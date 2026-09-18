@@ -1,18 +1,65 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
+import { useFonts } from 'expo-font';
+import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useColorScheme } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
+import { Colors } from '@/constants/colors';
+import { FontAssets } from '@/constants/typography';
+import { I18nProvider } from '@/i18n/i18n-provider';
+import { AppProvider, useSession } from '@/providers/app-provider';
 
 SplashScreen.preventAutoHideAsync();
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+export default function RootLayout() {
+  const [fontsLoaded, fontError] = useFonts(FontAssets);
+
+  useEffect(() => {
+    if (fontsLoaded || fontError) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, fontError]);
+
+  if (!fontsLoaded && !fontError) {
+    return null;
+  }
+
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AnimatedSplashOverlay />
-      <AppTabs />
-    </ThemeProvider>
+    <I18nProvider>
+      <AppProvider>
+        <StatusBar style="dark" />
+        <RootNavigator />
+      </AppProvider>
+    </I18nProvider>
+  );
+}
+
+function RootNavigator() {
+  const { isSignedIn } = useSession();
+
+  return (
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        contentStyle: { backgroundColor: Colors.background.base },
+      }}>
+      <Stack.Protected guard={!isSignedIn}>
+        <Stack.Screen name="(auth)" />
+      </Stack.Protected>
+
+      <Stack.Protected guard={isSignedIn}>
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="skin-profile" />
+        <Stack.Screen name="photo-review" />
+        <Stack.Screen name="image-quality" />
+        <Stack.Screen name="analyzing" options={{ gestureEnabled: false }} />
+        <Stack.Screen name="analysis-failed" />
+        <Stack.Screen name="scan-result" />
+        <Stack.Screen name="recommendation" />
+        <Stack.Screen name="scan-history" />
+        <Stack.Screen name="privacy" />
+        <Stack.Screen name="about" />
+      </Stack.Protected>
+    </Stack>
   );
 }

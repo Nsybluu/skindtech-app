@@ -1,14 +1,15 @@
 {
   "expo": {
-    "name": "skindtech-app",
+    "name": "SKINDTECH",
     "slug": "skindtech-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "skindtechapp",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "light",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/expo.icon",
+      "bundleIdentifier": "com.anonymous.skindtech-app"
     },
     "android": {
       "adaptiveIcon": {
@@ -26,9 +27,25 @@
     "plugins": [
       "expo-router",
       [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow SKINDTECH to use your camera for acne analysis.",
+          "recordAudioAndroid": false,
+          "barcodeScannerEnabled": false
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow SKINDTECH to choose a photo for acne analysis.",
+          "cameraPermission": "Allow SKINDTECH to use your camera for acne analysis.",
+          "microphonePermission": false
+        }
+      ],
+      [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
+          "backgroundColor": "#FFF9F7",
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
         }
