@@ -1,3 +1,5 @@
+import { File } from 'expo-file-system';
+
 import { mockClearScanResult, mockScanResult } from '@/mocks/scan';
 import type { SkinProfile } from '@/types/profile';
 import type { ScanOutcome, ScanResult } from '@/types/scan';
@@ -43,15 +45,9 @@ export const scanService = {
       return { status: 'failed' };
     }
 
+    const imageFile = new File(photoUri);
     const form = new FormData();
-    form.append(
-      'image',
-      {
-        uri: photoUri,
-        name: `scan-${Date.now()}.jpg`,
-        type: 'image/jpeg',
-      } as unknown as Blob,
-    );
+    form.append('image', imageFile, imageFile.name || `scan-${Date.now()}.jpg`);
     if (skinProfile) form.append('skinProfile', JSON.stringify(skinProfile));
     form.append('allowTrainingStorage', String(allowTrainingStorage));
 
