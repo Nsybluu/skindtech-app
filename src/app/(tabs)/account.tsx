@@ -32,10 +32,17 @@ export default function AccountScreen() {
   const { user, skinProfile } = useUserData();
   const { top } = useDesignInsets();
   const [languageVisible, setLanguageVisible] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
 
   const handleSignOut = async () => {
-    await authService.signOut();
-    signOut();
+    if (signingOut) return;
+    setSigningOut(true);
+    try {
+      await authService.signOut();
+    } finally {
+      signOut();
+      setSigningOut(false);
+    }
   };
 
   return (
@@ -110,6 +117,7 @@ export default function AccountScreen() {
                 label={t.profile.signOut}
                 icon={<SignOutIcon />}
                 onPress={handleSignOut}
+                disabled={signingOut}
               />
               <AppText variant="caption" color={Colors.text.muted} align="center">
                 {t.profile.version(APP_VERSION)}

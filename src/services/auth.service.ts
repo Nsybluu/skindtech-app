@@ -1,10 +1,17 @@
-import { mockScanHistory } from '@/mocks/history';
-import { mockSkinProfile } from '@/mocks/profile';
-import { mockUser } from '@/mocks/user';
+import * as Device from 'expo-device';
+import { Platform } from 'react-native';
+
 import type { SkinProfile, User } from '@/types/profile';
 import type { ScanResult } from '@/types/scan';
 
-import { mockResponse } from './api';
+import { apiRequest } from './api';
+import {
+  clearAuthTokens,
+  getStoredRefreshToken,
+  refreshAccessToken,
+  storeAuthTokens,
+  type AuthTokens,
+} from './session-token.service';
 
 /** What the app needs right after authentication (user + bootstrap data). */
 export type AuthSession = {
@@ -13,34 +20,89 @@ export type AuthSession = {
   scanHistory: ScanResult[];
 };
 
-const returningUserSession = (): AuthSession => ({
-  user: mockUser,
-  skinProfile: mockSkinProfile,
-  scanHistory: mockScanHistory,
-});
+type AuthUserPayload = {
+  id: string;
+  email: string;
+  displayName: string;
+};
 
-/** A freshly created account has no Skin Profile, so the first scan asks for one. */
-const newUserSession = (email: string): AuthSession => ({
-  user: { ...mockUser, email: email.trim() || mockUser.email },
+type AuthResponse = {
+  status: 'success';
+  data: AuthTokens & {
+    user: AuthUserPayload;
+    accessTokenExpiresIn: number;
+  };
+};
+
+type MeResponse = {
+  status: 'success';
+  data: { user: AuthUserPayload };
+};
+
+function toSession(user: AuthUserPayload): AuthSession {
+  return {
+    user: { id: user.id, name: user.displayName, email: user.email },
+    skinProfile: null,
+    scanHistory: [],
+  };
+}
+
+function deviceInfo() {
+  const platform = Platform.OS === 'ios' || Platform.OS === 'android' || Platform.OS === 'web'
+    ? Platform.OS
+    : 'unknown';
+  return {
+    platform,
+    ...(Device.modelName ? { deviceName: Device.modelName } : {}),
+  };
+}
+
+async function authenticate(path: '/auth/login' | '/auth/register', email: string, password: string) {
+  const response = await apiRequest<AuthResponse>(
+    path,
+    {
+      method: 'POST',
+      body: JSON.stringify({ email, password, device: deviceInfo() }),
+    },
+    { authenticated: false },
+  );
+  await storeAuthTokens(response.data);
+  return toSession(response.data.user);
+}
+
+/** A freshly authenticated account has no hydrated Phase 4/5 data yet. */
+const emptySession = (user: AuthUserPayload): AuthSession => ({
+  user: { id: user.id, name: user.displayName, email: user.email },
   skinProfile: null,
   scanHistory: [],
 });
 
-// TODO(api): POST /auth/sign-in, /auth/sign-up, /auth/google via Express.
 export const authService = {
-  signInWithEmail(_email: string, _password: string) {
-    return mockResponse(returningUserSession());
+  signInWithEmail(email: string, password: string) {
+    return authenticate('/auth/login', email, password);
   },
-  signInWithGoogle() {
-    return mockResponse(returningUserSession());
+  signUpWithEmail(email: string, password: string) {
+    return authenticate('/auth/register', email, password);
   },
-  signUpWithEmail(email: string, _password: string) {
-    return mockResponse(newUserSession(email));
+  async restoreSession(): Promise<AuthSession | null> {
+    if (!(await refreshAccessToken())) return null;
+    const response = await apiRequest<MeResponse>('/auth/me');
+    return emptySession(response.data.user);
   },
-  signUpWithGoogle() {
-    return mockResponse(newUserSession(''));
-  },
-  signOut() {
-    return mockResponse(undefined);
+  async signOut(): Promise<void> {
+    const refreshToken = await getStoredRefreshToken();
+    try {
+      if (refreshToken) {
+        await apiRequest(
+          '/auth/logout',
+          { method: 'POST', body: JSON.stringify({ refreshToken }) },
+          { authenticated: false },
+        );
+      }
+    } catch {
+      // Local sign-out must still complete when the backend is unreachable.
+    } finally {
+      await clearAuthTokens();
+    }
   },
 };

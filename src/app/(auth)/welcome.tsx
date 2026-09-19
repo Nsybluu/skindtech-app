@@ -1,6 +1,6 @@
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import { StyleSheet, View } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 
 import GoogleIcon from '@/assets/icons/google.svg';
 import { AppButton } from '@/components/ui/app-button';
@@ -11,17 +11,14 @@ import { Colors } from '@/constants/colors';
 import { Layout, Spacing } from '@/constants/spacing';
 import { useDesignInsets } from '@/hooks/use-design-insets';
 import { useI18n } from '@/i18n/i18n-provider';
-import { useSession } from '@/providers/app-provider';
-import { authService } from '@/services/auth.service';
 
 /** Figma 01 — Welcome */
 export default function WelcomeScreen() {
   const { t } = useI18n();
-  const { signIn } = useSession();
   const { top, insets } = useDesignInsets();
 
-  const signInWithGoogle = async () => {
-    signIn(await authService.signInWithGoogle());
+  const signInWithGoogle = () => {
+    Alert.alert(t.authErrors.googleTitle, t.authErrors.googlePhase);
   };
 
   return (

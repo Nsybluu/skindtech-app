@@ -1,11 +1,12 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 
-import { mockUser } from '@/mocks/user';
-import type { AuthSession } from '@/services/auth.service';
+import { authService, type AuthSession } from '@/services/auth.service';
+import { setSessionInvalidatedHandler } from '@/services/session-token.service';
 import type { SkinProfile, User } from '@/types/profile';
 import type { ScanResult } from '@/types/scan';
 
 type SessionValue = {
+  isSessionReady: boolean;
   isSignedIn: boolean;
   signIn: (session: AuthSession) => void;
   signOut: () => void;
@@ -29,16 +30,16 @@ type UserDataValue = {
 const SessionContext = createContext<SessionValue | null>(null);
 const UserDataContext = createContext<UserDataValue | null>(null);
 
+const emptyUser: User = { id: '', name: '', email: '' };
+
 /**
- * In-memory mock app state (auth + the signed-in user's data).
- *
- * User data is kept after sign-out so screens that are still animating out
- * never read an empty user; it is replaced on the next sign-in.
- * TODO(api): hydrate from the Express API and persist the auth token.
+ * Auth state is restored from the rotating refresh token in SecureStore.
+ * Profile and scan history are hydrated in their later backend phases.
  */
 export function AppProvider({ children }: { children: ReactNode }) {
+  const [isSessionReady, setIsSessionReady] = useState(false);
   const [isSignedIn, setIsSignedIn] = useState(false);
-  const [user, setUser] = useState<User>(mockUser);
+  const [user, setUser] = useState<User>(emptyUser);
   const [skinProfile, setSkinProfile] = useState<SkinProfile | null>(null);
   const [pendingPhotoUri, setPendingPhotoUri] = useState<string | null>(null);
   const [scanHistory, setScanHistory] = useState<ScanResult[]>([]);
@@ -53,8 +54,38 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setIsSignedIn(true);
   };
 
+  const signOut = () => {
+    setIsSignedIn(false);
+    setUser(emptyUser);
+    setSkinProfile(null);
+    setPendingPhotoUri(null);
+    setScanHistory([]);
+    setAiImprovementConsent(null);
+  };
+
+  useEffect(() => {
+    let active = true;
+    setSessionInvalidatedHandler(signOut);
+    void authService
+      .restoreSession()
+      .then((session) => {
+        if (active && session) signIn(session);
+      })
+      .catch(() => {
+        // A network error leaves the user signed out without exposing technical details.
+      })
+      .finally(() => {
+        if (active) setIsSessionReady(true);
+      });
+
+    return () => {
+      active = false;
+      setSessionInvalidatedHandler(null);
+    };
+  }, []);
+
   return (
-    <SessionContext.Provider value={{ isSignedIn, signIn, signOut: () => setIsSignedIn(false) }}>
+    <SessionContext.Provider value={{ isSessionReady, isSignedIn, signIn, signOut }}>
       <UserDataContext.Provider
         value={{
           user,

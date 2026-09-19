@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 
 import GoogleIcon from '@/assets/icons/google.svg';
 import { AuthFooterLink, AuthLayout } from '@/components/auth/auth-layout';
@@ -12,21 +12,44 @@ import { Spacing } from '@/constants/spacing';
 import { useI18n } from '@/i18n/i18n-provider';
 import { useSession } from '@/providers/app-provider';
 import { authService } from '@/services/auth.service';
+import { authErrorMessage } from '@/utils/auth-errors';
 
-/** Figma 03 — Sign Up. Creates a new mock user without a Skin Profile. */
+/** Figma 03 — Sign Up. */
 export default function SignUpScreen() {
   const { t } = useI18n();
   const { signIn } = useSession();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   const submit = async () => {
-    signIn(await authService.signUpWithEmail(email, password));
+    if (submitting) return;
+    if (!email.includes('@')) {
+      Alert.alert(t.authErrors.title, t.authErrors.invalidEmail);
+      return;
+    }
+    if (password.length < 8) {
+      Alert.alert(t.authErrors.title, t.authErrors.passwordTooShort);
+      return;
+    }
+    if (password !== confirmPassword) {
+      Alert.alert(t.authErrors.title, t.authErrors.passwordsDoNotMatch);
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      signIn(await authService.signUpWithEmail(email, password));
+    } catch (error) {
+      Alert.alert(t.authErrors.title, authErrorMessage(error, t));
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  const signUpWithGoogle = async () => {
-    signIn(await authService.signUpWithGoogle());
+  const signUpWithGoogle = () => {
+    Alert.alert(t.authErrors.googleTitle, t.authErrors.googlePhase);
   };
 
   return (
@@ -72,7 +95,11 @@ export default function SignUpScreen() {
       </View>
 
       <View style={styles.actions}>
-        <AppButton label={t.signUp.submit} onPress={submit} />
+        <AppButton
+          label={submitting ? t.authErrors.creatingAccount : t.signUp.submit}
+          onPress={submit}
+          disabled={submitting}
+        />
         <AppButton
           variant="google"
           label={t.signUp.signUpWithGoogle}

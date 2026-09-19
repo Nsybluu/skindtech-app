@@ -14,12 +14,6 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts(FontAssets);
 
-  useEffect(() => {
-    if (fontsLoaded || fontError) {
-      SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded, fontError]);
-
   if (!fontsLoaded && !fontError) {
     return null;
   }
@@ -28,10 +22,21 @@ export default function RootLayout() {
     <I18nProvider>
       <AppProvider>
         <StatusBar style="dark" />
-        <RootNavigator />
+        <AppShell />
       </AppProvider>
     </I18nProvider>
   );
+}
+
+function AppShell() {
+  const { isSessionReady } = useSession();
+
+  useEffect(() => {
+    if (isSessionReady) void SplashScreen.hideAsync();
+  }, [isSessionReady]);
+
+  if (!isSessionReady) return null;
+  return <RootNavigator />;
 }
 
 function RootNavigator() {
