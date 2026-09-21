@@ -1,6 +1,6 @@
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import { Alert, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import GoogleIcon from '@/assets/illustrations/google.svg';
 import { AppButton } from '@/components/ui/app-button';
@@ -10,6 +10,7 @@ import { ScreenBackground } from '@/components/ui/screen-background';
 import { Colors } from '@/constants/colors';
 import { Layout, Spacing } from '@/constants/spacing';
 import { useDesignInsets } from '@/hooks/use-design-insets';
+import { useGoogleSignIn } from '@/hooks/use-google-sign-in';
 import { useI18n } from '@/i18n/i18n-provider';
 
 /** Figma 01 — Welcome */
@@ -17,9 +18,7 @@ export default function WelcomeScreen() {
   const { t } = useI18n();
   const { top, insets } = useDesignInsets();
 
-  const signInWithGoogle = () => {
-    Alert.alert(t.authErrors.googleTitle, t.authErrors.googlePhase);
-  };
+  const google = useGoogleSignIn();
 
   return (
     <ScreenBackground>
@@ -53,12 +52,17 @@ export default function WelcomeScreen() {
         <View style={styles.spacer} />
 
         <View style={styles.actions}>
-          <AppButton label={t.welcome.signIn} onPress={() => router.push('/sign-in')} />
+          <AppButton
+            label={t.welcome.signIn}
+            onPress={() => router.push('/sign-in')}
+            disabled={google.busy}
+          />
           <AppButton
             variant="google"
-            label={t.welcome.signInWithGoogle}
+            label={google.busy ? t.authErrors.signingIn : t.welcome.signInWithGoogle}
             icon={<GoogleIcon />}
-            onPress={signInWithGoogle}
+            onPress={() => void google.start()}
+            disabled={google.busy}
           />
         </View>
       </View>

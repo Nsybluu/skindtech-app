@@ -63,7 +63,14 @@ export const en = {
     signingIn: 'Signing in…',
     creatingAccount: 'Creating account…',
     googleTitle: 'Google Sign-In',
-    googlePhase: 'Google Sign-In will be connected in Phase 3.5.',
+    googleInvalidToken: 'Google could not verify your sign-in. Please try again.',
+    googleUnavailable: 'Google Sign-In is temporarily unavailable. Try again later or sign in with your email.',
+    accountLinkRequired:
+      'An account with this email already exists. Sign in with your email and password to continue.',
+    googleNoAccount: 'No Google account was found on this device. Add one in your device settings and try again.',
+    googlePlayServices: 'Google Play services is missing or out of date. Update it and try again.',
+    googleMisconfigured: 'Google Sign-In is not set up correctly for this version of the app.',
+    googleNeedsDevBuild: 'Google Sign-In needs the SKINDTECH development build. It cannot run in Expo Go.',
   },
   tabs: {
     home: 'Home',

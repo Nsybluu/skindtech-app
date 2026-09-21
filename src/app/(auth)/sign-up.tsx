@@ -9,6 +9,7 @@ import { AppInput } from '@/components/ui/app-input';
 import { AppText } from '@/components/ui/app-text';
 import { Colors } from '@/constants/colors';
 import { Spacing } from '@/constants/spacing';
+import { useGoogleSignIn } from '@/hooks/use-google-sign-in';
 import { useI18n } from '@/i18n/i18n-provider';
 import { useSession } from '@/providers/app-provider';
 import { authService } from '@/services/auth.service';
@@ -22,9 +23,10 @@ export default function SignUpScreen() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const google = useGoogleSignIn();
 
   const submit = async () => {
-    if (submitting) return;
+    if (submitting || google.busy) return;
     if (!email.includes('@')) {
       Alert.alert(t.authErrors.title, t.authErrors.invalidEmail);
       return;
@@ -46,10 +48,6 @@ export default function SignUpScreen() {
     } finally {
       setSubmitting(false);
     }
-  };
-
-  const signUpWithGoogle = () => {
-    Alert.alert(t.authErrors.googleTitle, t.authErrors.googlePhase);
   };
 
   return (
@@ -98,13 +96,14 @@ export default function SignUpScreen() {
         <AppButton
           label={submitting ? t.authErrors.creatingAccount : t.signUp.submit}
           onPress={submit}
-          disabled={submitting}
+          disabled={submitting || google.busy}
         />
         <AppButton
           variant="google"
-          label={t.signUp.signUpWithGoogle}
+          label={google.busy ? t.authErrors.signingIn : t.signUp.signUpWithGoogle}
           icon={<GoogleIcon />}
-          onPress={signUpWithGoogle}
+          onPress={() => void google.start()}
+          disabled={submitting || google.busy}
         />
       </View>
 

@@ -58,12 +58,15 @@ function deviceInfo() {
   };
 }
 
-async function authenticate(path: '/auth/login' | '/auth/register', email: string, password: string) {
+type AuthEndpoint = '/auth/login' | '/auth/register' | '/auth/google';
+
+/** Every sign-in path returns the same tokens, which go through the one session layer. */
+async function authenticate(path: AuthEndpoint, credentials: Record<string, string>) {
   const response = await apiRequest<AuthResponse>(
     path,
     {
       method: 'POST',
-      body: JSON.stringify({ email, password, device: deviceInfo() }),
+      body: JSON.stringify({ ...credentials, device: deviceInfo() }),
     },
     { authenticated: false },
   );
@@ -73,10 +76,14 @@ async function authenticate(path: '/auth/login' | '/auth/register', email: strin
 
 export const authService = {
   signInWithEmail(email: string, password: string) {
-    return authenticate('/auth/login', email, password);
+    return authenticate('/auth/login', { email, password });
   },
   signUpWithEmail(email: string, password: string) {
-    return authenticate('/auth/register', email, password);
+    return authenticate('/auth/register', { email, password });
+  },
+  /** `idToken` is the Google ID token from the native dialog; the backend verifies it. */
+  signInWithGoogle(idToken: string) {
+    return authenticate('/auth/google', { idToken });
   },
   async restoreSession(): Promise<AuthSession | null> {
     if (!(await refreshAccessToken())) return null;
