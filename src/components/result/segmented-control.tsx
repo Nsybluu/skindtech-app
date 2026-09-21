@@ -30,6 +30,8 @@ export function SegmentedControl<T extends string>({ options, value, onChange }:
             accessibilityRole="tab"
             accessibilityState={{ selected }}
             accessibilityLabel={option.label}
+            // The pill is only 22pt tall; extend the touch area to the 44pt minimum.
+            hitSlop={{ top: 11, bottom: 11 }}
             onPress={() => onChange(option.value)}
             style={({ pressed }) => [
               styles.segment,

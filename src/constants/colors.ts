@@ -44,6 +44,10 @@ export const Colors = {
     accent: '#E1787F',
     peach: '#F5B7A6',
   },
+  icon: {
+    /** Dark warm ink for neutral icons (back chevron, password eye). */
+    strong: '#4A3B35',
+  },
   background: {
     base: '#FFF9F7',
     gradientStart: '#FDF1EF',

@@ -1,71 +1,61 @@
 import { Image } from 'expo-image';
 import type { ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, type ViewStyle } from 'react-native';
 
 import { AppText } from '@/components/ui/app-text';
 import { Alpha, Colors } from '@/constants/colors';
 import { Radius, Shadows, Spacing } from '@/constants/spacing';
-
-const GUIDE_WIDTH = 238;
-const GUIDE_HEIGHT = 306;
+import { useI18n } from '@/i18n/i18n-provider';
 
 type CameraFrameProps = {
   guidanceTitle: string;
   guidanceBody: string;
   /** `warning` is the rose pill from 07B — Image Quality Issue. */
   tone?: 'default' | 'warning';
-  illustrationOpacity?: number;
   topRightAccessory?: ReactNode;
   /** Live camera preview supplied by the scan screen. */
   cameraContent?: ReactNode;
   /** Captured local image shown during review and analysis. */
   photoUri?: string | null;
+  /** Dims the captured image (used behind a warning). */
+  photoOpacity?: number;
+  /** Shown instead of a preview when there is no camera or photo (e.g. camera access is off). */
+  emptyContent?: ReactNode;
 };
 
 /**
- * Dark camera / photo preview with the face guide illustration.
- * A real camera feed would replace the illustration later (expo-camera).
+ * Dark preview frame: a live camera (with corner brackets), the captured photo
+ * or an empty-state message, and the guidance pill underneath.
  */
 export function CameraFrame({
   guidanceTitle,
   guidanceBody,
   tone = 'default',
-  illustrationOpacity = 1,
   topRightAccessory,
   cameraContent,
   photoUri,
+  photoOpacity = 1,
+  emptyContent,
 }: CameraFrameProps) {
+  const { t } = useI18n();
+
   return (
     <View style={styles.frame}>
-      <View style={styles.illustrationArea}>
-        {cameraContent ? <View style={styles.media}>{cameraContent}</View> : null}
-        {!cameraContent && photoUri ? (
+      <View style={styles.viewport}>
+        {cameraContent ? (
+          <>
+            <View style={styles.media}>{cameraContent}</View>
+            <FramingGuide />
+          </>
+        ) : photoUri ? (
           <Image
             source={{ uri: photoUri }}
             contentFit="cover"
-            style={styles.media}
-            accessibilityLabel="Selected face photo"
+            style={[styles.media, { opacity: photoOpacity }]}
+            accessibilityLabel={t.scan.photoLabel}
           />
-        ) : null}
-        {!cameraContent && !photoUri ? (
-          <>
-            <View style={styles.topSpace} />
-            <Image
-              source={require('@/assets/images/face-scan-guide-dark.png')}
-              contentFit="contain"
-              style={[styles.illustration, { opacity: illustrationOpacity }]}
-              accessibilityIgnoresInvertColors
-            />
-            <View style={styles.bottomSpace} />
-          </>
-        ) : null}
-        {cameraContent ? (
-          <Image
-            source={require('@/assets/images/face-scan-guide-dark.png')}
-            contentFit="contain"
-            style={[styles.cameraGuide, { opacity: 0.58 }]}
-            accessibilityIgnoresInvertColors
-          />
+        ) : emptyContent ? (
+          <View style={styles.empty}>{emptyContent}</View>
         ) : null}
       </View>
 
@@ -85,6 +75,36 @@ export function CameraFrame({
   );
 }
 
+/** Four corner brackets that frame where the face should sit; no artwork over the camera. */
+function FramingGuide() {
+  return (
+    <View
+      pointerEvents="none"
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
+      style={styles.guideLayer}>
+      <View style={styles.guide}>
+        <View style={[styles.corner, styles.cornerTopLeft]} />
+        <View style={[styles.corner, styles.cornerTopRight]} />
+        <View style={[styles.corner, styles.cornerBottomLeft]} />
+        <View style={[styles.corner, styles.cornerBottomRight]} />
+      </View>
+    </View>
+  );
+}
+
+const CORNER_SIZE = 28;
+const CORNER_WIDTH = 3;
+const CORNER_RADIUS = 12;
+const GUIDE_COLOR = Alpha.white(0.85);
+
+const corner = (edges: ViewStyle): ViewStyle => ({
+  ...edges,
+  width: CORNER_SIZE,
+  height: CORNER_SIZE,
+  borderColor: GUIDE_COLOR,
+});
+
 const styles = StyleSheet.create({
   frame: {
     flex: 1,
@@ -94,35 +114,62 @@ const styles = StyleSheet.create({
     boxShadow: Shadows.camera,
     overflow: 'hidden',
   },
-  illustrationArea: {
+  viewport: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
     overflow: 'hidden',
   },
   media: {
     ...StyleSheet.absoluteFill,
   },
-  cameraGuide: {
-    height: '88%',
-    aspectRatio: GUIDE_WIDTH / GUIDE_HEIGHT,
+  empty: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.xxl,
   },
-  // Figma places the guide 54 pt from the top and 14 pt above the guidance pill.
-  topSpace: {
-    flexGrow: 54,
-    minHeight: 12,
+  guideLayer: {
+    ...StyleSheet.absoluteFill,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  bottomSpace: {
-    flexGrow: 14,
-    minHeight: 8,
+  guide: {
+    height: '78%',
+    aspectRatio: 0.8,
   },
-  illustration: {
-    height: GUIDE_HEIGHT,
-    aspectRatio: GUIDE_WIDTH / GUIDE_HEIGHT,
-    flexShrink: 1,
+  corner: {
+    position: 'absolute',
   },
+  cornerTopLeft: corner({
+    top: 0,
+    left: 0,
+    borderTopWidth: CORNER_WIDTH,
+    borderLeftWidth: CORNER_WIDTH,
+    borderTopLeftRadius: CORNER_RADIUS,
+  }),
+  cornerTopRight: corner({
+    top: 0,
+    right: 0,
+    borderTopWidth: CORNER_WIDTH,
+    borderRightWidth: CORNER_WIDTH,
+    borderTopRightRadius: CORNER_RADIUS,
+  }),
+  cornerBottomLeft: corner({
+    bottom: 0,
+    left: 0,
+    borderBottomWidth: CORNER_WIDTH,
+    borderLeftWidth: CORNER_WIDTH,
+    borderBottomLeftRadius: CORNER_RADIUS,
+  }),
+  cornerBottomRight: corner({
+    bottom: 0,
+    right: 0,
+    borderBottomWidth: CORNER_WIDTH,
+    borderRightWidth: CORNER_WIDTH,
+    borderBottomRightRadius: CORNER_RADIUS,
+  }),
   guidance: {
     minHeight: 64,
+    marginTop: Spacing.m,
     marginHorizontal: Spacing.l,
     marginBottom: Spacing.l,
     paddingHorizontal: Spacing.l,

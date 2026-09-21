@@ -39,6 +39,7 @@ type MeResponse = {
   data: { user: AuthUserPayload };
 };
 
+/** A freshly authenticated account has no hydrated profile or history yet (backend Phase 4/5). */
 function toSession(user: AuthUserPayload): AuthSession {
   return {
     user: { id: user.id, name: user.displayName, email: user.email },
@@ -70,13 +71,6 @@ async function authenticate(path: '/auth/login' | '/auth/register', email: strin
   return toSession(response.data.user);
 }
 
-/** A freshly authenticated account has no hydrated Phase 4/5 data yet. */
-const emptySession = (user: AuthUserPayload): AuthSession => ({
-  user: { id: user.id, name: user.displayName, email: user.email },
-  skinProfile: null,
-  scanHistory: [],
-});
-
 export const authService = {
   signInWithEmail(email: string, password: string) {
     return authenticate('/auth/login', email, password);
@@ -87,7 +81,7 @@ export const authService = {
   async restoreSession(): Promise<AuthSession | null> {
     if (!(await refreshAccessToken())) return null;
     const response = await apiRequest<MeResponse>('/auth/me');
-    return emptySession(response.data.user);
+    return toSession(response.data.user);
   },
   async signOut(): Promise<void> {
     const refreshToken = await getStoredRefreshToken();

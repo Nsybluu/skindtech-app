@@ -1,14 +1,15 @@
 import { StyleSheet } from 'react-native';
 
-import InfoIcon from '@/assets/icons/info.svg';
+import { AppIcon } from '@/components/ui/app-icon';
 import { AppText } from '@/components/ui/app-text';
+import { InfoIcon } from '@/components/ui/icons';
 import { Notice } from '@/components/ui/notice';
 import { Colors } from '@/constants/colors';
 import { Spacing } from '@/constants/spacing';
 
 /** "Notice / Photo Quality" row at the top of the scan controls sheet. */
 export function ScanNotice({ message }: { message: string }) {
-  return <Notice icon={<InfoIcon />} message={message} style={styles.notice} />;
+  return <Notice icon={<AppIcon icon={InfoIcon} size={18} />} message={message} style={styles.notice} />;
 }
 
 /** Small centered helper line under the scan controls. */

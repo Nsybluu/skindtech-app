@@ -1,7 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 
-import ComedonalMarkerIcon from '@/assets/icons/marker-comedonal.svg';
-import InflammatoryMarkerIcon from '@/assets/icons/marker-inflammatory.svg';
+import { LegendDot } from '@/components/result/legend-dot';
 import { AppText } from '@/components/ui/app-text';
 import { Alpha, Colors } from '@/constants/colors';
 import { Radius, Spacing } from '@/constants/spacing';
@@ -31,7 +30,7 @@ export function AcneTypesSection({ categories }: { categories: AcneCategory[] })
                     category === 'comedonal' ? Alpha.peach(0.22) : Alpha.rose(0.12),
                 },
               ]}>
-              {category === 'comedonal' ? <ComedonalMarkerIcon /> : <InflammatoryMarkerIcon />}
+              <LegendDot category={category} />
               <AppText variant="caption" color={Colors.text.secondary} numberOfLines={1}>
                 {t.result.category[category]}
               </AppText>

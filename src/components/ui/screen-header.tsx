@@ -2,9 +2,11 @@ import { router } from 'expo-router';
 import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import BackIcon from '@/assets/icons/back.svg';
+import { AppIcon } from '@/components/ui/app-icon';
+import { ChevronLeftIcon } from '@/components/ui/icons';
+import { Colors } from '@/constants/colors';
 import { Layout, Spacing } from '@/constants/spacing';
-import type { TextVariant } from '@/constants/typography';
+import { TextVariants, THAI_MIN_LINE_HEIGHT_RATIO, type TextVariant } from '@/constants/typography';
 import { useI18n } from '@/i18n/i18n-provider';
 
 import { AppText } from './app-text';
@@ -37,13 +39,17 @@ export function ScreenHeader({
   gap = Spacing.s,
 }: ScreenHeaderProps) {
   const { t } = useI18n();
+  // The tight Latin line height pushes Noto Sans Thai glyphs about 4pt above the
+  // back button's centre. Using the same roomy line height as Thai for every
+  // language keeps the title centred on the button in both.
+  const lineHeight = Math.ceil(TextVariants[titleVariant].fontSize * THAI_MIN_LINE_HEIGHT_RATIO);
 
   return (
     <View style={[styles.row, { gap }]}>
       <IconButton
         accessibilityLabel={t.common.back}
         onPress={onBack ?? (() => goBackOr(() => router.replace('/')))}>
-        <BackIcon />
+        <AppIcon icon={ChevronLeftIcon} size={18} color={Colors.text.muted} strokeWidth={2} />
       </IconButton>
       <AppText
         variant={titleVariant}
@@ -51,7 +57,7 @@ export function ScreenHeader({
         adjustsFontSizeToFit
         minimumFontScale={0.8}
         accessibilityRole="header"
-        style={styles.title}>
+        style={[styles.title, { lineHeight }]}>
         {title}
       </AppText>
       {accessory}

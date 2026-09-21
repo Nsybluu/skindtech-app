@@ -1,8 +1,9 @@
 import { StyleSheet, View } from 'react-native';
 
-import AiAssistantIcon from '@/assets/icons/ai-assistant.svg';
+import { AppIcon } from '@/components/ui/app-icon';
 import { AppText } from '@/components/ui/app-text';
 import { IconContainer } from '@/components/ui/icon-container';
+import { FaceSlightlySmilingIcon } from '@/components/ui/icons';
 import { Alpha, Colors } from '@/constants/colors';
 import { Radius, Spacing } from '@/constants/spacing';
 import { useI18n } from '@/i18n/i18n-provider';
@@ -35,7 +36,7 @@ export function SkinContextCard() {
   return (
     <View style={styles.card}>
       <IconContainer size={40} radius={Radius.m} backgroundColor={Alpha.peach(0.24)}>
-        <AiAssistantIcon />
+        <AppIcon icon={FaceSlightlySmilingIcon} size={18} />
       </IconContainer>
       <View style={styles.copy}>
         <AppText variant="captionSemibold">{t.aiChat.contextTitle}</AppText>

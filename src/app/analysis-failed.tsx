@@ -1,12 +1,12 @@
 import { router } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
-import FailedIcon from '@/assets/icons/analysis-failed.svg';
-import NotSavedIcon from '@/assets/icons/info.svg';
 import { ActionBar } from '@/components/ui/action-bar';
 import { AppButton } from '@/components/ui/app-button';
+import { AppIcon } from '@/components/ui/app-icon';
 import { AppScreen } from '@/components/ui/app-screen';
 import { AppText } from '@/components/ui/app-text';
+import { InfoIcon } from '@/components/ui/icons';
 import { ScreenHeader, goBackOr } from '@/components/ui/screen-header';
 import { Colors } from '@/constants/colors';
 import { Radius, Spacing } from '@/constants/spacing';
@@ -38,7 +38,7 @@ export default function AnalysisFailedScreen() {
         </ActionBar>
       }>
       <View style={styles.iconCircle}>
-        <FailedIcon />
+        <AppIcon icon={InfoIcon} size={24} />
       </View>
 
       <AppText variant="cardHeadline" color={Colors.error.title} align="center">
@@ -62,7 +62,7 @@ export default function AnalysisFailedScreen() {
       </View>
 
       <View style={styles.notice}>
-        <NotSavedIcon />
+        <AppIcon icon={InfoIcon} size={18} />
         <AppText variant="bodySmall" color={Colors.error.text} style={styles.noticeText}>
           {t.analysisFailed.notSaved}
         </AppText>

@@ -2,19 +2,13 @@ import { router } from 'expo-router';
 import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import DeleteAccountIcon from '@/assets/icons/delete-account.svg';
-import DocumentIcon from '@/assets/icons/document.svg';
-import InfoImportantIcon from '@/assets/icons/info-important.svg';
-import PhotoIcon from '@/assets/icons/photo.svg';
-import ScanResultsIcon from '@/assets/icons/scan-results.svg';
-import ShieldIcon from '@/assets/icons/shield.svg';
-import SkinProfileLargeIcon from '@/assets/icons/skin-profile-large.svg';
-import TrashIcon from '@/assets/icons/trash.svg';
 import { ActionRow } from '@/components/info/action-row';
 import { InfoRow } from '@/components/info/info-row';
+import { AppIcon } from '@/components/ui/app-icon';
 import { AppScreen } from '@/components/ui/app-screen';
 import { AppText } from '@/components/ui/app-text';
 import { IconContainer } from '@/components/ui/icon-container';
+import { FaceSlightlySmilingIcon, FileTextIcon, ImageIcon, InfoIcon, RotateCcwClockIcon, ShieldCheckIcon, TrashIcon, UserRoundMinusIcon } from '@/components/ui/icons';
 import { ListGroup } from '@/components/ui/list-group';
 import { Notice } from '@/components/ui/notice';
 import { ScreenHeader } from '@/components/ui/screen-header';
@@ -64,7 +58,7 @@ export default function PrivacyScreen() {
       gap={Spacing.l}>
       <View style={styles.intro}>
         <IconContainer size={40} radius={20} backgroundColor={Alpha.white(0.7)}>
-          <ShieldIcon />
+          <AppIcon icon={ShieldCheckIcon} size={20} />
         </IconContainer>
         <View style={styles.introCopy}>
           <AppText variant="titleSmall">{t.privacy.introTitle}</AppText>
@@ -77,19 +71,19 @@ export default function PrivacyScreen() {
       <Section title={t.privacy.dataUsed}>
         <ListGroup>
           <InfoRow
-            icon={<PhotoIcon />}
+            icon={<AppIcon icon={ImageIcon} size={20} />}
             title={t.privacy.facePhotos}
             body={t.privacy.facePhotosBody}
             bodyVariant="footnote"
             minHeight={72}
           />
           <InfoRow
-            icon={<SkinProfileLargeIcon />}
+            icon={<AppIcon icon={FaceSlightlySmilingIcon} size={20} />}
             title={t.privacy.skinProfile}
             body={t.privacy.skinProfileBody}
           />
           <InfoRow
-            icon={<ScanResultsIcon />}
+            icon={<AppIcon icon={RotateCcwClockIcon} size={20} />}
             title={t.privacy.scanResults}
             body={t.privacy.scanResultsBody}
           />
@@ -99,7 +93,7 @@ export default function PrivacyScreen() {
       <Section title={t.privacy.aiImprovement}>
         <View style={styles.consentCard}>
           <IconContainer size={36} radius={20} backgroundColor={Alpha.white(0.7)}>
-            <ShieldIcon />
+            <AppIcon icon={ShieldCheckIcon} size={20} />
           </IconContainer>
           <View style={styles.consentCopy}>
             <AppText variant="label">{t.privacy.aiImprovementTitle}</AppText>
@@ -117,9 +111,9 @@ export default function PrivacyScreen() {
 
       <Section title={t.privacy.yourControls}>
         <ListGroup>
-          <ActionRow icon={<TrashIcon />} label={t.privacy.deleteHistory} onPress={deleteHistory} />
+          <ActionRow icon={<AppIcon icon={TrashIcon} size={18} />} label={t.privacy.deleteHistory} onPress={deleteHistory} />
           <ActionRow
-            icon={<DeleteAccountIcon />}
+            icon={<AppIcon icon={UserRoundMinusIcon} size={18} />}
             label={t.privacy.deleteAccount}
             weight="semibold"
             onPress={deleteAccount}
@@ -128,7 +122,7 @@ export default function PrivacyScreen() {
       </Section>
 
       <Notice
-        icon={<InfoImportantIcon />}
+        icon={<AppIcon icon={InfoIcon} size={18} />}
         tone="blush"
         title={t.privacy.noticeTitle}
         message={t.privacy.noticeBody}
@@ -138,7 +132,7 @@ export default function PrivacyScreen() {
 
       <ActionRow
         standalone
-        icon={<DocumentIcon />}
+        icon={<AppIcon icon={FileTextIcon} size={18} />}
         label={t.privacy.privacyPolicy}
         color={Colors.text.primary}
         weight="semibold"

@@ -2,7 +2,7 @@ import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { Alert, StyleSheet, View } from 'react-native';
 
-import GoogleIcon from '@/assets/icons/google.svg';
+import GoogleIcon from '@/assets/illustrations/google.svg';
 import { AppButton } from '@/components/ui/app-button';
 import { AppText } from '@/components/ui/app-text';
 import { BrandWordmark } from '@/components/ui/brand-wordmark';

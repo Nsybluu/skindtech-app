@@ -52,6 +52,19 @@ export type ScanResult = {
   detectionAreas: AcneDetectionArea[];
 };
 
+/** Why `POST /scans` did not produce a result; drives which failure screen opens. */
+export type ScanFailureReason =
+  /** The photo was refused (unreadable, wrong type, too large, poor quality). */
+  | 'image-rejected'
+  /** The request never reached the server. */
+  | 'network'
+  /** The backend or the AI service is down or erroring. */
+  | 'unavailable'
+  /** The access token could not be refreshed; the user is being signed out. */
+  | 'session'
+  | 'rate-limited'
+  | 'unknown';
+
 export type ScanOutcome =
   | { status: 'success'; result: ScanResult }
-  | { status: 'failed' };
+  | { status: 'failed'; reason: ScanFailureReason };

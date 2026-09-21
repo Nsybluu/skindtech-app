@@ -1,7 +1,8 @@
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
-import SendIcon from '@/assets/icons/send.svg';
+import { AppIcon } from '@/components/ui/app-icon';
 import { AppText } from '@/components/ui/app-text';
+import { SendHorizontalIcon } from '@/components/ui/icons';
 import { Alpha, Colors, Gradients } from '@/constants/colors';
 import { Layout, Radius, Spacing } from '@/constants/spacing';
 import { FontFamily } from '@/constants/typography';
@@ -51,7 +52,7 @@ export function ChatComposer({
           disabled={!canSend}
           onPress={onSend}
           style={({ pressed }) => [styles.send, (pressed || !canSend) && styles.sendIdle]}>
-          <SendIcon color={Colors.text.onBrand} />
+          <AppIcon icon={SendHorizontalIcon} size={20} color={Colors.text.onBrand} />
         </Pressable>
       </View>
 

@@ -2,25 +2,22 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
-import AboutIcon from '@/assets/icons/about.svg';
-import HistoryIcon from '@/assets/icons/history.svg';
-import LanguageIcon from '@/assets/icons/language.svg';
-import PrivacyIcon from '@/assets/icons/privacy.svg';
-import SignOutIcon from '@/assets/icons/sign-out.svg';
-import SkinProfileIcon from '@/assets/icons/skin-profile.svg';
 import { LanguageSheet } from '@/components/profile/language-sheet';
 import { MenuRow } from '@/components/profile/menu-row';
 import { ProfileHero } from '@/components/profile/profile-hero';
 import { formatSkinProfileShort } from '@/components/scan/skin-profile-summary';
 import { AppButton } from '@/components/ui/app-button';
+import { AppIcon } from '@/components/ui/app-icon';
 import { AppText } from '@/components/ui/app-text';
+import { FaceSlightlySmilingIcon, GlobeIcon, InfoIcon, LogOutIcon, RotateCcwClockIcon, ShieldCheckIcon } from '@/components/ui/icons';
 import { ListGroup } from '@/components/ui/list-group';
 import { ScreenBackground } from '@/components/ui/screen-background';
+import { APP_VERSION } from '@/constants/app';
 import { Alpha, Colors } from '@/constants/colors';
 import { Layout, Radius, Spacing } from '@/constants/spacing';
 import { useDesignInsets } from '@/hooks/use-design-insets';
 import { NATIVE_LANGUAGE_NAMES, useI18n } from '@/i18n/i18n-provider';
-import { APP_VERSION } from '@/mocks/user';
+
 import { useSession, useUserData } from '@/providers/app-provider';
 import { authService } from '@/services/auth.service';
 import { showMockupOnlyAlert } from '@/utils/alerts';
@@ -66,7 +63,7 @@ export default function AccountScreen() {
                   borderColor={Alpha.rose(0.22)}
                   dividerColor={Alpha.taupe(0.18)}>
                   <MenuRow
-                    icon={<SkinProfileIcon />}
+                    icon={<AppIcon icon={FaceSlightlySmilingIcon} size={16} />}
                     iconBackground={Alpha.rose(0.1)}
                     label={t.profile.mySkinProfile}
                     description={
@@ -78,7 +75,7 @@ export default function AccountScreen() {
                     onPress={() => router.push('/skin-profile')}
                   />
                   <MenuRow
-                    icon={<HistoryIcon />}
+                    icon={<AppIcon icon={RotateCcwClockIcon} size={16} />}
                     label={t.profile.scanHistory}
                     minHeight={52}
                     onPress={() => router.push('/scan-history')}
@@ -92,18 +89,18 @@ export default function AccountScreen() {
                 </AppText>
                 <ListGroup backgroundColor={Alpha.white(0.72)} borderColor={Alpha.taupe(0.25)}>
                   <MenuRow
-                    icon={<LanguageIcon />}
+                    icon={<AppIcon icon={GlobeIcon} size={16} />}
                     label={t.profile.language}
                     value={NATIVE_LANGUAGE_NAMES[language]}
                     onPress={() => setLanguageVisible(true)}
                   />
                   <MenuRow
-                    icon={<PrivacyIcon />}
+                    icon={<AppIcon icon={ShieldCheckIcon} size={16} />}
                     label={t.profile.privacyAndData}
                     onPress={() => router.push('/privacy')}
                   />
                   <MenuRow
-                    icon={<AboutIcon />}
+                    icon={<AppIcon icon={InfoIcon} size={16} />}
                     label={t.profile.about}
                     onPress={() => router.push('/about')}
                   />
@@ -115,7 +112,7 @@ export default function AccountScreen() {
               <AppButton
                 variant="outline"
                 label={t.profile.signOut}
-                icon={<SignOutIcon />}
+                icon={<AppIcon icon={LogOutIcon} size={18} />}
                 onPress={handleSignOut}
                 disabled={signingOut}
               />

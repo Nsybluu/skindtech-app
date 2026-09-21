@@ -1,11 +1,11 @@
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import CaptureButtonIcon from '@/assets/icons/capture-button.svg';
-import FlashOffIcon from '@/assets/icons/flash-off.svg';
-import UploadIcon from '@/assets/icons/upload.svg';
+import CaptureButtonIcon from '@/assets/illustrations/capture-button.svg';
+import { AppIcon } from '@/components/ui/app-icon';
 import { AppText } from '@/components/ui/app-text';
 import { IconContainer } from '@/components/ui/icon-container';
+import { ImageUpIcon, ZapOffIcon } from '@/components/ui/icons';
 import { Alpha, Colors } from '@/constants/colors';
 import { Radius, Spacing } from '@/constants/spacing';
 import { useI18n } from '@/i18n/i18n-provider';
@@ -23,7 +23,7 @@ export function CaptureControls({ onUpload, onCapture, flashOn, onToggleFlash }:
 
   return (
     <View style={styles.row}>
-      <SideAction label={t.scan.upload} icon={<UploadIcon />} onPress={onUpload} />
+      <SideAction label={t.scan.upload} icon={<AppIcon icon={ImageUpIcon} size={18} />} onPress={onUpload} />
 
       <Pressable
         accessibilityRole="button"
@@ -35,7 +35,7 @@ export function CaptureControls({ onUpload, onCapture, flashOn, onToggleFlash }:
 
       <SideAction
         label={flashOn ? t.scan.flashOn : t.scan.flashOff}
-        icon={<FlashOffIcon />}
+        icon={<AppIcon icon={ZapOffIcon} size={18} />}
         onPress={onToggleFlash}
         selected={flashOn}
       />

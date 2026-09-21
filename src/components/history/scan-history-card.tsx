@@ -2,9 +2,9 @@ import type { FC } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import type { SvgProps } from 'react-native-svg';
 
-import MildPreviewIcon from '@/assets/icons/scan-preview-mild.svg';
-import ModeratePreviewIcon from '@/assets/icons/scan-preview-moderate.svg';
-import SeverePreviewIcon from '@/assets/icons/scan-preview-severe.svg';
+import MildPreviewIcon from '@/assets/illustrations/scan-preview-mild.svg';
+import ModeratePreviewIcon from '@/assets/illustrations/scan-preview-moderate.svg';
+import SeverePreviewIcon from '@/assets/illustrations/scan-preview-severe.svg';
 import { AppText } from '@/components/ui/app-text';
 import { Alpha, Colors } from '@/constants/colors';
 import { Radius, Spacing } from '@/constants/spacing';

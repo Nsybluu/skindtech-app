@@ -1,15 +1,16 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { StyleSheet } from 'react-native';
 
-import InfoIcon from '@/assets/icons/info.svg';
 import { AcneTypesSection } from '@/components/result/acne-types-section';
 import { DetectedAreasCard } from '@/components/result/detected-areas-card';
 import { OverallAnalysisCard } from '@/components/result/overall-analysis-card';
 import { SkinProfileSummary } from '@/components/scan/skin-profile-summary';
 import { ActionBar } from '@/components/ui/action-bar';
 import { AppButton } from '@/components/ui/app-button';
+import { AppIcon } from '@/components/ui/app-icon';
 import { AppScreen } from '@/components/ui/app-screen';
 import { AppText } from '@/components/ui/app-text';
+import { InfoIcon } from '@/components/ui/icons';
 import { Notice } from '@/components/ui/notice';
 import { ScreenHeader } from '@/components/ui/screen-header';
 import { Colors } from '@/constants/colors';
@@ -77,7 +78,7 @@ export default function ScanResultScreen() {
       <AcneTypesSection categories={categories} />
       <SkinProfileSummary variant="result" />
       <Notice
-        icon={<InfoIcon />}
+        icon={<AppIcon icon={InfoIcon} size={18} />}
         message={
           result.isDemoData
             ? t.result.demoDisclaimer

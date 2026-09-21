@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View, type TextInputProps } from 'react-native';
 
-import EyeIcon from '@/assets/icons/eye.svg';
+import { AppIcon } from '@/components/ui/app-icon';
+import { EyeIcon, EyeOffIcon } from '@/components/ui/icons';
 import { Colors } from '@/constants/colors';
 import { Layout, Radius, Spacing } from '@/constants/spacing';
 import { FontFamily } from '@/constants/typography';
@@ -15,16 +16,17 @@ type AppInputProps = Omit<TextInputProps, 'style' | 'secureTextEntry'> & {
   secure?: boolean;
 };
 
-export function AppInput({ label, secure = false, ...inputProps }: AppInputProps) {
+export function AppInput({ label, secure = false, onFocus, onBlur, ...inputProps }: AppInputProps) {
   const { t } = useI18n();
   const [hidden, setHidden] = useState(secure);
+  const [focused, setFocused] = useState(false);
 
   return (
     <View style={styles.field}>
       <AppText variant="body" color={Colors.text.label}>
         {label}
       </AppText>
-      <View style={styles.box}>
+      <View style={[styles.box, focused && styles.boxFocused]}>
         <TextInput
           accessibilityLabel={label}
           placeholderTextColor={Colors.text.muted}
@@ -34,6 +36,14 @@ export function AppInput({ label, secure = false, ...inputProps }: AppInputProps
           autoCorrect={false}
           style={styles.input}
           {...inputProps}
+          onFocus={(event) => {
+            setFocused(true);
+            onFocus?.(event);
+          }}
+          onBlur={(event) => {
+            setFocused(false);
+            onBlur?.(event);
+          }}
         />
         {secure ? (
           <Pressable
@@ -42,7 +52,12 @@ export function AppInput({ label, secure = false, ...inputProps }: AppInputProps
             hitSlop={10}
             onPress={() => setHidden((value) => !value)}
             style={({ pressed }) => pressed && styles.pressed}>
-            <EyeIcon />
+            {/* The icon shows the current state: open eye = password visible, closed eye = hidden. */}
+            {hidden ? (
+              <AppIcon icon={EyeOffIcon} size={26} color={Colors.icon.strong} />
+            ) : (
+              <AppIcon icon={EyeIcon} size={26} color={Colors.icon.strong} />
+            )}
           </Pressable>
         ) : null}
       </View>
@@ -64,6 +79,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.border.input,
     backgroundColor: Colors.surface.input,
+  },
+  boxFocused: {
+    borderColor: Colors.brand.primary,
+    backgroundColor: Colors.surface.cardStrong,
   },
   input: {
     flex: 1,

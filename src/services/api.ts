@@ -1,5 +1,8 @@
 import { API_BASE_URL, API_TIMEOUT_MS } from './api-config';
+import { ApiError } from './api-error';
 import { getAccessToken, refreshAccessToken } from './session-token.service';
+
+export { ApiError };
 
 type ApiErrorPayload = {
   error?: {
@@ -12,17 +15,6 @@ type ApiRequestOptions = {
   authenticated?: boolean;
   retryAuthentication?: boolean;
 };
-
-export class ApiError extends Error {
-  constructor(
-    readonly statusCode: number,
-    readonly code: string,
-    readonly details?: unknown,
-  ) {
-    super(code);
-    this.name = 'ApiError';
-  }
-}
 
 /** Resolves with `value` after `ms`, mimicking a network round trip. */
 export function mockResponse<T>(value: T, ms = 0): Promise<T> {
@@ -59,8 +51,8 @@ export async function apiRequest<T>(
     if (typeof init.body === 'string' && !headers.has('Content-Type')) {
       headers.set('Content-Type', 'application/json');
     }
-    const token = authenticated ? getAccessToken() : null;
-    if (token) headers.set('Authorization', `Bearer ${token}`);
+    const tokenUsed = authenticated ? getAccessToken() : null;
+    if (tokenUsed) headers.set('Authorization', `Bearer ${tokenUsed}`);
 
     const response = await fetch(`${API_BASE_URL}${path}`, {
       ...init,
@@ -69,8 +61,16 @@ export async function apiRequest<T>(
     });
 
     if (response.status === 401 && authenticated && retryAuthentication) {
-      const refreshedToken = await refreshAccessToken();
-      if (refreshedToken) {
+      // The server kills the previous access token as soon as the session is
+      // rotated, so a request that was already in flight when another one
+      // refreshed gets a 401 for a perfectly healthy session. In that case the
+      // newer token is already in memory: retry with it instead of refreshing
+      // (and rotating) a second time.
+      const latestToken = getAccessToken();
+      const usableToken =
+        latestToken && latestToken !== tokenUsed ? latestToken : await refreshAccessToken();
+      if (usableToken) {
+        clearTimeout(timeout);
         return apiRequest<T>(path, init, { authenticated: true, retryAuthentication: false });
       }
     }

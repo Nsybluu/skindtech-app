@@ -1,9 +1,10 @@
 import type { ReactNode } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 
-import InfoIcon from '@/assets/icons/info.svg';
 import { ActionBar } from '@/components/ui/action-bar';
+import { AppIcon } from '@/components/ui/app-icon';
 import { IconButton } from '@/components/ui/icon-button';
+import { InfoIcon } from '@/components/ui/icons';
 import { ScreenBackground } from '@/components/ui/screen-background';
 import { ScreenHeader } from '@/components/ui/screen-header';
 import { Colors } from '@/constants/colors';
@@ -52,7 +53,7 @@ export function ScanFlowLayout({
               tone="emphasis"
               accessibilityLabel={t.scan.scanTips}
               onPress={() => Alert.alert(t.scan.scanTips, t.scan.scanTipsBody, [{ text: t.common.ok }])}>
-              <InfoIcon />
+              <AppIcon icon={InfoIcon} size={18} />
             </IconButton>
           }
         />

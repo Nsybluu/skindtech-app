@@ -2,14 +2,14 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useState, type ReactNode } from 'react';
 import { StyleSheet, TextInput, View, type StyleProp, type TextStyle } from 'react-native';
 
-import InfoNoticeIcon from '@/assets/icons/info-notice.svg';
-import InfoLargeIcon from '@/assets/icons/info-large.svg';
 import { OptionChips, type ChipOption } from '@/components/profile/option-chips';
 import { ActionBar } from '@/components/ui/action-bar';
 import { AppButton } from '@/components/ui/app-button';
+import { AppIcon } from '@/components/ui/app-icon';
 import { AppScreen } from '@/components/ui/app-screen';
 import { AppText } from '@/components/ui/app-text';
 import { Badge } from '@/components/ui/badge';
+import { InfoIcon } from '@/components/ui/icons';
 import { Notice } from '@/components/ui/notice';
 import { ScreenHeader } from '@/components/ui/screen-header';
 import { Alpha, Colors } from '@/constants/colors';
@@ -107,7 +107,7 @@ export default function SkinProfileScreen() {
         </ActionBar>
       }>
       <Notice
-        icon={<InfoLargeIcon />}
+        icon={<AppIcon icon={InfoIcon} size={20} />}
         title={t.skinProfile.noticeTitle}
         titleVariant="bodySmall"
         titleColor={Colors.text.primary}
@@ -160,7 +160,7 @@ export default function SkinProfileScreen() {
       </Field>
 
       <Notice
-        icon={<InfoNoticeIcon />}
+        icon={<AppIcon icon={InfoIcon} size={18} />}
         message={t.skinProfile.disclaimer}
         messageVariant="caption"
         style={styles.disclaimer}

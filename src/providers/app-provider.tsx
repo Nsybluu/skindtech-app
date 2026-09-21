@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 
 import { authService, type AuthSession } from '@/services/auth.service';
 import { setSessionInvalidatedHandler } from '@/services/session-token.service';
@@ -33,6 +33,14 @@ const UserDataContext = createContext<UserDataValue | null>(null);
 const emptyUser: User = { id: '', name: '', email: '' };
 
 /**
+ * How long the splash screen may wait for the saved session to be restored.
+ * After this the app shows the sign-in screens and the restore keeps going in
+ * the background: it is deliberately NOT aborted, because cancelling a refresh
+ * the server has already rotated would lose the new token and sign the user out.
+ */
+const SESSION_BOOT_MAX_MS = 6_000;
+
+/**
  * Auth state is restored from the rotating refresh token in SecureStore.
  * Profile and scan history are hydrated in their later backend phases.
  */
@@ -44,8 +52,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [pendingPhotoUri, setPendingPhotoUri] = useState<string | null>(null);
   const [scanHistory, setScanHistory] = useState<ScanResult[]>([]);
   const [aiImprovementConsent, setAiImprovementConsent] = useState<boolean | null>(null);
+  // Mirrors `isSignedIn` for the async restore below, which would otherwise read a stale value.
+  const signedInRef = useRef(false);
 
   const signIn = (session: AuthSession) => {
+    signedInRef.current = true;
     setUser(session.user);
     setSkinProfile(session.skinProfile);
     setPendingPhotoUri(null);
@@ -55,6 +66,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = () => {
+    signedInRef.current = false;
     setIsSignedIn(false);
     setUser(emptyUser);
     setSkinProfile(null);
@@ -66,20 +78,31 @@ export function AppProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let active = true;
     setSessionInvalidatedHandler(signOut);
+
+    // A slow or unreachable backend must not keep the app on the splash screen.
+    const releaseSplash = setTimeout(() => {
+      if (active) setIsSessionReady(true);
+    }, SESSION_BOOT_MAX_MS);
+
     void authService
       .restoreSession()
       .then((session) => {
-        if (active && session) signIn(session);
+        // If the user already signed in by hand while this was running, that
+        // session wins: never replace it with the one that was being restored.
+        if (active && session && !signedInRef.current) signIn(session);
       })
       .catch(() => {
         // A network error leaves the user signed out without exposing technical details.
+        // The refresh token stays in the Keychain, so the next launch can retry.
       })
       .finally(() => {
+        clearTimeout(releaseSplash);
         if (active) setIsSessionReady(true);
       });
 
     return () => {
       active = false;
+      clearTimeout(releaseSplash);
       setSessionInvalidatedHandler(null);
     };
   }, []);

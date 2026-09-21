@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import RadioSelectedIcon from '@/assets/icons/radio-selected.svg';
-import RadioIcon from '@/assets/icons/radio-unselected.svg';
 import { AppButton } from '@/components/ui/app-button';
+import { AppIcon } from '@/components/ui/app-icon';
 import { AppText } from '@/components/ui/app-text';
 import { BottomSheet } from '@/components/ui/bottom-sheet';
+import { CircleDotIcon, CircleIcon } from '@/components/ui/icons';
 import { ListGroup, ListRow } from '@/components/ui/list-group';
 import { Alpha, Colors } from '@/constants/colors';
 import { Shadows, Spacing } from '@/constants/spacing';
@@ -65,7 +65,11 @@ export function LanguageSheet({ visible, onClose }: LanguageSheetProps) {
               accessibilityState={{ selected }}
               accessibilityLabel={NATIVE_LANGUAGE_NAMES[option]}
               onPress={() => setDraft(option)}>
-              {selected ? <RadioSelectedIcon /> : <RadioIcon />}
+              {selected ? (
+                <AppIcon icon={CircleDotIcon} size={20} />
+              ) : (
+                <AppIcon icon={CircleIcon} size={20} color={Alpha.taupe(1)} />
+              )}
               <AppText variant="titleSmall" style={styles.optionLabel}>
                 {NATIVE_LANGUAGE_NAMES[option]}
               </AppText>

@@ -1,9 +1,10 @@
 import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import ChevronRightIcon from '@/assets/icons/chevron-right.svg';
+import { AppIcon } from '@/components/ui/app-icon';
 import { AppText } from '@/components/ui/app-text';
 import { IconContainer } from '@/components/ui/icon-container';
+import { ChevronRightIcon } from '@/components/ui/icons';
 import { ListRow } from '@/components/ui/list-group';
 import { Alpha, Colors } from '@/constants/colors';
 import { Radius, Spacing } from '@/constants/spacing';
@@ -67,7 +68,7 @@ export function MenuRow({
           {value}
         </AppText>
       ) : null}
-      <ChevronRightIcon />
+      <AppIcon icon={ChevronRightIcon} size={16} color={Colors.text.muted} />
     </ListRow>
   );
 }

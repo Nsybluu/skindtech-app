@@ -1,9 +1,9 @@
 import { StyleSheet, View } from 'react-native';
 
-import AiAvatar from '@/assets/icons/ai-avatar.svg';
-import AiAvatarIcon from '@/assets/icons/ai-assistant-small.svg';
-import TypingBubble from '@/assets/icons/ai-typing.svg';
+import TypingBubble from '@/assets/illustrations/ai-typing.svg';
+import { AppIcon } from '@/components/ui/app-icon';
 import { AppText } from '@/components/ui/app-text';
+import { FaceSlightlySmilingIcon } from '@/components/ui/icons';
 import { Alpha, Colors, Gradients } from '@/constants/colors';
 import { Radius, Spacing } from '@/constants/spacing';
 
@@ -12,9 +12,9 @@ export function AssistantBubble({ text }: { text: string }) {
   return (
     <View style={styles.assistant}>
       <View style={styles.avatar}>
-        <AiAvatar />
+        <View style={styles.avatarBackground} />
         <View style={styles.avatarIcon}>
-          <AiAvatarIcon />
+          <AppIcon icon={FaceSlightlySmilingIcon} size={14} />
         </View>
       </View>
       <AppText variant="caption" color={Colors.text.secondary} style={styles.assistantText}>
@@ -61,6 +61,11 @@ const styles = StyleSheet.create({
     height: 28,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  avatarBackground: {
+    ...StyleSheet.absoluteFill,
+    borderRadius: 14,
+    backgroundColor: Alpha.peach(0.32),
   },
   avatarIcon: {
     position: 'absolute',

@@ -1,10 +1,10 @@
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import AvatarShapeIcon from '@/assets/icons/avatar-shape.svg';
-import CameraIcon from '@/assets/icons/camera.svg';
-import ChangePhotoIcon from '@/assets/icons/avatar-change-photo.svg';
+import ChangePhotoIcon from '@/assets/illustrations/avatar-change-photo.svg';
+import { AppIcon } from '@/components/ui/app-icon';
 import { AppText } from '@/components/ui/app-text';
-import { Colors } from '@/constants/colors';
+import { CameraIcon } from '@/components/ui/icons';
+import { Alpha, Colors } from '@/constants/colors';
 import { Spacing } from '@/constants/spacing';
 import { useI18n } from '@/i18n/i18n-provider';
 import type { User } from '@/types/profile';
@@ -26,7 +26,7 @@ export function ProfileHero({ user, onChangePhoto }: ProfileHeroProps) {
 
       <View style={styles.content}>
         <View style={styles.avatar}>
-          <AvatarShapeIcon style={styles.avatarShape} />
+          <View style={styles.avatarShape} />
           <AppText variant="avatarLetter" color={Colors.brand.primary} align="center" style={styles.initial}>
             {user.name.charAt(0).toUpperCase()}
           </AppText>
@@ -38,7 +38,7 @@ export function ProfileHero({ user, onChangePhoto }: ProfileHeroProps) {
             style={({ pressed }) => [styles.changePhoto, pressed && styles.pressed]}>
             <ChangePhotoIcon />
             <View style={styles.cameraIcon} pointerEvents="none">
-              <CameraIcon />
+              <AppIcon icon={CameraIcon} size={14} color={Colors.text.onBrand} />
             </View>
           </Pressable>
         </View>
@@ -72,6 +72,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 3,
     top: 0,
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    borderWidth: 1,
+    borderColor: Alpha.rose(0.42),
+    backgroundColor: Colors.background.avatar,
   },
   initial: {
     position: 'absolute',

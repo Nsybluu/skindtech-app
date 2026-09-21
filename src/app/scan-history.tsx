@@ -2,12 +2,12 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import HistoryIcon from '@/assets/icons/history-large.svg';
-import InfoSmallIcon from '@/assets/icons/info-small.svg';
 import { ScanHistoryCard } from '@/components/history/scan-history-card';
+import { AppIcon } from '@/components/ui/app-icon';
 import { AppScreen } from '@/components/ui/app-screen';
 import { AppText } from '@/components/ui/app-text';
 import { IconContainer } from '@/components/ui/icon-container';
+import { InfoIcon, RotateCcwClockIcon } from '@/components/ui/icons';
 import { Notice } from '@/components/ui/notice';
 import { ScreenHeader } from '@/components/ui/screen-header';
 import { Alpha, Colors } from '@/constants/colors';
@@ -38,7 +38,7 @@ export default function ScanHistoryScreen() {
     <AppScreen header={<ScreenHeader title={t.history.title} titleVariant="screenTitle" />}>
       <View style={styles.intro}>
         <IconContainer size={40} radius={20}>
-          <HistoryIcon />
+          <AppIcon icon={RotateCcwClockIcon} size={20} />
         </IconContainer>
         <View style={styles.introCopy}>
           <AppText variant="titleSmall">{t.history.introTitle}</AppText>
@@ -106,7 +106,7 @@ export default function ScanHistoryScreen() {
       )}
 
       <Notice
-        icon={<InfoSmallIcon />}
+        icon={<AppIcon icon={InfoIcon} size={16} />}
         tone="blush"
         message={t.history.disclaimer}
         messageVariant="footnote"

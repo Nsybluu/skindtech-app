@@ -1,11 +1,11 @@
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import BulletIcon from '@/assets/icons/bullet.svg';
-import ShieldIcon from '@/assets/icons/shield.svg';
 import { AppButton } from '@/components/ui/app-button';
+import { AppIcon } from '@/components/ui/app-icon';
 import { AppText } from '@/components/ui/app-text';
 import { BottomSheet } from '@/components/ui/bottom-sheet';
 import { IconContainer } from '@/components/ui/icon-container';
+import { ShieldCheckIcon } from '@/components/ui/icons';
 import { Alpha, Colors } from '@/constants/colors';
 import { Radius, Spacing } from '@/constants/spacing';
 import { useI18n } from '@/i18n/i18n-provider';
@@ -31,7 +31,7 @@ export function AiConsentSheet({ visible, onClose, onDecline, onAllow, onLearnMo
       style={styles.sheet}>
       <View style={styles.intro}>
         <IconContainer size={40} radius={20} backgroundColor={Alpha.white(0.7)}>
-          <ShieldIcon />
+          <AppIcon icon={ShieldCheckIcon} size={20} />
         </IconContainer>
         <View style={styles.introCopy}>
           <AppText variant="sheetTitle" accessibilityRole="header">
@@ -46,7 +46,7 @@ export function AiConsentSheet({ visible, onClose, onDecline, onAllow, onLearnMo
       <View style={styles.benefits}>
         {[t.consent.benefitUsage, t.consent.benefitOptional].map((benefit) => (
           <View key={benefit} style={styles.benefitRow}>
-            <BulletIcon />
+            <View style={styles.bullet} />
             <AppText variant="caption" color={Colors.text.secondary} style={styles.benefitText}>
               {benefit}
             </AppText>
@@ -115,6 +115,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.m,
+  },
+  bullet: {
+    width: 7,
+    height: 7,
+    borderRadius: 3.5,
+    backgroundColor: Colors.brand.primary,
   },
   benefitText: {
     flex: 1,

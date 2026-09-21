@@ -1,9 +1,10 @@
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import SkinProfileIcon from '@/assets/icons/skin-profile.svg';
+import { AppIcon } from '@/components/ui/app-icon';
 import { AppText } from '@/components/ui/app-text';
 import { IconContainer } from '@/components/ui/icon-container';
+import { FaceSlightlySmilingIcon } from '@/components/ui/icons';
 import { Colors } from '@/constants/colors';
 import { Radius, Spacing } from '@/constants/spacing';
 import { useI18n } from '@/i18n/i18n-provider';
@@ -36,7 +37,7 @@ export function SkinProfileSummary({ variant = 'scan' }: SkinProfileSummaryProps
       style={({ pressed }) => [styles.bar, isResult && styles.resultBar, pressed && styles.pressed]}>
       <View style={styles.content}>
         <IconContainer size={30} radius={Radius.m}>
-          <SkinProfileIcon />
+          <AppIcon icon={FaceSlightlySmilingIcon} size={16} />
         </IconContainer>
         <View style={styles.copy}>
           <AppText variant={isResult ? 'caption' : 'captionSemibold'} weight="semibold" numberOfLines={1}>

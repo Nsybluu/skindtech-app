@@ -2,25 +2,21 @@ import { router } from 'expo-router';
 import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import AcneTypesIcon from '@/assets/icons/acne-types.svg';
-import AssessIcon from '@/assets/icons/assess.svg';
-import CareIcon from '@/assets/icons/care.svg';
-import GraduationIcon from '@/assets/icons/graduation.svg';
-import InfoImportantIcon from '@/assets/icons/info-important.svg';
-import LogoScanIcon from '@/assets/icons/logo-scan.svg';
-import ShieldSmallIcon from '@/assets/icons/shield-small.svg';
+import LogoScanIcon from '@/assets/illustrations/logo-scan.svg';
 import { ActionRow } from '@/components/info/action-row';
 import { InfoRow } from '@/components/info/info-row';
+import { AppIcon } from '@/components/ui/app-icon';
 import { AppScreen } from '@/components/ui/app-screen';
 import { AppText } from '@/components/ui/app-text';
 import { IconContainer } from '@/components/ui/icon-container';
+import { BubblesIcon, ChartNoAxesColumnIcon, DropletIcon, GraduationCapIcon, InfoIcon, ShieldCheckIcon } from '@/components/ui/icons';
 import { ListGroup } from '@/components/ui/list-group';
 import { Notice } from '@/components/ui/notice';
 import { ScreenHeader } from '@/components/ui/screen-header';
+import { APP_VERSION } from '@/constants/app';
 import { Alpha, Colors } from '@/constants/colors';
 import { Radius, Spacing } from '@/constants/spacing';
 import { useI18n } from '@/i18n/i18n-provider';
-import { APP_VERSION } from '@/mocks/user';
 
 /** Figma 13 — About SKINDTECH */
 export default function AboutScreen() {
@@ -47,16 +43,16 @@ export default function AboutScreen() {
 
       <Section title={t.about.whatItDoes}>
         <ListGroup>
-          <InfoRow icon={<AssessIcon />} title={t.about.assessTitle} body={t.about.assessBody} />
-          <InfoRow icon={<AcneTypesIcon />} title={t.about.typesTitle} body={t.about.typesBody} />
-          <InfoRow icon={<CareIcon />} title={t.about.careTitle} body={t.about.careBody} />
+          <InfoRow icon={<AppIcon icon={ChartNoAxesColumnIcon} size={20} />} title={t.about.assessTitle} body={t.about.assessBody} />
+          <InfoRow icon={<AppIcon icon={BubblesIcon} size={20} />} title={t.about.typesTitle} body={t.about.typesBody} />
+          <InfoRow icon={<AppIcon icon={DropletIcon} size={20} />} title={t.about.careTitle} body={t.about.careBody} />
         </ListGroup>
       </Section>
 
       <Section title={t.about.projectInformation}>
         <View style={styles.projectCard}>
           <IconContainer size={40} radius={20} backgroundColor={Alpha.blush(0.9)}>
-            <GraduationIcon />
+            <AppIcon icon={GraduationCapIcon} size={20} />
           </IconContainer>
           <View style={styles.projectCopy}>
             <AppText variant="label" style={styles.projectTitle}>
@@ -73,7 +69,7 @@ export default function AboutScreen() {
       </Section>
 
       <Notice
-        icon={<InfoImportantIcon />}
+        icon={<AppIcon icon={InfoIcon} size={18} />}
         tone="blush"
         title={t.about.noteTitle}
         message={t.about.noteBody}
@@ -83,7 +79,7 @@ export default function AboutScreen() {
 
       <ActionRow
         standalone
-        icon={<ShieldSmallIcon />}
+        icon={<AppIcon icon={ShieldCheckIcon} size={18} />}
         label={t.about.privacyLink}
         color={Colors.text.primary}
         weight="semibold"

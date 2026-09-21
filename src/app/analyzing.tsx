@@ -7,8 +7,22 @@ import { ScanFlowLayout } from '@/components/scan/scan-flow-layout';
 import { useI18n } from '@/i18n/i18n-provider';
 import { useUserData } from '@/providers/app-provider';
 import { scanService } from '@/services/scan.service';
+import type { ScanFailureReason } from '@/types/scan';
 
 const PROGRESS_INTERVAL_MS = 850;
+
+/** Where each failure sends the user; `null` means the auth guard already took over. */
+function failureRoute(reason: ScanFailureReason) {
+  switch (reason) {
+    case 'image-rejected':
+      return '/image-quality' as const;
+    case 'session':
+      // The session could not be refreshed and the user is being signed out.
+      return null;
+    default:
+      return '/analysis-failed' as const;
+  }
+}
 
 /** Figma 07C — Analyzing. Uploads the selected image to the SKINDTECH API. */
 export default function AnalyzingScreen() {
@@ -25,15 +39,24 @@ export default function AnalyzingScreen() {
       PROGRESS_INTERVAL_MS,
     );
 
-    scanService.analyzePhoto(pendingPhotoUri, skinProfile, aiImprovementConsent === true).then((outcome) => {
-      if (cancelled) return;
-      if (outcome.status === 'success') {
-        addScanResult(outcome.result);
-        router.replace({ pathname: '/scan-result', params: { id: outcome.result.id } });
-      } else {
-        router.replace('/analysis-failed');
-      }
-    });
+    scanService
+      .analyzePhoto(pendingPhotoUri, skinProfile, aiImprovementConsent === true)
+      .then((outcome) => {
+        if (cancelled) return;
+        if (outcome.status === 'success') {
+          addScanResult(outcome.result);
+          router.replace({ pathname: '/scan-result', params: { id: outcome.result.id } });
+          return;
+        }
+
+        const destination = failureRoute(outcome.reason);
+        if (destination) router.replace(destination);
+      })
+      .catch(() => {
+        // analyzePhoto reports failures as outcomes; this only guards against
+        // an unexpected throw leaving the user on the progress screen forever.
+        if (!cancelled) router.replace('/analysis-failed');
+      });
 
     return () => {
       cancelled = true;
@@ -49,7 +72,6 @@ export default function AnalyzingScreen() {
       preview={
         <CameraFrame
           photoUri={pendingPhotoUri}
-          illustrationOpacity={0.7}
           guidanceTitle={t.analyzing.guidanceTitle}
           guidanceBody={t.analyzing.guidanceBody}
         />

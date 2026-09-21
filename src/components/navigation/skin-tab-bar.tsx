@@ -1,13 +1,11 @@
 import { GlassView, isLiquidGlassAvailable } from 'expo-glass-effect';
 import type { BottomTabBarProps } from 'expo-router/js-tabs';
-import type { FC, ReactNode } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
-import type { SvgProps } from 'react-native-svg';
+import { useEffect, useState, type ReactNode } from 'react';
+import { Pressable, StyleSheet, View, type LayoutChangeEvent } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
-import AiChatIcon from '@/assets/icons/nav-ai-chat.svg';
-import HomeIcon from '@/assets/icons/nav-home.svg';
-import ProfileIcon from '@/assets/icons/nav-profile.svg';
-import ScanIcon from '@/assets/icons/nav-scan.svg';
+import { AppIcon } from '@/components/ui/app-icon';
+import { BotMessageSquareIcon, HouseIcon, ScanFaceIcon, type LucideIcon, UserIcon } from '@/components/ui/icons';
 import { Alpha, Colors } from '@/constants/colors';
 import { Layout, Radius, Shadows, Spacing } from '@/constants/spacing';
 import { useDesignInsets } from '@/hooks/use-design-insets';
@@ -18,6 +16,10 @@ type TabName = 'index' | 'scan' | 'ai-chat' | 'account';
 
 const BAR_HEIGHT = 64;
 const INDICATOR_SIZE = 48;
+const ROW_PADDING = Spacing.s;
+
+/** Settles with a slight overshoot so the halo lands softly instead of stopping dead. */
+const SLIDE_SPRING = { damping: 22, stiffness: 220, mass: 1 };
 
 /**
  * Capsule finish. 'dark' is an ink bar that anchors the soft pink screens;
@@ -56,25 +58,53 @@ const ICON_ACTIVE = Colors.text.onBrand;
 const LIQUID_GLASS = isLiquidGlassAvailable();
 
 /**
- * Floating capsule navigation: Home · Scan · Profile, with the active tab marked
- * by a rose halo. Hidden on the Scan tab, which is full-screen by design.
+ * Floating capsule navigation: Home · Scan · AI Chat · Profile. One rose halo
+ * marks the active tab and slides to the next tab when the page changes.
+ * Hidden on the Scan tab, which is full-screen by design.
  */
 export function SkinTabBar({ state, navigation }: BottomTabBarProps) {
   const { t } = useI18n();
   const { insets } = useDesignInsets();
   const startScan = useStartScan();
+  const [rowSize, setRowSize] = useState({ width: 0, height: 0 });
+
+  const tabs: { name: TabName; label: string; icon: LucideIcon }[] = [
+    { name: 'index', label: t.tabs.home, icon: HouseIcon },
+    { name: 'scan', label: t.tabs.scan, icon: ScanFaceIcon },
+    { name: 'ai-chat', label: t.tabs.aiChat, icon: BotMessageSquareIcon },
+    { name: 'account', label: t.tabs.profile, icon: UserIcon },
+  ];
 
   const activeRoute = state.routes[state.index]?.name;
-  if (activeRoute === 'scan') {
+  const activeIndex = tabs.findIndex((tab) => tab.name === activeRoute);
+  const hidden = activeRoute === 'scan';
+
+  // Fractional tab index of the halo: 0 = Home … 3 = Profile.
+  const position = useSharedValue(Math.max(activeIndex, 0));
+
+  useEffect(() => {
+    // While the bar is hidden on Scan the halo stays put, then slides from there on return.
+    if (activeIndex >= 0 && !hidden) {
+      position.value = withSpring(activeIndex, SLIDE_SPRING);
+    }
+  }, [activeIndex, hidden, position]);
+
+  const slotWidth = rowSize.width > 0 ? (rowSize.width - ROW_PADDING * 2) / tabs.length : 0;
+  const haloLeft = ROW_PADDING + (slotWidth - INDICATOR_SIZE) / 2;
+  const haloTop = (rowSize.height - INDICATOR_SIZE) / 2;
+
+  // The halo travels right while the white icons inside it travel left by the same
+  // amount, so each icon stays put and only turns white where the halo covers it.
+  const haloStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: position.value * slotWidth }],
+  }));
+  const counterStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: -position.value * slotWidth }],
+  }));
+
+  if (hidden) {
     return null;
   }
-
-  const tabs: { name: TabName; label: string; Icon: FC<SvgProps> }[] = [
-    { name: 'index', label: t.tabs.home, Icon: HomeIcon },
-    { name: 'scan', label: t.tabs.scan, Icon: ScanIcon },
-    { name: 'ai-chat', label: t.tabs.aiChat, Icon: AiChatIcon },
-    { name: 'account', label: t.tabs.profile, Icon: ProfileIcon },
-  ];
 
   const onTabPress = (name: TabName) => {
     if (name === 'scan') {
@@ -96,30 +126,56 @@ export function SkinTabBar({ state, navigation }: BottomTabBarProps) {
       pointerEvents="box-none"
       style={[styles.wrapper, { bottom: Math.max(insets.bottom, Spacing.m) }]}>
       <TabBarSurface>
-        <View style={styles.row}>
-          {tabs.map(({ name, label, Icon }) => {
-            const focused = activeRoute === name;
-            return (
-              <Pressable
-                key={name}
-                accessibilityRole="tab"
-                accessibilityLabel={label}
-                accessibilityState={{ selected: focused }}
-                onPress={() => onTabPress(name)}
-                style={({ pressed }) => [styles.item, pressed && styles.pressed]}>
-                {focused ? <View style={styles.indicator} /> : null}
-                <Icon
-                  color={
-                    focused
-                      ? ICON_ACTIVE
-                      : name === 'scan'
-                        ? TONE.iconIdlePrimary
-                        : TONE.iconIdle
-                  }
-                />
-              </Pressable>
+        <View
+          style={styles.row}
+          onLayout={(event: LayoutChangeEvent) => {
+            const { width, height } = event.nativeEvent.layout;
+            setRowSize((current) =>
+              current.width === width && current.height === height ? current : { width, height },
             );
-          })}
+          }}>
+          {tabs.map(({ name, label, icon }) => (
+            <Pressable
+              key={name}
+              accessibilityRole="tab"
+              accessibilityLabel={label}
+              accessibilityState={{ selected: activeRoute === name }}
+              onPress={() => onTabPress(name)}
+              style={({ pressed }) => [styles.item, pressed && styles.pressed]}>
+              <AppIcon
+                icon={icon}
+                size={24}
+                color={name === 'scan' ? TONE.iconIdlePrimary : TONE.iconIdle}
+              />
+            </Pressable>
+          ))}
+
+          {slotWidth > 0 ? (
+            <>
+              <Animated.View
+                pointerEvents="none"
+                style={[styles.halo, { left: haloLeft, top: haloTop }, haloStyle]}
+              />
+              <Animated.View
+                pointerEvents="none"
+                accessibilityElementsHidden
+                importantForAccessibility="no-hide-descendants"
+                style={[styles.window, { left: haloLeft, top: haloTop }, haloStyle]}>
+                <Animated.View
+                  style={[
+                    styles.highlightRow,
+                    { left: -haloLeft, top: -haloTop, width: rowSize.width, height: rowSize.height },
+                    counterStyle,
+                  ]}>
+                  {tabs.map(({ name, icon }) => (
+                    <View key={name} style={styles.highlightItem}>
+                      <AppIcon icon={icon} size={24} color={ICON_ACTIVE} />
+                    </View>
+                  ))}
+                </Animated.View>
+              </Animated.View>
+            </>
+          ) : null}
         </View>
       </TabBarSurface>
     </View>
@@ -169,7 +225,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: Spacing.s,
+    paddingHorizontal: ROW_PADDING,
   },
   item: {
     flex: 1,
@@ -177,13 +233,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  indicator: {
+  halo: {
     position: 'absolute',
     width: INDICATOR_SIZE,
     height: INDICATOR_SIZE,
     borderRadius: Radius.pill,
     backgroundColor: Colors.brand.primary,
     boxShadow: '0px 4px 16px 0px rgba(201, 89, 97, 0.55)',
+  },
+  window: {
+    position: 'absolute',
+    width: INDICATOR_SIZE,
+    height: INDICATOR_SIZE,
+    borderRadius: Radius.pill,
+    overflow: 'hidden',
+  },
+  highlightRow: {
+    position: 'absolute',
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    paddingHorizontal: ROW_PADDING,
+  },
+  highlightItem: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   pressed: {
     opacity: 0.75,

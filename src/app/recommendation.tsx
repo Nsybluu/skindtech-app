@@ -1,18 +1,15 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
-import EveningIcon from '@/assets/icons/evening.svg';
-import GuidanceIcon from '@/assets/icons/guidance.svg';
-import HabitsIcon from '@/assets/icons/habits.svg';
-import InfoIcon from '@/assets/icons/info.svg';
-import MorningIcon from '@/assets/icons/morning.svg';
 import { RoutineCard } from '@/components/care/routine-card';
 import { SkincareBasics } from '@/components/care/skincare-basics';
 import { ActionBar } from '@/components/ui/action-bar';
 import { AppButton } from '@/components/ui/app-button';
+import { AppIcon } from '@/components/ui/app-icon';
 import { AppScreen } from '@/components/ui/app-screen';
 import { AppText } from '@/components/ui/app-text';
 import { IconContainer } from '@/components/ui/icon-container';
+import { ClipboardCheckIcon, FaceSlightlySmilingIcon, InfoIcon, MoonStarIcon, SunIcon } from '@/components/ui/icons';
 import { Notice } from '@/components/ui/notice';
 import { ScreenHeader } from '@/components/ui/screen-header';
 import { Alpha, Colors } from '@/constants/colors';
@@ -51,7 +48,7 @@ export default function RecommendationScreen() {
       }>
       <View style={styles.intro}>
         <IconContainer size={40} radius={Radius.l}>
-          <GuidanceIcon />
+          <AppIcon icon={FaceSlightlySmilingIcon} size={18} />
         </IconContainer>
         <View style={styles.introCopy}>
           <AppText variant="label">{t.care.basedOnResult}</AppText>
@@ -68,13 +65,13 @@ export default function RecommendationScreen() {
 
       <RoutineCard
         title={t.care.morningRoutine}
-        icon={<MorningIcon />}
+        icon={<AppIcon icon={SunIcon} size={15} />}
         iconBackground={Alpha.peach(0.22)}
         steps={t.care.morningSteps}
       />
       <RoutineCard
         title={t.care.eveningRoutine}
-        icon={<EveningIcon />}
+        icon={<AppIcon icon={MoonStarIcon} size={15} />}
         iconBackground={Alpha.rose(0.1)}
         steps={t.care.eveningSteps}
       />
@@ -83,7 +80,7 @@ export default function RecommendationScreen() {
 
       <View style={styles.habits}>
         <IconContainer size={36} radius={Radius.m} backgroundColor={Alpha.rose(0.1)}>
-          <HabitsIcon />
+          <AppIcon icon={ClipboardCheckIcon} size={18} />
         </IconContainer>
         <View style={styles.habitsCopy}>
           <AppText variant="label">{t.care.habitsTitle}</AppText>
@@ -94,7 +91,7 @@ export default function RecommendationScreen() {
       </View>
 
       <Notice
-        icon={<InfoIcon />}
+        icon={<AppIcon icon={InfoIcon} size={18} />}
         title={t.care.professionalTitle}
         titleVariant="captionSemibold"
         message={t.care.professionalBody}

@@ -1,11 +1,8 @@
-import type { FC } from 'react';
 import { StyleSheet, View } from 'react-native';
-import type { SvgProps } from 'react-native-svg';
 
-import FaceForwardIcon from '@/assets/icons/tip-face-forward.svg';
-import LightingIcon from '@/assets/icons/tip-lighting.svg';
-import NoFiltersIcon from '@/assets/icons/tip-no-filters.svg';
+import { AppIcon } from '@/components/ui/app-icon';
 import { AppText } from '@/components/ui/app-text';
+import { ImageOffIcon, ScanFaceIcon, SunIcon, type LucideIcon } from '@/components/ui/icons';
 import { Colors } from '@/constants/colors';
 import { Radius, Spacing } from '@/constants/spacing';
 import { useI18n } from '@/i18n/i18n-provider';
@@ -14,10 +11,10 @@ import { useI18n } from '@/i18n/i18n-provider';
 export function ScanTipsRow() {
   const { t } = useI18n();
 
-  const tips: { key: string; label: string; Icon: FC<SvgProps> }[] = [
-    { key: 'lighting', label: t.home.tipGoodLighting, Icon: LightingIcon },
-    { key: 'face-forward', label: t.home.tipFaceForward, Icon: FaceForwardIcon },
-    { key: 'no-filters', label: t.home.tipNoFilters, Icon: NoFiltersIcon },
+  const tips: { key: string; label: string; icon: LucideIcon }[] = [
+    { key: 'lighting', label: t.home.tipGoodLighting, icon: SunIcon },
+    { key: 'face-forward', label: t.home.tipFaceForward, icon: ScanFaceIcon },
+    { key: 'no-filters', label: t.home.tipNoFilters, icon: ImageOffIcon },
   ];
 
   return (
@@ -26,9 +23,9 @@ export function ScanTipsRow() {
         {t.home.beforeYouScan}
       </AppText>
       <View style={styles.row}>
-        {tips.map(({ key, label, Icon }) => (
+        {tips.map(({ key, label, icon }) => (
           <View key={key} style={styles.tile}>
-            <Icon />
+            <AppIcon icon={icon} size={24} />
             <AppText variant="bodySmall" color={Colors.text.secondary} align="center" numberOfLines={2}>
               {label}
             </AppText>

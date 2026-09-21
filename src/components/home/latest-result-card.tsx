@@ -1,8 +1,9 @@
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import ScanResultIcon from '@/assets/icons/scan-result.svg';
+import { AppIcon } from '@/components/ui/app-icon';
 import { AppText } from '@/components/ui/app-text';
 import { IconContainer } from '@/components/ui/icon-container';
+import { ScanFaceIcon } from '@/components/ui/icons';
 import { Colors } from '@/constants/colors';
 import { Radius, Spacing } from '@/constants/spacing';
 import { useI18n } from '@/i18n/i18n-provider';
@@ -30,7 +31,7 @@ export function LatestResultCard({ result, onPress }: LatestResultCardProps) {
         onPress={onPress}
         style={({ pressed }) => [styles.card, pressed && styles.pressed]}>
         <IconContainer size={44} radius={Radius.l}>
-          <ScanResultIcon />
+          <AppIcon icon={ScanFaceIcon} size={22} />
         </IconContainer>
         <View style={styles.copy}>
           <AppText variant="title" numberOfLines={1}>

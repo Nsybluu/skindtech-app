@@ -2,9 +2,10 @@ import { router } from 'expo-router';
 import type { ReactNode } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
-import BackIcon from '@/assets/icons/back-large.svg';
+import { AppIcon } from '@/components/ui/app-icon';
 import { AppText } from '@/components/ui/app-text';
 import { BrandWordmark } from '@/components/ui/brand-wordmark';
+import { ChevronLeftIcon } from '@/components/ui/icons';
 import { ScreenBackground } from '@/components/ui/screen-background';
 import { goBackOr } from '@/components/ui/screen-header';
 import { Colors } from '@/constants/colors';
@@ -39,7 +40,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
                 hitSlop={10}
                 onPress={() => goBackOr(() => router.replace('/welcome'))}
                 style={({ pressed }) => [styles.back, pressed && styles.pressed]}>
-                <BackIcon />
+                <AppIcon icon={ChevronLeftIcon} size={28} color={Colors.icon.strong} strokeWidth={2} />
               </Pressable>
               <BrandWordmark />
             </View>

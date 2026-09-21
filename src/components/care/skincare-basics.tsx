@@ -1,11 +1,8 @@
-import type { FC } from 'react';
 import { StyleSheet, View } from 'react-native';
-import type { SvgProps } from 'react-native-svg';
 
-import CleanserIcon from '@/assets/icons/cleanser.svg';
-import MoisturizerIcon from '@/assets/icons/moisturizer.svg';
-import SunscreenIcon from '@/assets/icons/sunscreen.svg';
+import { AppIcon } from '@/components/ui/app-icon';
 import { AppText } from '@/components/ui/app-text';
+import { DropletIcon, SoapDispenserDropletIcon, SunMediumIcon, type LucideIcon } from '@/components/ui/icons';
 import { Alpha, Colors } from '@/constants/colors';
 import { Radius, Spacing } from '@/constants/spacing';
 import type { TextVariant } from '@/constants/typography';
@@ -15,10 +12,10 @@ import { useI18n } from '@/i18n/i18n-provider';
 export function SkincareBasics() {
   const { t } = useI18n();
 
-  const tiles: { key: string; label: string; Icon: FC<SvgProps>; variant: TextVariant }[] = [
-    { key: 'cleanser', label: t.care.basicCleanser, Icon: CleanserIcon, variant: 'footnote' },
-    { key: 'moisturizer', label: t.care.basicMoisturizer, Icon: MoisturizerIcon, variant: 'footnote' },
-    { key: 'sunscreen', label: t.care.basicSunscreen, Icon: SunscreenIcon, variant: 'micro' },
+  const tiles: { key: string; label: string; icon: LucideIcon; variant: TextVariant }[] = [
+    { key: 'cleanser', label: t.care.basicCleanser, icon: SoapDispenserDropletIcon, variant: 'footnote' },
+    { key: 'moisturizer', label: t.care.basicMoisturizer, icon: DropletIcon, variant: 'footnote' },
+    { key: 'sunscreen', label: t.care.basicSunscreen, icon: SunMediumIcon, variant: 'micro' },
   ];
 
   return (
@@ -27,9 +24,9 @@ export function SkincareBasics() {
         {t.care.basicsTitle}
       </AppText>
       <View style={styles.row}>
-        {tiles.map(({ key, label, Icon, variant }) => (
+        {tiles.map(({ key, label, icon, variant }) => (
           <View key={key} style={styles.tile}>
-            <Icon />
+            <AppIcon icon={icon} size={20} />
             <AppText variant={variant} color={Colors.text.secondary} align="center">
               {label}
             </AppText>

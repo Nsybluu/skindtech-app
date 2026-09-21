@@ -1,15 +1,18 @@
 import { CameraView, useCameraPermissions, type CameraType } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
-import { Redirect, router } from 'expo-router';
+import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { Alert, Pressable, StyleSheet } from 'react-native';
+import { Alert, Linking, Pressable, StyleSheet } from 'react-native';
 
-import SwitchCameraIcon from '@/assets/icons/switch-camera.svg';
 import { cameraAccessoryStyles, CameraFrame } from '@/components/scan/camera-frame';
+import { CameraPlaceholder } from '@/components/scan/camera-placeholder';
 import { CaptureControls } from '@/components/scan/capture-controls';
 import { ScanFlowLayout } from '@/components/scan/scan-flow-layout';
 import { ScanNote, ScanNotice } from '@/components/scan/scan-notice';
+import { AppIcon } from '@/components/ui/app-icon';
+import { SwitchCameraIcon } from '@/components/ui/icons';
 import { goBackOr } from '@/components/ui/screen-header';
+import { Colors } from '@/constants/colors';
 import { useI18n } from '@/i18n/i18n-provider';
 import { useUserData } from '@/providers/app-provider';
 
@@ -17,6 +20,8 @@ import { useUserData } from '@/providers/app-provider';
 export default function ScanScreen() {
   const { t } = useI18n();
   const { skinProfile, setPendingPhotoUri } = useUserData();
+  // "Choose another" on the photo-problem screen passes a new `pick` value to open the library.
+  const { pick } = useLocalSearchParams<{ pick?: string }>();
   const cameraRef = useRef<CameraView>(null);
   const requestedPermission = useRef(false);
   const [permission, requestPermission] = useCameraPermissions();
@@ -80,6 +85,12 @@ export default function ScanScreen() {
     }
   };
 
+  useEffect(() => {
+    if (pick && skinProfile) void choosePhoto();
+    // Only a new `pick` value should reopen the library.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pick]);
+
   // A Skin Profile is required before the first scan.
   if (!skinProfile) {
     return <Redirect href={{ pathname: '/skin-profile', params: { next: 'scan' } }} />;
@@ -91,8 +102,17 @@ export default function ScanScreen() {
       onBack={() => goBackOr(() => router.navigate('/'))}
       preview={
         <CameraFrame
-          guidanceTitle={t.scan.guidanceTitle}
-          guidanceBody={t.scan.guidanceBody}
+          guidanceTitle={permission && !permission.granted ? t.scan.noCameraGuidanceTitle : t.scan.guidanceTitle}
+          guidanceBody={permission && !permission.granted ? t.scan.noCameraGuidanceBody : t.scan.guidanceBody}
+          emptyContent={
+            permission && !permission.granted ? (
+              <CameraPlaceholder
+                canAskAgain={permission.canAskAgain}
+                onAllow={() => void requestPermission()}
+                onOpenSettings={() => void Linking.openSettings()}
+              />
+            ) : undefined
+          }
           cameraContent={
             permission?.granted ? (
               <CameraView
@@ -106,13 +126,15 @@ export default function ScanScreen() {
             ) : undefined
           }
           topRightAccessory={
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={t.scan.switchCamera}
-              onPress={() => setFacing((value) => (value === 'front' ? 'back' : 'front'))}
-              style={({ pressed }) => [cameraAccessoryStyles.roundButton, pressed && { opacity: 0.7 }]}>
-              <SwitchCameraIcon />
-            </Pressable>
+            permission?.granted ? (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t.scan.switchCamera}
+                onPress={() => setFacing((value) => (value === 'front' ? 'back' : 'front'))}
+                style={({ pressed }) => [cameraAccessoryStyles.roundButton, pressed && { opacity: 0.7 }]}>
+                <AppIcon icon={SwitchCameraIcon} size={18} color={Colors.text.onBrand} />
+              </Pressable>
+            ) : undefined
           }
         />
       }

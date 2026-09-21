@@ -34,15 +34,3 @@ export const mockClearScanResult: Omit<ScanResult, 'id' | 'scannedAt'> = {
   detectedTypes: [],
   detectionAreas: [],
 };
-
-/**
- * Outcomes returned by the mock analysis, in order, so every Figma state can be
- * demonstrated: 1st scan → result with acne, 2nd → no visible acne,
- * 3rd → analysis failed, then it starts over.
- */
-export const MOCK_ANALYSIS_OUTCOMES = ['acne', 'clear', 'failed'] as const;
-
-export type MockAnalysisOutcome = (typeof MOCK_ANALYSIS_OUTCOMES)[number];
-
-/** Total mock analysis time; the progress card steps through evenly. */
-export const MOCK_ANALYSIS_DURATION_MS = 3500;

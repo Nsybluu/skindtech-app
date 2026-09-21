@@ -1,12 +1,13 @@
 import { router } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
-import InfoIcon from '@/assets/icons/info.svg';
 import { LatestResultCard } from '@/components/home/latest-result-card';
 import { ScanTipsRow } from '@/components/home/scan-tips-row';
 import { StartScanCard } from '@/components/home/start-scan-card';
+import { AppIcon } from '@/components/ui/app-icon';
 import { AppText } from '@/components/ui/app-text';
 import { BrandWordmark } from '@/components/ui/brand-wordmark';
+import { InfoIcon } from '@/components/ui/icons';
 import { Notice } from '@/components/ui/notice';
 import { ScreenBackground } from '@/components/ui/screen-background';
 import { Colors } from '@/constants/colors';
@@ -65,7 +66,7 @@ export default function HomeScreen() {
           ) : null}
 
           <Notice
-            icon={<InfoIcon />}
+            icon={<AppIcon icon={InfoIcon} size={18} />}
             message={t.home.disclaimer}
             messageVariant="caption"
             style={styles.notice}
