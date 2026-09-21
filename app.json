@@ -9,9 +9,10 @@
     "userInterfaceStyle": "light",
     "ios": {
       "icon": "./assets/expo.icon",
-      "bundleIdentifier": "com.anonymous.skindtech-app"
+      "bundleIdentifier": "com.nsybluu.skindtech"
     },
     "android": {
+      "package": "com.nsybluu.skindtech",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
