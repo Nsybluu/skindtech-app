@@ -1,6 +1,8 @@
-import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 
 import { authService, type AuthSession } from '@/services/auth.service';
+import { ConsentController, type ConsentSnapshot, type ConsentValue } from '@/services/consent-controller';
+import { consentService } from '@/services/consent.service';
 import { setSessionInvalidatedHandler } from '@/services/session-token.service';
 import type { SkinProfile, User } from '@/types/profile';
 import type { ScanResult } from '@/types/scan';
@@ -22,9 +24,22 @@ type UserDataValue = {
   addScanResult: (result: ScanResult) => void;
   clearScanHistory: () => void;
   getScanResult: (id: string) => ScanResult | undefined;
-  /** `null` until the user answers the AI-improvement consent sheet. */
-  aiImprovementConsent: boolean | null;
-  setAiImprovementConsent: (allowed: boolean) => void;
+  /**
+   * Whether scan photos may be saved to improve the AI, as confirmed by the backend.
+   * `null` means not granted or not asked yet: the consent sheet asks.
+   */
+  aiImprovementConsent: ConsentValue;
+  /** True while a consent choice is being saved on the backend. */
+  isSavingConsent: boolean;
+  /** Latest confirmed value, read synchronously (use this when starting a scan). */
+  getAiImprovementConsent: () => ConsentValue;
+  /** Re-reads the saved choice from the backend. Failures keep the current value. */
+  refreshAiConsent: () => Promise<void>;
+  /**
+   * Saves the user's choice on the backend before anything depends on it. Resolves with the
+   * confirmed value (`null` if a save is already running), rejects when it could not be saved.
+   */
+  saveAiConsent: (granted: boolean) => Promise<boolean | null>;
 };
 
 const SessionContext = createContext<SessionValue | null>(null);
@@ -51,29 +66,41 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [skinProfile, setSkinProfile] = useState<SkinProfile | null>(null);
   const [pendingPhotoUri, setPendingPhotoUri] = useState<string | null>(null);
   const [scanHistory, setScanHistory] = useState<ScanResult[]>([]);
-  const [aiImprovementConsent, setAiImprovementConsent] = useState<boolean | null>(null);
+  const [consent, setConsent] = useState<ConsentSnapshot>({ value: null, saving: false });
+  const [consentController] = useState(
+    () =>
+      new ConsentController(
+        { get: () => consentService.getAiTraining(), put: (granted) => consentService.setAiTraining(granted) },
+        setConsent,
+      ),
+  );
   // Mirrors `isSignedIn` for the async restore below, which would otherwise read a stale value.
   const signedInRef = useRef(false);
 
-  const signIn = (session: AuthSession) => {
-    signedInRef.current = true;
-    setUser(session.user);
-    setSkinProfile(session.skinProfile);
-    setPendingPhotoUri(null);
-    setScanHistory(session.scanHistory);
-    setAiImprovementConsent(null);
-    setIsSignedIn(true);
-  };
+  const signIn = useCallback(
+    (session: AuthSession) => {
+      signedInRef.current = true;
+      setUser(session.user);
+      setSkinProfile(session.skinProfile);
+      setPendingPhotoUri(null);
+      setScanHistory(session.scanHistory);
+      setIsSignedIn(true);
+      // Every way in (email, Google, restored session) has its tokens in memory by now.
+      consentController.reset();
+      void consentController.hydrate();
+    },
+    [consentController],
+  );
 
-  const signOut = () => {
+  const signOut = useCallback(() => {
     signedInRef.current = false;
     setIsSignedIn(false);
     setUser(emptyUser);
     setSkinProfile(null);
     setPendingPhotoUri(null);
     setScanHistory([]);
-    setAiImprovementConsent(null);
-  };
+    consentController.reset();
+  }, [consentController]);
 
   useEffect(() => {
     let active = true;
@@ -105,7 +132,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
       clearTimeout(releaseSplash);
       setSessionInvalidatedHandler(null);
     };
-  }, []);
+  }, [signIn, signOut]);
+
+  const refreshAiConsent = useCallback(() => consentController.hydrate(), [consentController]);
+  const saveAiConsent = useCallback(
+    (granted: boolean) => consentController.save(granted),
+    [consentController],
+  );
+  const getAiImprovementConsent = useCallback(() => consentController.current, [consentController]);
 
   return (
     <SessionContext.Provider value={{ isSessionReady, isSignedIn, signIn, signOut }}>
@@ -120,8 +154,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
           addScanResult: (result) => setScanHistory((current) => [result, ...current]),
           clearScanHistory: () => setScanHistory([]),
           getScanResult: (id) => scanHistory.find((scan) => scan.id === id),
-          aiImprovementConsent,
-          setAiImprovementConsent,
+          aiImprovementConsent: consent.value,
+          isSavingConsent: consent.saving,
+          getAiImprovementConsent,
+          refreshAiConsent,
+          saveAiConsent,
         }}>
         {children}
       </UserDataContext.Provider>

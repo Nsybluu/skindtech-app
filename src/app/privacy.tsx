@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
-import type { ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { useEffect, type ReactNode } from 'react';
+import { Alert, StyleSheet, View } from 'react-native';
 
 import { ActionRow } from '@/components/info/action-row';
 import { InfoRow } from '@/components/info/info-row';
@@ -25,7 +25,21 @@ import { confirmDestructive, showMockupOnlyAlert } from '@/utils/alerts';
 export default function PrivacyScreen() {
   const { t } = useI18n();
   const { signOut } = useSession();
-  const { aiImprovementConsent, setAiImprovementConsent, clearScanHistory } = useUserData();
+  const { aiImprovementConsent, isSavingConsent, refreshAiConsent, saveAiConsent, clearScanHistory } = useUserData();
+
+  // Show what the backend really has, not what this device last remembered.
+  useEffect(() => {
+    void refreshAiConsent();
+  }, [refreshAiConsent]);
+
+  const changeConsent = async (granted: boolean) => {
+    try {
+      await saveAiConsent(granted);
+    } catch {
+      // Nothing was saved, so the switch stays where it was.
+      Alert.alert(t.consent.saveFailedTitle, t.consent.saveFailedBody, [{ text: t.common.ok }]);
+    }
+  };
 
   const deleteHistory = () =>
     confirmDestructive({
@@ -103,7 +117,8 @@ export default function PrivacyScreen() {
           </View>
           <Toggle
             value={aiImprovementConsent === true}
-            onValueChange={setAiImprovementConsent}
+            onValueChange={(granted) => void changeConsent(granted)}
+            disabled={isSavingConsent}
             accessibilityLabel={t.privacy.aiImprovementTitle}
           />
         </View>

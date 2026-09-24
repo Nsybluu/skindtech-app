@@ -1,6 +1,6 @@
 import { Redirect, router } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { Alert, StyleSheet } from 'react-native';
 
 import { AiConsentSheet } from '@/components/scan/ai-consent-sheet';
 import { CameraFrame } from '@/components/scan/camera-frame';
@@ -13,7 +13,7 @@ import { useUserData } from '@/providers/app-provider';
 /** Figma 07A — Photo Review, with the 07A.1 AI consent sheet on first use. */
 export default function PhotoReviewScreen() {
   const { t } = useI18n();
-  const { aiImprovementConsent, pendingPhotoUri, setAiImprovementConsent, setPendingPhotoUri } = useUserData();
+  const { aiImprovementConsent, isSavingConsent, pendingPhotoUri, saveAiConsent, setPendingPhotoUri } = useUserData();
   const [consentVisible, setConsentVisible] = useState(false);
 
   if (!pendingPhotoUri) {
@@ -30,10 +30,17 @@ export default function PhotoReviewScreen() {
     }
   };
 
-  const answerConsent = (allowed: boolean) => {
-    setAiImprovementConsent(allowed);
-    setConsentVisible(false);
-    startAnalysis();
+  // The choice is saved on the backend first. Only a confirmed answer closes the sheet and
+  // starts the scan, so a failed request can never turn into consent (or into a silent decline).
+  const answerConsent = async (allowed: boolean) => {
+    try {
+      const confirmed = await saveAiConsent(allowed);
+      if (confirmed === null) return; // another answer is still being saved
+      setConsentVisible(false);
+      startAnalysis();
+    } catch {
+      Alert.alert(t.consent.saveFailedTitle, t.consent.saveFailedBody, [{ text: t.common.ok }]);
+    }
   };
 
   return (
@@ -71,9 +78,10 @@ export default function PhotoReviewScreen() {
 
       <AiConsentSheet
         visible={consentVisible}
+        busy={isSavingConsent}
         onClose={() => setConsentVisible(false)}
-        onDecline={() => answerConsent(false)}
-        onAllow={() => answerConsent(true)}
+        onDecline={() => void answerConsent(false)}
+        onAllow={() => void answerConsent(true)}
         onLearnMore={() => {
           setConsentVisible(false);
           router.push('/privacy');

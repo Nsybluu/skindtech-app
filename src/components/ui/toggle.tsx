@@ -14,10 +14,12 @@ type ToggleProps = {
   value: boolean;
   onValueChange: (value: boolean) => void;
   accessibilityLabel: string;
+  /** Ignores taps and dims the switch, e.g. while the new value is being saved. */
+  disabled?: boolean;
 };
 
 /** Switch drawn to match Figma "Toggle / AI Improvement / On" (48 × 28, rose track). */
-export function Toggle({ value, onValueChange, accessibilityLabel }: ToggleProps) {
+export function Toggle({ value, onValueChange, accessibilityLabel, disabled = false }: ToggleProps) {
   const progress = useSharedValue(value ? 1 : 0);
 
   useEffect(() => {
@@ -32,10 +34,15 @@ export function Toggle({ value, onValueChange, accessibilityLabel }: ToggleProps
     <Pressable
       accessibilityRole="switch"
       accessibilityLabel={accessibilityLabel}
-      accessibilityState={{ checked: value }}
+      accessibilityState={{ checked: value, disabled }}
+      disabled={disabled}
       hitSlop={8}
       onPress={() => onValueChange(!value)}
-      style={[styles.track, { backgroundColor: value ? Colors.brand.primary : Alpha.taupe(0.45) }]}>
+      style={[
+        styles.track,
+        { backgroundColor: value ? Colors.brand.primary : Alpha.taupe(0.45) },
+        disabled && styles.disabled,
+      ]}>
       <Animated.View style={[styles.knob, knobStyle]} />
     </Pressable>
   );
@@ -48,6 +55,9 @@ const styles = StyleSheet.create({
     borderRadius: TRACK_HEIGHT / 2,
     justifyContent: 'center',
     paddingHorizontal: KNOB_OFFSET,
+  },
+  disabled: {
+    opacity: 0.55,
   },
   knob: {
     width: KNOB_SIZE,

@@ -16,16 +16,25 @@ type AiConsentSheetProps = {
   onDecline: () => void;
   onAllow: () => void;
   onLearnMore: () => void;
+  /** A choice is being saved: lock the buttons and keep the sheet open until it is confirmed. */
+  busy?: boolean;
 };
 
 /** Figma 07A.1 — "Modal / AI Improvement Consent". */
-export function AiConsentSheet({ visible, onClose, onDecline, onAllow, onLearnMore }: AiConsentSheetProps) {
+export function AiConsentSheet({
+  visible,
+  onClose,
+  onDecline,
+  onAllow,
+  onLearnMore,
+  busy = false,
+}: AiConsentSheetProps) {
   const { t } = useI18n();
 
   return (
     <BottomSheet
       visible={visible}
-      onClose={onClose}
+      onClose={busy ? () => {} : onClose}
       handleColor="rgba(201, 181, 174, 0.8)"
       bottomPadding={Spacing.l}
       style={styles.sheet}>
@@ -54,7 +63,7 @@ export function AiConsentSheet({ visible, onClose, onDecline, onAllow, onLearnMo
         ))}
       </View>
 
-      <Pressable accessibilityRole="link" onPress={onLearnMore} hitSlop={6}>
+      <Pressable accessibilityRole="link" onPress={onLearnMore} disabled={busy} hitSlop={6}>
         {({ pressed }) => (
           <AppText
             variant="caption"
@@ -76,13 +85,15 @@ export function AiConsentSheet({ visible, onClose, onDecline, onAllow, onLearnMo
           variant="secondary"
           label={t.consent.notNow}
           onPress={onDecline}
+          disabled={busy}
           textVariant="button"
           style={styles.secondary}
         />
         <AppButton
           variant="solid"
-          label={t.consent.allow}
+          label={busy ? t.consent.saving : t.consent.allow}
           onPress={onAllow}
+          disabled={busy}
           textVariant="button"
           style={styles.primary}
         />

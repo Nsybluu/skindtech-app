@@ -208,6 +208,9 @@ export const en = {
       'Choosing “Not now” will still continue to acne analysis. Your photo will not be added to the AI improvement dataset.',
     notNow: 'Not now',
     allow: 'Allow & continue',
+    saving: 'Saving…',
+    saveFailedTitle: 'Could not save your choice',
+    saveFailedBody: 'Your choice was not saved, so nothing was shared. Check your connection and try again.',
   },
   imageQuality: {
     title: 'Photo needs attention',
