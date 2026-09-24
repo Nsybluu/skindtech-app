@@ -62,7 +62,7 @@ export function CameraFrame({
       <View
         accessibilityRole={tone === 'warning' ? 'alert' : 'summary'}
         style={[styles.guidance, tone === 'warning' && styles.guidanceWarning]}>
-        <AppText variant="bodySmall" weight="semibold" color={Colors.text.onBrand} align="center">
+        <AppText variant="label" color={Colors.text.onBrand} align="center">
           {guidanceTitle}
         </AppText>
         <AppText variant="caption" color={Colors.text.onDarkMuted} align="center" style={styles.guidanceBody}>

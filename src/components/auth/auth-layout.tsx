@@ -67,7 +67,7 @@ export function AuthFooterLink({ prompt, action, onPress }: AuthFooterLinkProps)
       </AppText>
       <Pressable accessibilityRole="link" hitSlop={10} onPress={onPress}>
         {({ pressed }) => (
-          <AppText variant="bodyLarge" weight="semibold" color={Colors.brand.primary} style={pressed && styles.pressed}>
+          <AppText variant="buttonLarge" color={Colors.brand.primary} style={pressed && styles.pressed}>
             {action}
           </AppText>
         )}

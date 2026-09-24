@@ -19,7 +19,7 @@ export function ScanTipsRow() {
 
   return (
     <View style={styles.section}>
-      <AppText variant="titleLarge" color={Colors.brand.primary} accessibilityRole="header">
+      <AppText variant="sectionTitle" accessibilityRole="header">
         {t.home.beforeYouScan}
       </AppText>
       <View style={styles.row}>

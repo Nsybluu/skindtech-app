@@ -39,14 +39,14 @@ export function AiConsentSheet({
       bottomPadding={Spacing.l}
       style={styles.sheet}>
       <View style={styles.intro}>
-        <IconContainer size={40} radius={20} backgroundColor={Alpha.white(0.7)}>
+        <IconContainer size={40} radius={20}>
           <AppIcon icon={ShieldCheckIcon} size={20} />
         </IconContainer>
         <View style={styles.introCopy}>
-          <AppText variant="sheetTitle" accessibilityRole="header">
+          <AppText variant="headline" accessibilityRole="header">
             {t.consent.title}
           </AppText>
-          <AppText variant="caption" color={Colors.text.secondary}>
+          <AppText variant="body" color={Colors.text.secondary}>
             {t.consent.body}
           </AppText>
         </View>
@@ -56,7 +56,7 @@ export function AiConsentSheet({
         {[t.consent.benefitUsage, t.consent.benefitOptional].map((benefit) => (
           <View key={benefit} style={styles.benefitRow}>
             <View style={styles.bullet} />
-            <AppText variant="caption" color={Colors.text.secondary} style={styles.benefitText}>
+            <AppText variant="bodySmall" color={Colors.text.secondary} style={styles.benefitText}>
               {benefit}
             </AppText>
           </View>
@@ -66,8 +66,7 @@ export function AiConsentSheet({
       <Pressable accessibilityRole="link" onPress={onLearnMore} disabled={busy} hitSlop={6}>
         {({ pressed }) => (
           <AppText
-            variant="caption"
-            weight="semibold"
+            variant="label"
             color={Colors.brand.primary}
             align="center"
             style={pressed && styles.pressed}>
@@ -86,7 +85,6 @@ export function AiConsentSheet({
           label={t.consent.notNow}
           onPress={onDecline}
           disabled={busy}
-          textVariant="button"
           style={styles.secondary}
         />
         <AppButton
@@ -94,7 +92,6 @@ export function AiConsentSheet({
           label={busy ? t.consent.saving : t.consent.allow}
           onPress={onAllow}
           disabled={busy}
-          textVariant="button"
           style={styles.primary}
         />
       </View>
@@ -108,13 +105,13 @@ const styles = StyleSheet.create({
   },
   intro: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     gap: Spacing.m,
     paddingVertical: Spacing.xs,
   },
   introCopy: {
     flex: 1,
-    gap: Spacing.xxs,
+    gap: Spacing.xs,
   },
   benefits: {
     gap: Spacing.s,

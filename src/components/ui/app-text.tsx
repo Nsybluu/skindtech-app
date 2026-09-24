@@ -3,7 +3,9 @@ import { Platform, StyleSheet, Text, type TextProps, type TextStyle } from 'reac
 import { Colors } from '@/constants/colors';
 import {
   FontFamily,
-  THAI_MIN_LINE_HEIGHT_RATIO,
+  MAX_FONT_SIZE_MULTIPLIER,
+  resolveLetterSpacing,
+  resolveLineHeight,
   TextVariants,
   type FontWeightName,
   type TextVariant,
@@ -37,21 +39,17 @@ export function AppText({
 
   const containsThai =
     language === 'th' || (typeof children === 'string' && THAI_CHARACTERS.test(children));
-  const letterSpacing = 'letterSpacing' in spec ? spec.letterSpacing : 0;
 
   return (
     <Text
-      maxFontSizeMultiplier={1.3}
+      maxFontSizeMultiplier={MAX_FONT_SIZE_MULTIPLIER}
       style={[
         styles.base,
         {
           fontFamily: FontFamily[weight ?? spec.weight],
           fontSize: spec.fontSize,
-          lineHeight: containsThai
-            ? Math.max(spec.lineHeight, Math.ceil(spec.fontSize * THAI_MIN_LINE_HEIGHT_RATIO))
-            : spec.lineHeight,
-          // Negative tracking makes stacked Thai vowels and tone marks collide.
-          letterSpacing: containsThai ? Math.max(letterSpacing, 0) : letterSpacing,
+          lineHeight: resolveLineHeight(spec, containsThai),
+          letterSpacing: resolveLetterSpacing(spec, containsThai),
           color,
           textAlign: align,
         },

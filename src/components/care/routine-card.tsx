@@ -27,16 +27,16 @@ export function RoutineCard({ title, icon, iconBackground, steps }: RoutineCardP
           <IconContainer size={24} radius={Radius.s} backgroundColor={iconBackground}>
             {icon}
           </IconContainer>
-          <AppText variant="titleSmall" numberOfLines={1} style={styles.titleText}>
+          <AppText variant="cardTitle" numberOfLines={2} style={styles.titleText}>
             {title}
           </AppText>
         </View>
         <Badge label={t.care.stepCount(steps.length)} minWidth={65} backgroundColor={Alpha.rose(0.08)} />
       </View>
 
-      <View>
+      <View style={styles.steps}>
         {steps.map((step, index) => (
-          <AppText key={step} variant="listStep" color={Colors.text.secondary}>
+          <AppText key={step} variant="bodySmall" color={Colors.text.secondary}>
             {`${index + 1}   ${step}`}
           </AppText>
         ))}
@@ -69,5 +69,8 @@ const styles = StyleSheet.create({
   },
   titleText: {
     flexShrink: 1,
+  },
+  steps: {
+    gap: Spacing.xs,
   },
 });

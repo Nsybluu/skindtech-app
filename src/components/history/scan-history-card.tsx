@@ -63,14 +63,15 @@ export function ScanHistoryCard({
         <AppText variant="caption" color={Colors.text.muted}>
           {date}
         </AppText>
-        <AppText variant="titleSmall" color={Colors.brand.primary} numberOfLines={1}>
+        {/* Long Thai summaries wrap to a second line instead of being cut off. */}
+        <AppText variant="cardTitle" color={Colors.brand.primary} numberOfLines={2}>
           {summary}
         </AppText>
-        <AppText variant="caption" color={Colors.text.secondary} numberOfLines={1}>
+        <AppText variant="caption" color={Colors.text.secondary} numberOfLines={2}>
           {t.result.categoryList(getDetectedCategories(result))}
         </AppText>
         {selectable ? null : (
-          <AppText variant="caption" weight="semibold" color={Colors.brand.primary}>
+          <AppText variant="captionSemibold" color={Colors.brand.primary}>
             {t.history.viewResult}
           </AppText>
         )}
@@ -89,7 +90,8 @@ const styles = StyleSheet.create({
     minHeight: 120,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.l,
+    // 12pt between thumbnail, text and the selection circle keeps a two-word summary on one line.
+    gap: Spacing.m,
     padding: Spacing.l,
     borderRadius: Radius.l,
     borderWidth: 1,

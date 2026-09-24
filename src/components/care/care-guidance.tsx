@@ -33,10 +33,10 @@ export function CareGuidance({ isClear, morningSteps, eveningSteps }: CareGuidan
           <AppIcon icon={FaceSlightlySmilingIcon} size={18} />
         </IconContainer>
         <View style={styles.introCopy}>
-          <AppText variant="titleSmall" accessibilityRole="header">
+          <AppText variant="sectionTitle" accessibilityRole="header">
             {t.care.sectionTitle}
           </AppText>
-          <AppText variant="footnote" color={Colors.text.secondary}>
+          <AppText variant="caption" color={Colors.text.secondary}>
             {isClear ? t.care.introBodyClear : t.care.introBody}
           </AppText>
         </View>
@@ -62,8 +62,8 @@ export function CareGuidance({ isClear, morningSteps, eveningSteps }: CareGuidan
           <AppIcon icon={ClipboardCheckIcon} size={18} />
         </IconContainer>
         <View style={styles.habitsCopy}>
-          <AppText variant="label">{t.care.habitsTitle}</AppText>
-          <AppText variant="caption" color={Colors.text.secondary}>
+          <AppText variant="cardTitle">{t.care.habitsTitle}</AppText>
+          <AppText variant="bodySmall" color={Colors.text.secondary}>
             {t.care.habitsBody}
           </AppText>
         </View>
@@ -72,9 +72,7 @@ export function CareGuidance({ isClear, morningSteps, eveningSteps }: CareGuidan
       <Notice
         icon={<AppIcon icon={InfoIcon} size={18} />}
         title={t.care.professionalTitle}
-        titleVariant="captionSemibold"
         message={t.care.professionalBody}
-        messageVariant="footnote"
         style={styles.professional}
       />
     </View>

@@ -59,11 +59,11 @@ export function ScanActionsSheet({ visible, busy, error, onDelete, onClose }: Sc
             onPress={() => setConfirming(true)}
             style={({ pressed }) => [styles.option, pressed && styles.pressed]}>
             <AppIcon icon={TrashIcon} size={20} color={Colors.danger.text} />
-            <AppText variant="label" color={Colors.danger.text} style={styles.optionLabel}>
+            <AppText variant="button" color={Colors.danger.text} style={styles.optionLabel}>
               {t.result.deleteThisScan}
             </AppText>
           </Pressable>
-          <AppButton variant="secondary" label={t.common.cancel} onPress={close} textVariant="button" />
+          <AppButton variant="secondary" label={t.common.cancel} onPress={close} />
         </>
       )}
     </BottomSheet>

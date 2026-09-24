@@ -21,7 +21,7 @@ export function LatestResultStatus({ status, onRetry }: LatestResultStatusProps)
 
   return (
     <View style={styles.section}>
-      <AppText variant="titleLarge" accessibilityRole="header">
+      <AppText variant="sectionTitle" accessibilityRole="header">
         {t.home.latestResult}
       </AppText>
       {status === 'loading' ? (

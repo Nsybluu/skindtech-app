@@ -5,7 +5,7 @@ import { AppText } from '@/components/ui/app-text';
 import { SendHorizontalIcon } from '@/components/ui/icons';
 import { Alpha, Colors, Gradients } from '@/constants/colors';
 import { Layout, Radius, Spacing } from '@/constants/spacing';
-import { FontFamily } from '@/constants/typography';
+import { inputTextStyle, MAX_FONT_SIZE_MULTIPLIER } from '@/constants/typography';
 import { useI18n } from '@/i18n/i18n-provider';
 
 type ChatComposerProps = {
@@ -42,6 +42,7 @@ export function ChatComposer({
             returnKeyType="send"
             onSubmitEditing={() => canSend && onSend()}
             multiline
+            maxFontSizeMultiplier={MAX_FONT_SIZE_MULTIPLIER}
             style={styles.input}
           />
         </View>
@@ -91,9 +92,7 @@ const styles = StyleSheet.create({
   },
   input: {
     maxHeight: 96,
-    fontFamily: FontFamily.regular,
-    fontSize: 15,
-    lineHeight: 21,
+    ...inputTextStyle('bodyLarge', { multiline: true }),
     color: Colors.text.primary,
   },
   send: {

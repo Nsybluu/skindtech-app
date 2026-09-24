@@ -18,7 +18,7 @@ export function QuickPrompts({ onSelect, disabled = false }: QuickPromptsProps) 
 
   return (
     <View style={styles.section}>
-      <AppText variant="captionSemibold" accessibilityRole="header">
+      <AppText variant="titleSmall" accessibilityRole="header">
         {t.aiChat.suggestedQuestions}
       </AppText>
       <View style={styles.chips}>
@@ -30,8 +30,9 @@ export function QuickPrompts({ onSelect, disabled = false }: QuickPromptsProps) 
             accessibilityState={{ disabled }}
             disabled={disabled}
             onPress={() => onSelect(promptId)}
+            hitSlop={{ top: 4, bottom: 4 }}
             style={({ pressed }) => [styles.chip, (pressed || disabled) && styles.pressed]}>
-            <AppText variant="footnoteSemibold" color={Colors.text.secondary} align="center">
+            <AppText variant="label" color={Colors.text.secondary}>
               {t.aiChat.prompts[promptId]}
             </AppText>
           </Pressable>

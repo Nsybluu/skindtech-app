@@ -64,7 +64,7 @@ function SideAction({ label, icon, onPress, selected = false }: SideActionProps)
         backgroundColor={selected ? Alpha.rose(0.2) : Alpha.rose(0.1)}>
         {icon}
       </IconContainer>
-      <AppText variant="footnote" color={Colors.text.secondary} numberOfLines={1}>
+      <AppText variant="caption" color={Colors.text.secondary} numberOfLines={1}>
         {label}
       </AppText>
     </Pressable>

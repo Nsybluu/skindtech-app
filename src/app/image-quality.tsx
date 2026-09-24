@@ -21,7 +21,6 @@ export default function ImageQualityScreen() {
   return (
     <ScanFlowLayout
       title={t.imageQuality.title}
-      titleVariant="screenTitleSmall"
       onBack={() => backToScan()}
       preview={
         <CameraFrame
@@ -43,8 +42,6 @@ export default function ImageQualityScreen() {
           <AppButton
             variant="secondary"
             label={t.imageQuality.chooseAnother}
-            textVariant="caption"
-            textWeight="semibold"
             // A fresh `pick` value makes the Scan screen open the photo library.
             onPress={() => backToScan({ pick: String(Date.now()) })}
             style={styles.secondary}

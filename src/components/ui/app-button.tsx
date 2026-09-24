@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'rea
 
 import { Alpha, Colors, Gradients } from '@/constants/colors';
 import { Layout, Radius, Shadows, Spacing } from '@/constants/spacing';
-import type { FontWeightName, TextVariant } from '@/constants/typography';
+import type { TextVariant } from '@/constants/typography';
 
 import { AppText } from './app-text';
 
@@ -28,8 +28,6 @@ type AppButtonProps = {
   icon?: ReactNode;
   height?: number;
   radius?: number;
-  textVariant?: TextVariant;
-  textWeight?: FontWeightName;
   style?: StyleProp<ViewStyle>;
   accessibilityLabel?: string;
   disabled?: boolean;
@@ -63,14 +61,14 @@ const VARIANT_DEFAULTS: Record<
   outline: {
     height: 48,
     radius: Radius.l,
-    textVariant: 'label',
+    textVariant: 'button',
     textColor: Colors.brand.primary,
     iconGap: Spacing.s,
   },
   google: {
     height: Layout.buttonHeight,
     radius: Radius.l,
-    textVariant: 'bodyLarge',
+    textVariant: 'buttonLarge',
     textColor: Colors.text.google,
     iconGap: Spacing.l,
   },
@@ -90,8 +88,6 @@ export function AppButton({
   icon,
   height,
   radius,
-  textVariant,
-  textWeight,
   style,
   accessibilityLabel,
   disabled = false,
@@ -120,8 +116,9 @@ export function AppButton({
       ]}>
       {icon ? <View>{icon}</View> : null}
       <AppText
-        variant={textVariant ?? defaults.textVariant}
-        weight={textWeight ?? (variant === 'google' ? 'medium' : undefined)}
+        variant={defaults.textVariant}
+        // Google's own button guidelines ask for a medium weight; every other button is semibold.
+        weight={variant === 'google' ? 'medium' : undefined}
         color={defaults.textColor}
         align="center"
         numberOfLines={2}

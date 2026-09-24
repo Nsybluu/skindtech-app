@@ -39,7 +39,7 @@ export function SkinContextCard() {
         <AppIcon icon={FaceSlightlySmilingIcon} size={18} />
       </IconContainer>
       <View style={styles.copy}>
-        <AppText variant="captionSemibold">{t.aiChat.contextTitle}</AppText>
+        <AppText variant="titleSmall">{t.aiChat.contextTitle}</AppText>
         <AppText variant="caption" color={Colors.text.muted} numberOfLines={2}>
           {scanLine}
         </AppText>

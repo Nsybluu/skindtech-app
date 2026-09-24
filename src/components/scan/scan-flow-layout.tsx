@@ -16,7 +16,6 @@ import { SkinProfileSummary } from './skin-profile-summary';
 
 type ScanFlowLayoutProps = {
   title: string;
-  titleVariant?: 'screenTitle' | 'screenTitleSmall';
   onBack?: () => void;
   /** The camera / photo preview (fills the remaining height). */
   preview: ReactNode;
@@ -32,7 +31,6 @@ type ScanFlowLayoutProps = {
  */
 export function ScanFlowLayout({
   title,
-  titleVariant = 'screenTitle',
   onBack,
   preview,
   controls,
@@ -46,7 +44,6 @@ export function ScanFlowLayout({
       <View style={[styles.top, { paddingTop: top(40) }]}>
         <ScreenHeader
           title={title}
-          titleVariant={titleVariant}
           onBack={onBack}
           accessory={
             <IconButton

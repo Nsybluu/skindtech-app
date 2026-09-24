@@ -50,7 +50,7 @@ export default function HomeScreen() {
               accessibilityLabel={t.home.openProfile}
               onPress={() => router.navigate('/account')}
               style={({ pressed }) => [styles.avatar, pressed && styles.pressed]}>
-              <AppText variant="bodyLarge" weight="semibold" color={Colors.brand.primary}>
+              <AppText variant="cardTitle" color={Colors.brand.primary}>
                 {user.name.charAt(0).toUpperCase()}
               </AppText>
             </Pressable>
@@ -84,7 +84,6 @@ export default function HomeScreen() {
           <Notice
             icon={<AppIcon icon={InfoIcon} size={18} />}
             message={t.home.disclaimer}
-            messageVariant="caption"
             style={styles.notice}
           />
         </View>

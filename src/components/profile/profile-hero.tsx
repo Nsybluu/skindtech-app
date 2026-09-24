@@ -43,10 +43,10 @@ export function ProfileHero({ user, onChangePhoto }: ProfileHeroProps) {
           </Pressable>
         </View>
 
-        <AppText variant="titleLarge" align="center">
+        <AppText variant="sectionTitle" align="center">
           {user.name}
         </AppText>
-        <AppText variant="label" weight="regular" color={Colors.text.secondary} align="center">
+        <AppText variant="bodySmall" color={Colors.text.secondary} align="center">
           {user.email}
         </AppText>
       </View>

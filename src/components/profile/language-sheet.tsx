@@ -43,10 +43,10 @@ export function LanguageSheet({ visible, onClose }: LanguageSheetProps) {
       handleColor={Alpha.taupe(0.38)}
       style={styles.sheet}>
       <View style={styles.header}>
-        <AppText variant="sheetTitle" align="center" accessibilityRole="header">
+        <AppText variant="headline" align="center" accessibilityRole="header">
           {t.language.title}
         </AppText>
-        <AppText variant="caption" color={Colors.text.muted} align="center">
+        <AppText variant="body" color={Colors.text.secondary} align="center">
           {t.language.subtitle}
         </AppText>
       </View>
@@ -92,14 +92,12 @@ export function LanguageSheet({ visible, onClose }: LanguageSheetProps) {
           variant="secondary"
           label={t.common.cancel}
           onPress={close}
-          textVariant="button"
           style={styles.cancel}
         />
         <AppButton
           variant="solid"
           label={t.language.apply}
           onPress={apply}
-          textVariant="button"
           style={styles.apply}
         />
       </View>
@@ -122,10 +120,9 @@ const styles = StyleSheet.create({
     gap: Spacing.m,
   },
   cancel: {
-    width: 100,
+    width: 104,
   },
   apply: {
     flex: 1,
-    backgroundColor: Colors.brand.vivid,
   },
 });

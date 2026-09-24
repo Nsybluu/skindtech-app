@@ -22,7 +22,7 @@ export function LatestResultCard({ result, onPress }: LatestResultCardProps) {
 
   return (
     <View style={styles.section}>
-      <AppText variant="titleLarge" accessibilityRole="header">
+      <AppText variant="sectionTitle" accessibilityRole="header">
         {t.home.latestResult}
       </AppText>
       <Pressable
@@ -34,7 +34,7 @@ export function LatestResultCard({ result, onPress }: LatestResultCardProps) {
           <AppIcon icon={ScanFaceIcon} size={22} />
         </IconContainer>
         <View style={styles.copy}>
-          <AppText variant="title" numberOfLines={1}>
+          <AppText variant="cardTitle" numberOfLines={2}>
             {summary}
           </AppText>
           <AppText variant="caption" color={Colors.text.secondary}>

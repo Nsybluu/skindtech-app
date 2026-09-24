@@ -17,7 +17,7 @@ export function AssistantBubble({ text }: { text: string }) {
           <AppIcon icon={FaceSlightlySmilingIcon} size={14} />
         </View>
       </View>
-      <AppText variant="caption" color={Colors.text.secondary} style={styles.assistantText}>
+      <AppText variant="body" color={Colors.text.secondary} style={styles.assistantText}>
         {text}
       </AppText>
     </View>
@@ -28,7 +28,7 @@ export function AssistantBubble({ text }: { text: string }) {
 export function UserBubble({ text }: { text: string }) {
   return (
     <View style={styles.user}>
-      <AppText variant="caption" weight="semibold" color={Colors.text.onBrand}>
+      <AppText variant="body" color={Colors.text.onBrand}>
         {text}
       </AppText>
     </View>

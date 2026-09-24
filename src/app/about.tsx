@@ -1,5 +1,4 @@
 import { router } from 'expo-router';
-import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import LogoScanIcon from '@/assets/illustrations/logo-scan.svg';
@@ -13,6 +12,7 @@ import { BubblesIcon, ChartNoAxesColumnIcon, DropletIcon, GraduationCapIcon, Inf
 import { ListGroup } from '@/components/ui/list-group';
 import { Notice } from '@/components/ui/notice';
 import { ScreenHeader } from '@/components/ui/screen-header';
+import { Section } from '@/components/ui/section';
 import { APP_VERSION } from '@/constants/app';
 import { Alpha, Colors } from '@/constants/colors';
 import { Radius, Spacing } from '@/constants/spacing';
@@ -24,19 +24,19 @@ export default function AboutScreen() {
 
   return (
     <AppScreen
-      header={<ScreenHeader title={t.about.title} titleVariant="screenTitle" />}
+      header={<ScreenHeader title={t.about.title} />}
       gap={Spacing.l}>
       <View style={styles.hero}>
         <View style={styles.logo}>
           <LogoScanIcon />
         </View>
-        <AppText variant="sheetTitle" align="center">
+        <AppText variant="headline" align="center">
           {t.common.brand}
         </AppText>
         <AppText variant="caption" color={Colors.brand.primary} align="center">
           {t.about.version(APP_VERSION)}
         </AppText>
-        <AppText variant="footnote" color={Colors.text.secondary} align="center">
+        <AppText variant="caption" color={Colors.text.secondary} align="center">
           {t.about.description}
         </AppText>
       </View>
@@ -55,13 +55,11 @@ export default function AboutScreen() {
             <AppIcon icon={GraduationCapIcon} size={20} />
           </IconContainer>
           <View style={styles.projectCopy}>
-            <AppText variant="label" style={styles.projectTitle}>
-              {t.about.projectTitle}
-            </AppText>
-            <AppText variant="footnote" color={Colors.text.secondary}>
+            <AppText variant="titleSmall">{t.about.projectTitle}</AppText>
+            <AppText variant="caption" color={Colors.text.secondary}>
               {t.about.projectProgram}
             </AppText>
-            <AppText variant="footnote" color={Colors.text.secondary}>
+            <AppText variant="caption" color={Colors.text.secondary}>
               {t.about.projectUniversity}
             </AppText>
           </View>
@@ -73,7 +71,6 @@ export default function AboutScreen() {
         tone="blush"
         title={t.about.noteTitle}
         message={t.about.noteBody}
-        messageVariant="caption"
         style={styles.notice}
       />
 
@@ -82,21 +79,10 @@ export default function AboutScreen() {
         icon={<AppIcon icon={ShieldCheckIcon} size={18} />}
         label={t.about.privacyLink}
         color={Colors.text.primary}
-        weight="semibold"
+        emphasized
         onPress={() => router.push('/privacy')}
       />
     </AppScreen>
-  );
-}
-
-function Section({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <View style={styles.section}>
-      <AppText variant="titleSmall" accessibilityRole="header">
-        {title}
-      </AppText>
-      {children}
-    </View>
   );
 }
 
@@ -117,9 +103,6 @@ const styles = StyleSheet.create({
     borderRadius: 27,
     backgroundColor: Colors.brand.vivid,
   },
-  section: {
-    gap: Spacing.m,
-  },
   projectCard: {
     minHeight: 88,
     flexDirection: 'row',
@@ -133,9 +116,6 @@ const styles = StyleSheet.create({
   },
   projectCopy: {
     flex: 1,
-  },
-  projectTitle: {
-    lineHeight: 17,
   },
   notice: {
     gap: Spacing.m,

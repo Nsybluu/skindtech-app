@@ -14,7 +14,7 @@ import { Notice } from '@/components/ui/notice';
 import { ScreenHeader } from '@/components/ui/screen-header';
 import { Alpha, Colors } from '@/constants/colors';
 import { Radius, Spacing } from '@/constants/spacing';
-import { FontFamily } from '@/constants/typography';
+import { inputTextStyle, MAX_FONT_SIZE_MULTIPLIER } from '@/constants/typography';
 import { useI18n } from '@/i18n/i18n-provider';
 import { useUserData } from '@/providers/app-provider';
 import type { SkinConcern, SkinSensitivity, SkinType } from '@/types/profile';
@@ -124,7 +124,6 @@ export default function SkinProfileScreen() {
             label={isSavingSkinProfile ? t.skinProfile.saving : t.skinProfile.save}
             onPress={() => void save()}
             disabled={!canSave || isSavingSkinProfile}
-            textVariant="buttonLarge"
             style={styles.saveButton}
           />
         </ActionBar>
@@ -132,10 +131,8 @@ export default function SkinProfileScreen() {
       <Notice
         icon={<AppIcon icon={InfoIcon} size={20} />}
         title={t.skinProfile.noticeTitle}
-        titleVariant="bodySmall"
         titleColor={Colors.text.primary}
         message={t.skinProfile.noticeBody}
-        messageVariant="caption"
         style={styles.usageNotice}
       />
 
@@ -178,6 +175,7 @@ export default function SkinProfileScreen() {
           placeholder={t.skinProfile.ingredientsPlaceholder}
           placeholderTextColor={Colors.text.muted}
           selectionColor={Colors.brand.primary}
+          maxFontSizeMultiplier={MAX_FONT_SIZE_MULTIPLIER}
           accessibilityLabel={t.skinProfile.ingredients}
           style={styles.input}
         />
@@ -186,7 +184,6 @@ export default function SkinProfileScreen() {
       <Notice
         icon={<AppIcon icon={InfoIcon} size={18} />}
         message={t.skinProfile.disclaimer}
-        messageVariant="caption"
         style={styles.disclaimer}
       />
     </AppScreen>
@@ -202,7 +199,7 @@ type FieldProps = {
 function Field({ label, labelStyle, children }: FieldProps) {
   return (
     <View style={styles.field}>
-      <AppText variant="title" style={labelStyle}>
+      <AppText variant="cardTitle" style={labelStyle}>
         {label}
       </AppText>
       {children}
@@ -228,8 +225,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Alpha.taupe(0.3),
     backgroundColor: Colors.surface.card,
-    fontFamily: FontFamily.regular,
-    fontSize: 15,
+    ...inputTextStyle('bodyLarge'),
     color: Colors.text.primary,
   },
   disclaimer: {

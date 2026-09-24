@@ -14,7 +14,7 @@ export function AcneTypesSection({ categories }: { categories: AcneCategory[] })
 
   return (
     <View style={styles.section}>
-      <AppText variant="titleSmall" accessibilityRole="header">
+      <AppText variant="cardTitle" accessibilityRole="header">
         {hasTypes ? t.result.acneTypesDetected : t.result.acneTypeAssessment}
       </AppText>
 
@@ -31,7 +31,8 @@ export function AcneTypesSection({ categories }: { categories: AcneCategory[] })
                 },
               ]}>
               <LegendDot category={category} />
-              <AppText variant="caption" color={Colors.text.secondary} numberOfLines={1}>
+              {/* Wraps under Dynamic Type instead of running out of the chip. */}
+              <AppText variant="caption" color={Colors.text.secondary} style={styles.chipLabel}>
                 {t.result.category[category]}
               </AppText>
             </View>
@@ -50,9 +51,8 @@ export function AcneTypesSection({ categories }: { categories: AcneCategory[] })
 
 const styles = StyleSheet.create({
   section: {
-    gap: Spacing.s,
-    paddingHorizontal: Spacing.m,
-    paddingVertical: Spacing.m,
+    gap: Spacing.m,
+    padding: Spacing.l,
     borderRadius: Radius.l,
     backgroundColor: Colors.surface.card,
   },
@@ -69,7 +69,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: Spacing.s,
     paddingHorizontal: Spacing.m,
+    paddingVertical: Spacing.xs,
     borderRadius: Radius.m,
+  },
+  chipLabel: {
+    flexShrink: 1,
   },
   emptyMessage: {
     minHeight: 36,

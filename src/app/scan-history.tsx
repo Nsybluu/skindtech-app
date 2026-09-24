@@ -131,7 +131,6 @@ export default function ScanHistoryScreen() {
       header={
         <ScreenHeader
           title={title}
-          titleVariant={managing ? 'screenTitleSmall' : 'screenTitle'}
           backLabel={managing ? t.common.cancel : undefined}
           onBack={managing ? () => history.endSelection() : undefined}
           accessory={
@@ -167,14 +166,14 @@ export default function ScanHistoryScreen() {
           <AppIcon icon={RotateCcwClockIcon} size={20} />
         </IconContainer>
         <View style={styles.introCopy}>
-          <AppText variant="titleSmall">{t.history.introTitle}</AppText>
-          <AppText variant="caption" color={Colors.text.secondary}>
+          <AppText variant="cardTitle">{t.history.introTitle}</AppText>
+          <AppText variant="bodySmall" color={Colors.text.secondary}>
             {t.history.introBody}
           </AppText>
         </View>
         {scans.length > 0 || isEmpty ? (
           <View style={styles.countBadge}>
-            <AppText variant="caption" weight="semibold" color={Colors.brand.primary}>
+            <AppText variant="captionSemibold" color={Colors.brand.primary}>
               {history.hasMore ? `${scans.length}+` : scans.length}
             </AppText>
           </View>
@@ -191,6 +190,7 @@ export default function ScanHistoryScreen() {
               accessibilityState={{ selected, disabled: managing }}
               accessibilityLabel={option.label}
               disabled={managing}
+              hitSlop={{ top: 4, bottom: 4 }}
               onPress={() => setFilter(option.value)}
               style={({ pressed }) => [
                 styles.filter,
@@ -198,8 +198,7 @@ export default function ScanHistoryScreen() {
                 (pressed || managing) && styles.pressed,
               ]}>
               <AppText
-                variant="caption"
-                weight={selected ? 'semibold' : 'regular'}
+                variant="label"
                 color={selected ? Colors.text.onBrand : Colors.text.secondary}
                 numberOfLines={1}>
                 {option.label}
@@ -210,17 +209,17 @@ export default function ScanHistoryScreen() {
       </View>
 
       {managing && history.allSelected ? (
-        <AppText variant="footnote" color={Colors.text.muted} accessibilityLiveRegion="polite">
+        <AppText variant="caption" color={Colors.text.muted} accessibilityLiveRegion="polite">
           {t.history.allSelectedHint}
         </AppText>
       ) : null}
       {managing && !history.allSelected && history.selectedIds.length >= MAX_SELECTION ? (
-        <AppText variant="footnote" color={Colors.text.muted} accessibilityLiveRegion="polite">
+        <AppText variant="caption" color={Colors.text.muted} accessibilityLiveRegion="polite">
           {t.history.selectLimit}
         </AppText>
       ) : null}
 
-      <AppText variant="titleSmall" accessibilityRole="header" style={styles.sectionTitle}>
+      <AppText variant="sectionTitle" accessibilityRole="header" style={styles.sectionTitle}>
         {t.history.recentScans}
       </AppText>
 
@@ -253,10 +252,10 @@ export default function ScanHistoryScreen() {
 
       {isEmpty ? (
         <View style={styles.empty}>
-          <AppText variant="titleSmall" color={Colors.text.secondary} align="center">
+          <AppText variant="cardTitle" color={Colors.text.secondary} align="center">
             {t.history.emptyTitle}
           </AppText>
-          <AppText variant="caption" color={Colors.text.muted} align="center">
+          <AppText variant="bodySmall" color={Colors.text.muted} align="center">
             {t.history.emptyBody}
           </AppText>
         </View>
@@ -264,7 +263,7 @@ export default function ScanHistoryScreen() {
 
       {scans.length > 0 && visibleScans.length === 0 ? (
         <View style={styles.empty}>
-          <AppText variant="titleSmall" color={Colors.text.secondary} align="center">
+          <AppText variant="cardTitle" color={Colors.text.secondary} align="center">
             {t.history.noMatches}
           </AppText>
         </View>
@@ -277,7 +276,7 @@ export default function ScanHistoryScreen() {
       ) : null}
 
       {history.loadError && !isFailed ? (
-        <AppText variant="caption" color={Colors.brand.primary} align="center" accessibilityLiveRegion="polite">
+        <AppText variant="bodySmall" color={Colors.brand.primary} align="center" accessibilityLiveRegion="polite">
           {t.history.updateFailed}
         </AppText>
       ) : null}
@@ -296,7 +295,6 @@ export default function ScanHistoryScreen() {
         icon={<AppIcon icon={InfoIcon} size={16} />}
         tone="blush"
         message={t.history.disclaimer}
-        messageVariant="footnote"
         style={styles.notice}
       />
 

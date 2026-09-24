@@ -10,7 +10,8 @@ type ActionRowProps = {
   label: string;
   onPress: () => void;
   color?: string;
-  weight?: 'regular' | 'semibold';
+  /** Emphasised rows (destructive or standalone) use the semibold small-title style. */
+  emphasized?: boolean;
   /** Standalone rows have their own card background; list rows don't. */
   standalone?: boolean;
   /** Dims the row and ignores presses (an action that is already running). */
@@ -23,7 +24,7 @@ export function ActionRow({
   label,
   onPress,
   color = Colors.brand.primary,
-  weight = 'regular',
+  emphasized = false,
   standalone = false,
   disabled = false,
 }: ActionRowProps) {
@@ -41,7 +42,7 @@ export function ActionRow({
         disabled && styles.disabled,
       ]}>
       {icon}
-      <AppText variant="bodySmall" weight={weight} color={color} style={styles.label}>
+      <AppText variant={emphasized ? 'titleSmall' : 'body'} color={color} style={styles.label}>
         {label}
       </AppText>
     </Pressable>

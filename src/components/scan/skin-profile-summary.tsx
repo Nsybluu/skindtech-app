@@ -40,7 +40,7 @@ export function SkinProfileSummary({ variant = 'scan' }: SkinProfileSummaryProps
           <AppIcon icon={FaceSlightlySmilingIcon} size={16} />
         </IconContainer>
         <View style={styles.copy}>
-          <AppText variant={isResult ? 'caption' : 'captionSemibold'} weight="semibold" numberOfLines={1}>
+          <AppText variant="captionSemibold" numberOfLines={1}>
             {isResult ? t.result.skinProfileUsed : t.common.skinProfile}
           </AppText>
           <AppText variant="caption" color={Colors.text.muted} numberOfLines={1}>
@@ -48,11 +48,7 @@ export function SkinProfileSummary({ variant = 'scan' }: SkinProfileSummaryProps
           </AppText>
         </View>
       </View>
-      <AppText
-        variant={isResult ? 'caption' : 'caption'}
-        weight="semibold"
-        color={Colors.brand.primary}
-        style={styles.action}>
+      <AppText variant="captionSemibold" color={Colors.brand.primary} style={styles.action}>
         {action}
       </AppText>
     </Pressable>

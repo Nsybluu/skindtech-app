@@ -15,7 +15,7 @@ export function OverallAnalysisCard({ result }: { result: ScanResult }) {
   return (
     <View style={styles.card}>
       <View style={styles.header}>
-        <AppText variant="title" accessibilityRole="header">
+        <AppText variant="cardTitle" accessibilityRole="header">
           {t.result.overallAnalysis}
         </AppText>
         {result.isDemoData ? (
@@ -57,10 +57,11 @@ type StatProps = {
 function Stat({ label, value, backgroundColor, valueColor }: StatProps) {
   return (
     <View style={[styles.stat, { backgroundColor }]}>
-      <AppText variant="footnote" color={Colors.text.muted} numberOfLines={1}>
+      <AppText variant="caption" color={Colors.text.muted} numberOfLines={1}>
         {label}
       </AppText>
-      <AppText variant="title" color={valueColor} numberOfLines={1}>
+      {/* The headline figure of the analysis, so one step above a card title. */}
+      <AppText variant="sectionTitle" color={valueColor} numberOfLines={1}>
         {value}
       </AppText>
     </View>
@@ -89,7 +90,7 @@ const styles = StyleSheet.create({
   },
   stat: {
     flex: 1,
-    minHeight: 60,
+    minHeight: 72,
     justifyContent: 'center',
     gap: Spacing.xxs,
     paddingHorizontal: Spacing.m,

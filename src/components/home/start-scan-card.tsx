@@ -18,8 +18,8 @@ export function StartScanCard({ onStartScan }: StartScanCardProps) {
   return (
     <View style={styles.card}>
       <View style={styles.content}>
-        <AppText variant="cardHeadline">{t.home.scanCardTitle}</AppText>
-        <AppText variant="bodySmall" color={Colors.text.secondary}>
+        <AppText variant="headline">{t.home.scanCardTitle}</AppText>
+        <AppText variant="body" color={Colors.text.secondary}>
           {t.home.scanCardBody}
         </AppText>
         <AppButton
@@ -27,7 +27,6 @@ export function StartScanCard({ onStartScan }: StartScanCardProps) {
           onPress={onStartScan}
           height={44}
           radius={Radius.l}
-          textVariant="bodyLarge"
           style={styles.button}
         />
       </View>

@@ -28,10 +28,10 @@ export function AnalysisProgressCard({ currentStep }: AnalysisProgressCardProps)
 
   return (
     <View style={styles.card} accessibilityLiveRegion="polite">
-      <AppText variant="titleLarge" color={Colors.progress.title}>
+      <AppText variant="cardTitle" color={Colors.progress.title}>
         {t.analyzing.cardTitle}
       </AppText>
-      <AppText variant="bodySmall" color={Colors.brand.primary}>
+      <AppText variant="label" color={Colors.brand.primary}>
         {t.analyzing.stepProgress(step, total, steps[step - 1].label)}
       </AppText>
       <View

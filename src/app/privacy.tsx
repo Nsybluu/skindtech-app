@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 
 import { ActionRow } from '@/components/info/action-row';
@@ -13,6 +13,7 @@ import { FaceSlightlySmilingIcon, FileTextIcon, ImageIcon, InfoIcon, RotateCcwCl
 import { ListGroup } from '@/components/ui/list-group';
 import { Notice } from '@/components/ui/notice';
 import { ScreenHeader } from '@/components/ui/screen-header';
+import { Section } from '@/components/ui/section';
 import { Toggle } from '@/components/ui/toggle';
 import { Alpha, Colors } from '@/constants/colors';
 import { Radius, Spacing } from '@/constants/spacing';
@@ -120,15 +121,15 @@ export default function PrivacyScreen() {
 
   return (
     <AppScreen
-      header={<ScreenHeader title={t.privacy.title} titleVariant="screenTitle" />}
+      header={<ScreenHeader title={t.privacy.title} />}
       gap={Spacing.l}>
       <View style={styles.intro}>
         <IconContainer size={40} radius={20} backgroundColor={Alpha.white(0.7)}>
           <AppIcon icon={ShieldCheckIcon} size={20} />
         </IconContainer>
         <View style={styles.introCopy}>
-          <AppText variant="titleSmall">{t.privacy.introTitle}</AppText>
-          <AppText variant="footnote" color={Colors.text.secondary}>
+          <AppText variant="cardTitle">{t.privacy.introTitle}</AppText>
+          <AppText variant="bodySmall" color={Colors.text.secondary}>
             {t.privacy.introBody}
           </AppText>
         </View>
@@ -140,7 +141,6 @@ export default function PrivacyScreen() {
             icon={<AppIcon icon={ImageIcon} size={20} />}
             title={t.privacy.facePhotos}
             body={t.privacy.facePhotosBody}
-            bodyVariant="footnote"
             minHeight={72}
           />
           <InfoRow
@@ -162,8 +162,8 @@ export default function PrivacyScreen() {
             <AppIcon icon={ShieldCheckIcon} size={20} />
           </IconContainer>
           <View style={styles.consentCopy}>
-            <AppText variant="label">{t.privacy.aiImprovementTitle}</AppText>
-            <AppText variant="footnote" color={Colors.text.secondary}>
+            <AppText variant="titleSmall">{t.privacy.aiImprovementTitle}</AppText>
+            <AppText variant="caption" color={Colors.text.secondary}>
               {t.privacy.aiImprovementBody}
             </AppText>
           </View>
@@ -187,7 +187,7 @@ export default function PrivacyScreen() {
           <ActionRow
             icon={<AppIcon icon={UserRoundMinusIcon} size={18} />}
             label={deletion.busy && !deletion.needsPassword ? t.privacy.deletingAccount : t.privacy.deleteAccount}
-            weight="semibold"
+            emphasized
             disabled={anyDeletionRunning}
             onPress={deleteAccount}
           />
@@ -199,7 +199,6 @@ export default function PrivacyScreen() {
         tone="blush"
         title={t.privacy.noticeTitle}
         message={t.privacy.noticeBody}
-        messageVariant="caption"
         style={styles.notice}
       />
 
@@ -208,7 +207,7 @@ export default function PrivacyScreen() {
         icon={<AppIcon icon={FileTextIcon} size={18} />}
         label={t.privacy.privacyPolicy}
         color={Colors.text.primary}
-        weight="semibold"
+        emphasized
         onPress={() => showMockupOnlyAlert(t, t.privacy.privacyPolicy.replace('  ›', ''))}
       />
 
@@ -227,17 +226,6 @@ export default function PrivacyScreen() {
   );
 }
 
-function Section({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <View style={styles.section}>
-      <AppText variant="titleSmall" accessibilityRole="header">
-        {title}
-      </AppText>
-      {children}
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
   intro: {
     minHeight: 88,
@@ -251,9 +239,6 @@ const styles = StyleSheet.create({
   introCopy: {
     flex: 1,
     gap: Spacing.xs,
-  },
-  section: {
-    gap: Spacing.m,
   },
   consentCard: {
     minHeight: 84,

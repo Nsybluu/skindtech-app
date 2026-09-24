@@ -25,11 +25,11 @@ export function StateCard({ loading = false, icon, title, body, actionLabel, onA
       accessibilityLiveRegion="polite"
       style={[styles.card, style]}>
       {loading ? <ActivityIndicator color={Colors.brand.primary} /> : icon}
-      <AppText variant="titleSmall" align="center">
+      <AppText variant="cardTitle" align="center">
         {title}
       </AppText>
       {body ? (
-        <AppText variant="caption" color={Colors.text.secondary} align="center">
+        <AppText variant="bodySmall" color={Colors.text.secondary} align="center">
           {body}
         </AppText>
       ) : null}

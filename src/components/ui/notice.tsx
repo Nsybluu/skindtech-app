@@ -3,7 +3,6 @@ import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { Alpha, Colors } from '@/constants/colors';
 import { Radius, Spacing } from '@/constants/spacing';
-import type { TextVariant } from '@/constants/typography';
 
 import { AppText } from './app-text';
 
@@ -14,8 +13,6 @@ type NoticeProps = {
   message: string;
   title?: string;
   tone?: NoticeTone;
-  messageVariant?: TextVariant;
-  titleVariant?: TextVariant;
   /** Title color; Figma uses ink for informational and rose for warnings. */
   titleColor?: string;
   style?: StyleProp<ViewStyle>;
@@ -27,7 +24,8 @@ const TONE_BACKGROUND: Record<NoticeTone, string> = {
 };
 
 /**
- * Tinted info row (icon + text) used for disclaimers and hints.
+ * Tinted info row (icon + text) used for disclaimers and hints: an optional `label` title over a
+ * `caption` message. Every notice reads the same, so the sizes are not configurable.
  * Padding / radius / min height are passed via `style` to match each Figma instance.
  */
 export function Notice({
@@ -35,8 +33,6 @@ export function Notice({
   message,
   title,
   tone = 'rose',
-  messageVariant = 'caption',
-  titleVariant = 'caption',
   titleColor = Colors.brand.primary,
   style,
 }: NoticeProps) {
@@ -45,11 +41,11 @@ export function Notice({
       {icon}
       <View style={styles.copy}>
         {title ? (
-          <AppText variant={titleVariant} weight="semibold" color={titleColor}>
+          <AppText variant="label" color={titleColor}>
             {title}
           </AppText>
         ) : null}
-        <AppText variant={messageVariant} color={Colors.text.secondary}>
+        <AppText variant="caption" color={Colors.text.secondary}>
           {message}
         </AppText>
       </View>

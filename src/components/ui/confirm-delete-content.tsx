@@ -45,10 +45,10 @@ export function ConfirmDeleteContent({
           <AppIcon icon={TrashIcon} size={20} color={Colors.danger.text} />
         </IconContainer>
         <View style={styles.introCopy}>
-          <AppText variant="sheetTitle" accessibilityRole="header">
+          <AppText variant="headline" accessibilityRole="header">
             {title}
           </AppText>
-          <AppText variant="caption" color={Colors.text.secondary}>
+          <AppText variant="body" color={Colors.text.secondary}>
             {message}
           </AppText>
         </View>
@@ -56,7 +56,7 @@ export function ConfirmDeleteContent({
 
       {error ? (
         <AppText
-          variant="caption"
+          variant="bodySmall"
           color={Colors.danger.text}
           accessibilityRole="alert"
           accessibilityLiveRegion="polite">
@@ -70,7 +70,6 @@ export function ConfirmDeleteContent({
           label={t.common.cancel}
           onPress={onCancel}
           disabled={busy}
-          textVariant="button"
           style={styles.secondary}
         />
         <AppButton
@@ -94,7 +93,7 @@ const styles = StyleSheet.create({
   },
   introCopy: {
     flex: 1,
-    gap: Spacing.xxs,
+    gap: Spacing.xs,
   },
   actions: {
     flexDirection: 'row',

@@ -56,7 +56,7 @@ export default function SignUpScreen() {
         <AppText variant="authTitle" accessibilityRole="header">
           {t.signUp.title}
         </AppText>
-        <AppText variant="subtitle" color={Colors.text.secondary}>
+        <AppText variant="bodyLarge" color={Colors.text.secondary}>
           {t.signUp.subtitle}
         </AppText>
       </View>

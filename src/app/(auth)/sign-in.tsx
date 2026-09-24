@@ -49,7 +49,7 @@ export default function SignInScreen() {
         <AppText variant="authTitle" accessibilityRole="header">
           {t.signIn.title}
         </AppText>
-        <AppText variant="subtitle" color={Colors.text.secondary}>
+        <AppText variant="bodyLarge" color={Colors.text.secondary}>
           {t.signIn.subtitle}
         </AppText>
       </View>

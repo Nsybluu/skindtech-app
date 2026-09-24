@@ -5,7 +5,7 @@ import { AppIcon } from '@/components/ui/app-icon';
 import { EyeIcon, EyeOffIcon } from '@/components/ui/icons';
 import { Colors } from '@/constants/colors';
 import { Layout, Radius, Spacing } from '@/constants/spacing';
-import { FontFamily } from '@/constants/typography';
+import { inputTextStyle, MAX_FONT_SIZE_MULTIPLIER } from '@/constants/typography';
 import { useI18n } from '@/i18n/i18n-provider';
 
 import { AppText } from './app-text';
@@ -32,6 +32,7 @@ export function AppInput({ label, secure = false, onFocus, onBlur, ...inputProps
           placeholderTextColor={Colors.text.muted}
           selectionColor={Colors.brand.primary}
           secureTextEntry={hidden}
+          maxFontSizeMultiplier={MAX_FONT_SIZE_MULTIPLIER}
           autoCapitalize="none"
           autoCorrect={false}
           style={styles.input}
@@ -87,8 +88,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     height: '100%',
-    fontFamily: FontFamily.regular,
-    fontSize: 16,
+    ...inputTextStyle('bodyLarge'),
     color: Colors.text.primary,
   },
   pressed: {

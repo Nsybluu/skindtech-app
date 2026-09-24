@@ -41,7 +41,7 @@ export default function AnalysisFailedScreen() {
         <AppIcon icon={InfoIcon} size={24} />
       </View>
 
-      <AppText variant="cardHeadline" color={Colors.error.title} align="center">
+      <AppText variant="headline" color={Colors.error.title} align="center">
         {t.analysisFailed.heading}
       </AppText>
       <AppText variant="body" color={Colors.error.body} align="center">
@@ -49,12 +49,12 @@ export default function AnalysisFailedScreen() {
       </AppText>
 
       <View style={styles.card}>
-        <AppText variant="bodyLarge" weight="semibold" color={Colors.error.title}>
+        <AppText variant="cardTitle" color={Colors.error.title}>
           {t.analysisFailed.whatYouCanDo}
         </AppText>
-        <View>
+        <View style={styles.tips}>
           {t.analysisFailed.tips.map((tip) => (
-            <AppText key={tip} variant="listStep" color={Colors.error.text}>
+            <AppText key={tip} variant="bodySmall" color={Colors.error.text}>
               {`•  ${tip}`}
             </AppText>
           ))}
@@ -63,7 +63,7 @@ export default function AnalysisFailedScreen() {
 
       <View style={styles.notice}>
         <AppIcon icon={InfoIcon} size={18} />
-        <AppText variant="bodySmall" color={Colors.error.text} style={styles.noticeText}>
+        <AppText variant="caption" color={Colors.error.text} style={styles.noticeText}>
           {t.analysisFailed.notSaved}
         </AppText>
       </View>
@@ -111,6 +111,9 @@ const styles = StyleSheet.create({
   },
   noticeText: {
     flex: 1,
+  },
+  tips: {
+    gap: Spacing.xs,
   },
   secondary: {
     width: 104,

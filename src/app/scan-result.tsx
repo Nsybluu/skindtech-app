@@ -142,7 +142,6 @@ export default function ScanResultScreen() {
               ? t.result.clearDisclaimer
               : t.result.disclaimer
         }
-        messageVariant="caption"
         style={styles.notice}
       />
       <ScanActionsSheet

@@ -25,7 +25,7 @@ export function CameraPlaceholder({ canAskAgain, onAllow, onOpenSettings }: Came
         <AppIcon icon={CameraIcon} size={28} color={Colors.text.onBrand} />
       </View>
       <View style={styles.text}>
-        <AppText variant="title" color={Colors.text.onBrand} align="center" accessibilityRole="header">
+        <AppText variant="cardTitle" color={Colors.text.onBrand} align="center" accessibilityRole="header">
           {t.scan.cameraOffTitle}
         </AppText>
         <AppText variant="caption" color={Colors.text.onDarkMuted} align="center">

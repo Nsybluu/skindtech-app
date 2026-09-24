@@ -11,6 +11,7 @@ import { AppIcon } from '@/components/ui/app-icon';
 import { AppText } from '@/components/ui/app-text';
 import { FaceSlightlySmilingIcon, GlobeIcon, InfoIcon, LogOutIcon, RotateCcwClockIcon, ShieldCheckIcon } from '@/components/ui/icons';
 import { ListGroup } from '@/components/ui/list-group';
+import { Section } from '@/components/ui/section';
 import { ScreenBackground } from '@/components/ui/screen-background';
 import { APP_VERSION } from '@/constants/app';
 import { Alpha, Colors } from '@/constants/colors';
@@ -54,10 +55,7 @@ export default function AccountScreen() {
         <View style={styles.sheet}>
           <View style={styles.sheetContent}>
             <View style={styles.sections}>
-              <View style={styles.section}>
-                <AppText variant="titleSmall" accessibilityRole="header">
-                  {t.profile.skinAndResults}
-                </AppText>
+              <Section title={t.profile.skinAndResults}>
                 <ListGroup
                   backgroundColor="rgba(255, 249, 247, 0.92)"
                   borderColor={Alpha.rose(0.22)}
@@ -81,12 +79,9 @@ export default function AccountScreen() {
                     onPress={() => router.push('/scan-history')}
                   />
                 </ListGroup>
-              </View>
+              </Section>
 
-              <View style={styles.section}>
-                <AppText variant="titleSmall" accessibilityRole="header">
-                  {t.profile.settingsAndInformation}
-                </AppText>
+              <Section title={t.profile.settingsAndInformation}>
                 <ListGroup backgroundColor={Alpha.white(0.72)} borderColor={Alpha.taupe(0.25)}>
                   <MenuRow
                     icon={<AppIcon icon={GlobeIcon} size={16} />}
@@ -105,7 +100,7 @@ export default function AccountScreen() {
                     onPress={() => router.push('/about')}
                   />
                 </ListGroup>
-              </View>
+              </Section>
             </View>
 
             <View style={styles.accountActions}>
@@ -158,9 +153,6 @@ const styles = StyleSheet.create({
   },
   sections: {
     gap: Spacing.l,
-  },
-  section: {
-    gap: Spacing.m,
   },
   accountActions: {
     gap: Spacing.m,

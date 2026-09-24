@@ -41,16 +41,16 @@ function NoPhotoCard({ result }: { result: ScanResult }) {
   return (
     <View style={styles.card}>
       <View style={styles.header}>
-        <AppText variant="titleSmall" accessibilityRole="header">
+        <AppText variant="cardTitle" accessibilityRole="header">
           {count > 0 ? t.result.detectedAreas : t.result.reviewedImage}
         </AppText>
       </View>
       <View style={[styles.imageBox, styles.imageBoxPlaceholder, styles.noPhoto]}>
         <AppIcon icon={ImageOffIcon} size={26} color={Colors.text.onBrand} />
-        <AppText variant="caption" weight="semibold" color={Colors.text.onBrand} align="center">
+        <AppText variant="label" color={Colors.text.onBrand} align="center">
           {t.result.photoUnavailableTitle}
         </AppText>
-        <AppText variant="footnote" color={Alpha.white(0.8)} align="center">
+        <AppText variant="caption" color={Colors.text.onDarkMuted} align="center">
           {t.result.photoUnavailableBody}
         </AppText>
       </View>
@@ -77,8 +77,8 @@ function PhotoCard({
   const [loadedAspect, setLoadedAspect] = useState<number | null>(null);
 
   const options: SegmentOption<ImageMode>[] = [
-    { value: 'original', label: t.result.original, weight: 'regular', width: 57 },
-    { value: 'detected', label: t.result.detected, weight: 'semibold', width: 65 },
+    { value: 'original', label: t.result.original },
+    { value: 'detected', label: t.result.detected },
   ];
 
   const onLayout = (event: LayoutChangeEvent) => {
@@ -107,7 +107,7 @@ function PhotoCard({
   return (
     <View style={styles.card}>
       <View style={styles.header}>
-        <AppText variant="titleSmall" accessibilityRole="header">
+        <AppText variant="cardTitle" accessibilityRole="header">
           {hasDetections ? t.result.detectedAreas : t.result.reviewedImage}
         </AppText>
         <SegmentedControl options={options} value={mode} onChange={setMode} />
@@ -139,7 +139,7 @@ function PhotoCard({
             {categories.map((category) => (
               <View key={category} style={styles.legendItem}>
                 <LegendDot category={category} outlined />
-                <AppText variant="footnote" color={Colors.text.onBrand} numberOfLines={1}>
+                <AppText variant="caption" color={Colors.text.onBrand} numberOfLines={1}>
                   {t.result.legend[category]}
                 </AppText>
               </View>
@@ -153,8 +153,8 @@ function PhotoCard({
 
 const styles = StyleSheet.create({
   card: {
-    gap: Spacing.s,
-    padding: Spacing.m,
+    gap: Spacing.m,
+    padding: Spacing.l,
     borderRadius: Radius.l,
     borderWidth: 1,
     borderColor: Colors.border.subtle,

@@ -55,14 +55,14 @@ export function DeleteAccountSheet({ visible, busy, error, onSubmit, onClose }: 
       bottomPadding={Spacing.l}
       style={styles.sheet}>
       <View style={styles.intro}>
-        <IconContainer size={40} radius={20} backgroundColor={Alpha.white(0.7)}>
-          <AppIcon icon={UserRoundMinusIcon} size={20} />
+        <IconContainer size={40} radius={20} backgroundColor={Colors.danger.surface}>
+          <AppIcon icon={UserRoundMinusIcon} size={20} color={Colors.danger.text} />
         </IconContainer>
         <View style={styles.introCopy}>
-          <AppText variant="sheetTitle" accessibilityRole="header">
+          <AppText variant="headline" accessibilityRole="header">
             {t.privacy.passwordSheet.title}
           </AppText>
-          <AppText variant="caption" color={Colors.text.secondary}>
+          <AppText variant="body" color={Colors.text.secondary}>
             {t.privacy.passwordSheet.body}
           </AppText>
         </View>
@@ -82,8 +82,8 @@ export function DeleteAccountSheet({ visible, busy, error, onSubmit, onClose }: 
 
       {error ? (
         <AppText
-          variant="caption"
-          color={Colors.brand.primary}
+          variant="bodySmall"
+          color={Colors.danger.text}
           accessibilityRole="alert"
           accessibilityLiveRegion="polite">
           {error}
@@ -96,15 +96,13 @@ export function DeleteAccountSheet({ visible, busy, error, onSubmit, onClose }: 
           label={t.common.cancel}
           onPress={close}
           disabled={busy}
-          textVariant="button"
           style={styles.secondary}
         />
         <AppButton
-          variant="solid"
+          variant="destructive"
           label={busy ? t.privacy.passwordSheet.deleting : t.privacy.passwordSheet.confirm}
           onPress={submit}
           disabled={busy || password === ''}
-          textVariant="button"
           style={styles.primary}
         />
       </View>
@@ -118,13 +116,13 @@ const styles = StyleSheet.create({
   },
   intro: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     gap: Spacing.m,
     paddingVertical: Spacing.xs,
   },
   introCopy: {
     flex: 1,
-    gap: Spacing.xxs,
+    gap: Spacing.xs,
   },
   actions: {
     flexDirection: 'row',

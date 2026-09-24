@@ -6,7 +6,6 @@ import { AppIcon } from '@/components/ui/app-icon';
 import { ChevronLeftIcon } from '@/components/ui/icons';
 import { Colors } from '@/constants/colors';
 import { Layout, Spacing } from '@/constants/spacing';
-import { TextVariants, THAI_MIN_LINE_HEIGHT_RATIO, type TextVariant } from '@/constants/typography';
 import { useI18n } from '@/i18n/i18n-provider';
 
 import { AppText } from './app-text';
@@ -15,7 +14,6 @@ import { IconButton } from './icon-button';
 
 type ScreenHeaderProps = {
   title: string;
-  titleVariant?: Extract<TextVariant, 'screenTitle' | 'screenTitleSmall'>;
   /** Defaults to going back in the navigation history. */
   onBack?: () => void;
   /** Replaces the chevron with a text button (e.g. "Cancel" while a mode is active). */
@@ -36,17 +34,12 @@ export function goBackOr(fallback: () => void) {
 /** Back button + bold title row used by every in-app screen. */
 export function ScreenHeader({
   title,
-  titleVariant = 'screenTitle',
   onBack,
   backLabel,
   accessory,
   gap = Spacing.s,
 }: ScreenHeaderProps) {
   const { t } = useI18n();
-  // The tight Latin line height pushes Noto Sans Thai glyphs about 4pt above the
-  // back button's centre. Using the same roomy line height as Thai for every
-  // language keeps the title centred on the button in both.
-  const lineHeight = Math.ceil(TextVariants[titleVariant].fontSize * THAI_MIN_LINE_HEIGHT_RATIO);
 
   return (
     <View style={[styles.row, { gap }]}>
@@ -59,13 +52,12 @@ export function ScreenHeader({
           <AppIcon icon={ChevronLeftIcon} size={18} color={Colors.text.muted} strokeWidth={2} />
         </IconButton>
       )}
+      {/* Every screen title is the same size. A long one wraps to a second line; it is never shrunk. */}
       <AppText
-        variant={titleVariant}
-        numberOfLines={1}
-        adjustsFontSizeToFit
-        minimumFontScale={0.8}
+        variant="screenTitle"
+        numberOfLines={2}
         accessibilityRole="header"
-        style={[styles.title, { lineHeight }]}>
+        style={styles.title}>
         {title}
       </AppText>
       {accessory}

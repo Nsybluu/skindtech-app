@@ -59,12 +59,7 @@ export function MenuRow({
       </View>
 
       {value ? (
-        <AppText
-          variant="label"
-          weight="regular"
-          color={Colors.text.muted}
-          numberOfLines={1}
-          style={styles.value}>
+        <AppText variant="bodySmall" color={Colors.text.muted} numberOfLines={1} style={styles.value}>
           {value}
         </AppText>
       ) : null}
