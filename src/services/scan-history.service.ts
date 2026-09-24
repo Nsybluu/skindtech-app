@@ -17,6 +17,8 @@ import { ApiError } from './api-error';
 
 export const HISTORY_PAGE_SIZE = 20;
 const MAX_PAGE_SIZE = 50;
+/** Most scans one `DELETE /scans/selection` request may name (the backend rejects more). */
+export const MAX_DELETE_SELECTION = 50;
 
 export type ScanPage = {
   scans: ScanResult[];
@@ -122,6 +124,23 @@ export const scanHistoryService = {
     // An answer about another scan than the one asked for is not an answer.
     if (scan.id.toLowerCase() !== id.toLowerCase()) throw invalid();
     return scan;
+  },
+
+  /**
+   * Deletes the named scans (and their consented training images) on the backend, all or
+   * nothing: one unknown or foreign id makes the whole request fail with `SCAN_NOT_FOUND`.
+   * Resolves only after the backend confirmed with 204.
+   */
+  async deleteScans(ids: string[]): Promise<void> {
+    const unique = [...new Set(ids)];
+    if (unique.length === 0 || unique.length > MAX_DELETE_SELECTION) {
+      // The backend would refuse it too; do not even send it.
+      throw new ApiError(400, 'VALIDATION_ERROR');
+    }
+    await apiRequest<void>('/scans/selection', {
+      method: 'DELETE',
+      body: JSON.stringify({ ids: unique }),
+    });
   },
 
   /**

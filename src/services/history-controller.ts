@@ -1,5 +1,10 @@
 import type { ScanResult } from '@/types/scan';
 
+import { apiErrorKind } from './api-error-kind';
+
+/** Most scans that can be picked one by one (the backend accepts 50 ids per request). */
+export const MAX_SELECTION = 50;
+
 /**
  * `idle`: signed out, `loading`: first page is being loaded after sign-in or restore,
  * `ready`: the backend answered (the list may legitimately be empty),
@@ -17,12 +22,23 @@ export type HistorySnapshot = {
   nextCursor: string | null;
   /** The last refresh or "load more" failed; the list on screen is still valid. */
   loadError: boolean;
+  /** A deletion (one scan, several, or everything) is running on the backend. */
   deleting: boolean;
+  /** "Manage" mode: cards can be picked for deletion. */
+  selecting: boolean;
+  /** The scans picked one by one (empty while `allSelected`). At most `MAX_SELECTION`. */
+  selectedIds: string[];
+  /**
+   * "Select all": the WHOLE history of the account, loaded or not. It is one atomic choice,
+   * so single cards are locked until it is cleared.
+   */
+  allSelected: boolean;
 };
 
 export type HistoryApi = {
   list: (options: { cursor: string | null }) => Promise<{ scans: ScanResult[]; nextCursor: string | null }>;
   get: (id: string) => Promise<ScanResult>;
+  deleteSelected: (ids: string[]) => Promise<void>;
   deleteAll: () => Promise<void>;
 };
 
@@ -47,7 +63,9 @@ function uniqueById(scans: ScanResult[]): ScanResult[] {
  * - local data is cleared by deletion only after the backend confirmed it, and a failure keeps everything;
  * - answers that belong to an earlier session, or were superseded by a refresh or a deletion, are dropped;
  * - the first load is single-flight, "load more" cannot be started twice, ids never repeat;
- * - a scan made in this session is prepended at once and survives loads that started before it.
+ * - a scan made in this session is prepended at once and survives loads that started before it;
+ * - deleting one, several or all scans is never optimistic: scans, opened details and the
+ *   selection are removed only after the backend confirmed (204), and a failure keeps them all.
  */
 export class HistoryController {
   private scans: ScanResult[] = [];
@@ -57,6 +75,9 @@ export class HistoryController {
   private nextCursor: string | null = null;
   private loadError = false;
   private deleting = false;
+  private selecting = false;
+  private selectedIds: string[] = [];
+  private allSelected = false;
 
   /** Bumped by `reset()` and by a confirmed deletion: everything in flight then belongs to the past. */
   private session = 0;
@@ -68,6 +89,8 @@ export class HistoryController {
   /** Scans opened by id that are older than the loaded pages (deep link, or a page not loaded yet). */
   private details = new Map<string, ScanResult>();
   private detailLoads = new Map<string, Promise<ScanResult>>();
+  /** Ids deleted in this session (lower case): a detail request that was already running must not bring one back. */
+  private removed = new Set<string>();
 
   constructor(
     private readonly api: HistoryApi,
@@ -90,10 +113,12 @@ export class HistoryController {
     this.nextCursor = null;
     this.loadError = false;
     this.deleting = false;
+    this.clearSelectionState();
     this.loading = null;
     this.addedSinceLoad = [];
     this.details.clear();
     this.detailLoads.clear();
+    this.removed.clear();
     this.publish();
   }
 
@@ -217,7 +242,9 @@ export class HistoryController {
     const run = (async () => {
       const scan = await this.api.get(id);
       // Signed out, or the history was deleted, while this was loading: do not resurrect it.
-      if (session !== this.session) throw new Error('The history changed while the scan was loading');
+      if (session !== this.session || this.removed.has(scan.id.toLowerCase())) {
+        throw new Error('The history changed while the scan was loading');
+      }
       this.details.set(scan.id.toLowerCase(), scan);
       return scan;
     })();
@@ -264,12 +291,122 @@ export class HistoryController {
     this.nextCursor = null;
     this.loadError = false;
     this.deleting = false;
+    this.clearSelectionState();
     this.loading = null;
     this.addedSinceLoad = [];
     this.details.clear();
     this.detailLoads.clear();
+    this.removed.clear();
     this.publish();
     return true;
+  }
+
+  /**
+   * Deletes the named scans on the backend (all or nothing) and, only after it confirmed,
+   * removes them from the list, the opened details and the selection, and leaves "Manage" mode.
+   * Resolves `true` when deleted, `false` when a deletion is already running or the call does not
+   * fit the state (nothing named, more than `MAX_SELECTION`, history not loaded, session ended).
+   * Rejects when the backend refused: nothing local changes then, the selection is kept.
+   */
+  async deleteSelected(ids: string[]): Promise<boolean> {
+    const unique = [...new Set(ids)];
+    if (unique.length === 0 || unique.length > MAX_SELECTION) return false;
+    if (this.deleting || this.status !== 'ready') return false;
+
+    const session = this.session;
+    this.deleting = true;
+    this.publish();
+
+    try {
+      await this.api.deleteSelected(unique);
+    } catch (error) {
+      if (session === this.session) {
+        this.deleting = false;
+        this.publish();
+        // Some of the scans are already gone (deleted elsewhere): the list on screen is out of date.
+        if (apiErrorKind(error) === 'not-found') void this.refresh();
+      }
+      throw error;
+    }
+
+    if (session !== this.session) return false;
+
+    // Confirmed. A page that was loading was asked before this and may still list these scans.
+    this.generation += 1;
+    this.refreshing = false;
+    this.loadingMore = false;
+    const gone = new Set(unique.map((id) => id.toLowerCase()));
+    for (const id of gone) {
+      this.removed.add(id);
+      this.details.delete(id);
+      this.detailLoads.delete(id);
+    }
+    this.scans = this.scans.filter((scan) => !gone.has(scan.id.toLowerCase()));
+    this.addedSinceLoad = this.addedSinceLoad.filter((scan) => !gone.has(scan.id.toLowerCase()));
+    this.clearSelectionState();
+    this.deleting = false;
+    this.publish();
+
+    // Everything that was loaded is gone but older scans remain on the backend: keep going, so
+    // the history does not look empty. The cursor stays valid after its own scan was deleted.
+    if (this.scans.length === 0 && this.nextCursor !== null) void this.loadMore();
+    return true;
+  }
+
+  /** Enters "Manage" mode. Only for a loaded, non-empty history and while nothing is being deleted. */
+  beginSelection(): void {
+    if (this.status !== 'ready' || this.deleting || this.scans.length === 0) return;
+    this.selecting = true;
+    this.selectedIds = [];
+    this.allSelected = false;
+    this.publish();
+  }
+
+  /** Leaves "Manage" mode and forgets the selection. Ignored while a deletion is running. */
+  endSelection(): void {
+    if (this.deleting || (!this.selecting && this.selectedIds.length === 0 && !this.allSelected)) return;
+    this.clearSelectionState();
+    this.publish();
+  }
+
+  /**
+   * Picks or unpicks one loaded scan. Refused (`false`) outside "Manage" mode, while everything
+   * is selected, for an unknown scan, or past `MAX_SELECTION` picked scans.
+   */
+  toggleSelected(id: string): boolean {
+    if (!this.selecting || this.deleting || this.allSelected) return false;
+    if (!this.scans.some((scan) => scan.id === id)) return false;
+
+    if (this.selectedIds.includes(id)) {
+      this.selectedIds = this.selectedIds.filter((selected) => selected !== id);
+    } else {
+      if (this.selectedIds.length >= MAX_SELECTION) return false;
+      this.selectedIds = [...this.selectedIds, id];
+    }
+    this.publish();
+    return true;
+  }
+
+  /** "Select all": the whole history of the account, including pages that are not loaded yet. */
+  selectAll(): void {
+    if (!this.selecting || this.deleting) return;
+    this.allSelected = true;
+    this.selectedIds = [];
+    this.publish();
+  }
+
+  /** "Deselect all": stays in "Manage" mode with nothing picked. */
+  clearSelection(): void {
+    if (!this.selecting || this.deleting) return;
+    this.allSelected = false;
+    this.selectedIds = [];
+    this.publish();
+  }
+
+  private clearSelectionState(): void {
+    this.selecting = false;
+    this.selectedIds = [];
+    this.allSelected = false;
   }
 
   private isCurrent(session: number, generation: number): boolean {
@@ -292,6 +429,10 @@ export class HistoryController {
     this.nextCursor = page.nextCursor;
     this.status = 'ready';
     this.loadError = false;
+    // Picked scans that the fresh list no longer contains (deleted elsewhere) cannot stay picked.
+    const present = new Set(this.scans.map((scan) => scan.id));
+    this.selectedIds = this.selectedIds.filter((id) => present.has(id));
+    if (this.scans.length === 0 && this.nextCursor === null) this.clearSelectionState();
     this.publish();
   }
 
@@ -304,6 +445,9 @@ export class HistoryController {
       nextCursor: this.nextCursor,
       loadError: this.loadError,
       deleting: this.deleting,
+      selecting: this.selecting,
+      selectedIds: this.selectedIds,
+      allSelected: this.allSelected,
     });
   }
 }

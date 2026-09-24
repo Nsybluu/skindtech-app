@@ -40,6 +40,18 @@ type HistoryValue = Omit<HistorySnapshot, 'nextCursor'> & {
    * deletion is already running, rejects (keeping the history) when the backend refused.
    */
   deleteAll: () => Promise<boolean>;
+  /**
+   * Deletes the named scans (up to 50, all or nothing) on the backend, then removes them locally
+   * and leaves "Manage" mode. Resolves `false` when nothing was done (a deletion is already
+   * running), rejects (keeping every scan and the selection) when the backend refused.
+   */
+  deleteSelected: (ids: string[]) => Promise<boolean>;
+  /** "Manage" mode of the history screen (selection lives here so logout and deletion clear it). */
+  beginSelection: () => void;
+  endSelection: () => void;
+  toggleSelected: (id: string) => boolean;
+  selectAll: () => void;
+  clearSelection: () => void;
 };
 
 type UserDataValue = {
@@ -125,6 +137,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     nextCursor: null,
     loadError: false,
     deleting: false,
+    selecting: false,
+    selectedIds: [],
+    allSelected: false,
   });
   const [historyController] = useState(
     () =>
@@ -132,6 +147,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         {
           list: ({ cursor }) => scanHistoryService.listScans({ cursor }),
           get: (id) => scanHistoryService.getScan(id),
+          deleteSelected: (ids) => scanHistoryService.deleteScans(ids),
           deleteAll: () => scanHistoryService.deleteHistory(),
         },
         setHistoryState,
@@ -227,6 +243,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const findScan = useCallback((id: string) => historyController.find(id), [historyController]);
   const fetchScan = useCallback((id: string) => historyController.loadDetail(id), [historyController]);
   const deleteHistory = useCallback(() => historyController.deleteAll(), [historyController]);
+  const deleteSelectedScans = useCallback(
+    (ids: string[]) => historyController.deleteSelected(ids),
+    [historyController],
+  );
+  const beginSelection = useCallback(() => historyController.beginSelection(), [historyController]);
+  const endSelection = useCallback(() => historyController.endSelection(), [historyController]);
+  const toggleSelected = useCallback((id: string) => historyController.toggleSelected(id), [historyController]);
+  const selectAll = useCallback(() => historyController.selectAll(), [historyController]);
+  const clearSelection = useCallback(() => historyController.clearSelection(), [historyController]);
 
   return (
     <SessionContext.Provider value={{ isSessionReady, isSignedIn, signIn, signOut }}>
@@ -248,6 +273,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
             loadingMore: historyState.loadingMore,
             loadError: historyState.loadError,
             deleting: historyState.deleting,
+            selecting: historyState.selecting,
+            selectedIds: historyState.selectedIds,
+            allSelected: historyState.allSelected,
             hasMore: historyState.nextCursor !== null,
             refresh: refreshHistory,
             loadMore: loadMoreHistory,
@@ -255,6 +283,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
             find: findScan,
             fetch: fetchScan,
             deleteAll: deleteHistory,
+            deleteSelected: deleteSelectedScans,
+            beginSelection,
+            endSelection,
+            toggleSelected,
+            selectAll,
+            clearSelection,
           },
           aiImprovementConsent: consent.value,
           isSavingConsent: consent.saving,

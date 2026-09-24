@@ -15,12 +15,14 @@ export { default as BotMessageSquareIcon } from 'lucide-react-native/icons/bot-m
 export { default as BubblesIcon } from 'lucide-react-native/icons/bubbles';
 export { default as CameraIcon } from 'lucide-react-native/icons/camera';
 export { default as ChartNoAxesColumnIcon } from 'lucide-react-native/icons/chart-no-axes-column';
+export { default as CheckIcon } from 'lucide-react-native/icons/check';
 export { default as ChevronLeftIcon } from 'lucide-react-native/icons/chevron-left';
 export { default as ChevronRightIcon } from 'lucide-react-native/icons/chevron-right';
 export { default as CircleDotIcon } from 'lucide-react-native/icons/circle-dot';
 export { default as CircleIcon } from 'lucide-react-native/icons/circle';
 export { default as ClipboardCheckIcon } from 'lucide-react-native/icons/clipboard-check';
 export { default as DropletIcon } from 'lucide-react-native/icons/droplet';
+export { default as EllipsisIcon } from 'lucide-react-native/icons/ellipsis';
 export { default as EyeIcon } from 'lucide-react-native/icons/eye';
 export { default as EyeOffIcon } from 'lucide-react-native/icons/eye-off';
 export { default as FaceSlightlySmilingIcon } from 'lucide-react-native/icons/face-slightly-smiling';

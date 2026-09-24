@@ -268,8 +268,8 @@ export const th: Translations = {
     skinProfileUsed: 'โปรไฟล์ผิวที่ใช้',
     disclaimer: 'เป็นการวิเคราะห์เบื้องต้นด้วย AI เท่านั้น ไม่ใช่การวินิจฉัยทางการแพทย์',
     clearDisclaimer: 'ไม่พบสิวที่มองเห็นได้ในภาพนี้ ผลลัพธ์เป็นข้อมูลเบื้องต้นเท่านั้น',
-    careRecommendations: 'คำแนะนำการดูแลผิว',
-    basicCareTips: 'เคล็ดลับดูแลผิวเบื้องต้น',
+    moreOptions: 'ตัวเลือกเพิ่มเติม',
+    deleteThisScan: 'ลบผลสแกนรายการนี้',
     notFound: 'ไม่พบผลการสแกนนี้',
     loadingResult: 'กำลังโหลดผลการสแกนนี้…',
     loadFailedTitle: 'โหลดผลการสแกนไม่สำเร็จ',
@@ -310,12 +310,7 @@ export const th: Translations = {
         : categories.map((category) => th.result.category[category]).join(' · '),
   },
   care: {
-    title: 'คำแนะนำการดูแลผิว',
-    basedOnResult: 'อ้างอิงจากผลสแกนของคุณ',
-    summary: (amount, severity) =>
-      amount === 'none'
-        ? 'ไม่พบสิวที่มองเห็นได้'
-        : `ปริมาณ${th.result.amountValue[amount]} · ความรุนแรง${th.result.severityValue[severity]}`,
+    sectionTitle: 'วิธีดูแลเบื้องต้น',
     introBody: 'ดูแลผิวอย่างอ่อนโยน และค่อย ๆ ปรับเปลี่ยนผลิตภัณฑ์ทีละอย่าง',
     introBodyClear: 'ดูแลผิวด้วยขั้นตอนง่าย ๆ อย่างอ่อนโยน เพื่อรักษาสภาพผิวให้ดีต่อเนื่อง',
     morningRoutine: 'ขั้นตอนดูแลผิวตอนเช้า',
@@ -335,7 +330,6 @@ export const th: Translations = {
     habitsBody: 'หลีกเลี่ยงการแกะสิวและการขัดผิวแรง ๆ หมั่นทำความสะอาดปลอกหมอนและโทรศัพท์',
     professionalTitle: 'เมื่อใดควรพบผู้เชี่ยวชาญ',
     professionalBody: 'หากสิวทำให้เจ็บ อาการแย่ลง หรือเป็นต่อเนื่อง ควรปรึกษาแพทย์ผิวหนัง',
-    backToHome: 'กลับหน้าแรก',
   },
   history: {
     title: 'ประวัติการสแกน',
@@ -355,6 +349,27 @@ export const th: Translations = {
     loadingMore: 'กำลังโหลด…',
     updateFailed: 'อัปเดตประวัติไม่สำเร็จ แสดงผลการสแกนที่โหลดไว้แล้ว',
     filterNote: 'ตัวกรองใช้กับผลการสแกนที่โหลดแล้วเท่านั้น',
+    manage: 'จัดการ',
+    selectedTitle: (count: number): string => `เลือกแล้ว ${count} รายการ`,
+    selectedAllTitle: 'เลือกประวัติทั้งหมดแล้ว',
+    selectAll: 'เลือกทั้งหมด',
+    deselectAll: 'ยกเลิกทั้งหมด',
+    deleteSelected: 'ลบที่เลือก',
+    deleteCount: (count: number): string => `ลบ ${count} รายการ`,
+    deleteEverything: 'ลบประวัติทั้งหมด',
+    deleting: 'กำลังลบ…',
+    selectLimit: 'เลือกทีละรายการได้ไม่เกิน 50 รายการ หากต้องการลบทั้งหมด ให้ใช้ “เลือกทั้งหมด”',
+    allSelectedHint: 'เลือกประวัติทั้งหมดไว้แล้ว กด “ยกเลิกทั้งหมด” เพื่อเลือกทีละรายการ',
+    deleteOneTitle: 'ลบผลสแกนนี้?',
+    deleteOneBody:
+      'ผลสแกนนี้และรูปที่คุณเคยอนุญาตให้เก็บไว้เพื่อพัฒนา AI จะถูกลบถาวร และไม่สามารถย้อนกลับได้',
+    deleteManyTitle: (count: number): string => `ลบผลสแกน ${count} รายการ?`,
+    deleteManyBody:
+      'ผลสแกนเหล่านี้และรูปที่คุณเคยอนุญาตให้เก็บไว้เพื่อพัฒนา AI จะถูกลบถาวร และไม่สามารถย้อนกลับได้',
+    deleteAllTitle: 'ลบประวัติทั้งหมด?',
+    deleteAllBody:
+      'ผลสแกนทั้งหมดในประวัติของคุณ และรูปที่คุณเคยอนุญาตให้เก็บไว้เพื่อพัฒนา AI จะถูกลบถาวร และไม่สามารถย้อนกลับได้',
+    deletedAnnouncement: 'ลบแล้ว',
   },
 
   dataErrors: {
@@ -362,6 +377,8 @@ export const th: Translations = {
     session: 'เซสชันหมดอายุแล้ว กรุณาเข้าสู่ระบบอีกครั้ง',
     storageUnavailable:
       'ตอนนี้ยังลบรูปภาพที่บันทึกไว้ไม่ได้ จึงยังไม่มีการลบข้อมูล กรุณาลองอีกครั้งในอีกสักครู่',
+    notFound: 'ผลสแกนบางรายการไม่มีอยู่แล้ว ระบบรีเฟรชรายการให้แล้ว',
+    historyNotReady: 'ประวัติยังโหลดไม่เสร็จ ลองอีกครั้งในอีกสักครู่',
     generic: 'เกิดข้อผิดพลาดบางอย่าง กรุณาลองอีกครั้ง',
   },
   language: {

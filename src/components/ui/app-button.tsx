@@ -17,7 +17,9 @@ export type ButtonVariant =
   /** Sign out. */
   | 'outline'
   /** White button with Google mark. */
-  | 'google';
+  | 'google'
+  /** Irreversible actions: deleting scans. */
+  | 'destructive';
 
 type AppButtonProps = {
   label: string;
@@ -72,6 +74,13 @@ const VARIANT_DEFAULTS: Record<
     textColor: Colors.text.google,
     iconGap: Spacing.l,
   },
+  destructive: {
+    height: Layout.buttonHeight,
+    radius: Radius.l,
+    textVariant: 'button',
+    textColor: Colors.text.onBrand,
+    iconGap: Spacing.s,
+  },
 };
 
 export function AppButton({
@@ -105,6 +114,8 @@ export function AppButton({
           gap: defaults.iconGap,
         },
         (pressed || disabled) && styles.pressed,
+        // A delete button that cannot be used yet must look unavailable, not merely pressed.
+        disabled && variant === 'destructive' && styles.disabledDestructive,
         style,
       ]}>
       {icon ? <View>{icon}</View> : null}
@@ -134,6 +145,9 @@ const styles = StyleSheet.create({
   pressed: {
     opacity: 0.85,
   },
+  disabledDestructive: {
+    opacity: 0.4,
+  },
 });
 
 const variantStyles = StyleSheet.create({
@@ -160,5 +174,8 @@ const variantStyles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.border.button,
     boxShadow: Shadows.google,
+  },
+  destructive: {
+    backgroundColor: Colors.danger.fill,
   },
 });

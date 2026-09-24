@@ -26,6 +26,16 @@ export default function HomeScreen() {
   const { top } = useDesignInsets();
   const startScan = useStartScan();
   const latestResult = history.scans[0];
+  // No latest result to show is not the same as "never scanned": the history may still be loading,
+  // may have failed to load, or the loaded scans were just deleted while older ones remain.
+  const latestStatus =
+    latestResult || history.status === 'idle'
+      ? null
+      : history.status === 'ready' && !history.hasMore
+        ? null
+        : history.status === 'failed' || (history.status === 'ready' && history.loadError)
+          ? 'failed'
+          : 'loading';
 
   return (
     <ScreenBackground>
@@ -64,8 +74,11 @@ export default function HomeScreen() {
               result={latestResult}
               onPress={() => router.push({ pathname: '/scan-result', params: { id: latestResult.id } })}
             />
-          ) : history.status === 'loading' || history.status === 'failed' ? (
-            <LatestResultStatus status={history.status} onRetry={() => void history.refresh()} />
+          ) : latestStatus ? (
+            <LatestResultStatus
+              status={latestStatus}
+              onRetry={() => void (history.status === 'ready' ? history.loadMore() : history.refresh())}
+            />
           ) : null}
 
           <Notice

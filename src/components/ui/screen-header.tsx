@@ -10,6 +10,7 @@ import { TextVariants, THAI_MIN_LINE_HEIGHT_RATIO, type TextVariant } from '@/co
 import { useI18n } from '@/i18n/i18n-provider';
 
 import { AppText } from './app-text';
+import { HeaderTextButton } from './header-text-button';
 import { IconButton } from './icon-button';
 
 type ScreenHeaderProps = {
@@ -17,6 +18,8 @@ type ScreenHeaderProps = {
   titleVariant?: Extract<TextVariant, 'screenTitle' | 'screenTitleSmall'>;
   /** Defaults to going back in the navigation history. */
   onBack?: () => void;
+  /** Replaces the chevron with a text button (e.g. "Cancel" while a mode is active). */
+  backLabel?: string;
   /** Right side content: an icon button or a short label. */
   accessory?: ReactNode;
   gap?: number;
@@ -35,6 +38,7 @@ export function ScreenHeader({
   title,
   titleVariant = 'screenTitle',
   onBack,
+  backLabel,
   accessory,
   gap = Spacing.s,
 }: ScreenHeaderProps) {
@@ -46,11 +50,15 @@ export function ScreenHeader({
 
   return (
     <View style={[styles.row, { gap }]}>
-      <IconButton
-        accessibilityLabel={t.common.back}
-        onPress={onBack ?? (() => goBackOr(() => router.replace('/')))}>
-        <AppIcon icon={ChevronLeftIcon} size={18} color={Colors.text.muted} strokeWidth={2} />
-      </IconButton>
+      {backLabel ? (
+        <HeaderTextButton label={backLabel} onPress={onBack ?? (() => goBackOr(() => router.replace('/')))} />
+      ) : (
+        <IconButton
+          accessibilityLabel={t.common.back}
+          onPress={onBack ?? (() => goBackOr(() => router.replace('/')))}>
+          <AppIcon icon={ChevronLeftIcon} size={18} color={Colors.text.muted} strokeWidth={2} />
+        </IconButton>
+      )}
       <AppText
         variant={titleVariant}
         numberOfLines={1}

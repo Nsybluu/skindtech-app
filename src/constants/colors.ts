@@ -101,6 +101,13 @@ export const Colors = {
     noticeSurface: '#FFF3F4',
     noticeBorder: '#F7D8DB',
   },
+  /** Irreversible actions (delete). Deliberately deeper than the brand rose so it never reads as a normal action. */
+  danger: {
+    fill: '#B3261E',
+    text: '#B3261E',
+    surface: '#FDECEA',
+    border: 'rgba(179, 38, 30, 0.28)',
+  },
   history: {
     moderate: '#FCECEC',
     mild: '#FDF2F0',

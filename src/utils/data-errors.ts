@@ -10,6 +10,8 @@ export function dataErrorMessageForKind(kind: ApiErrorKind, t: Translations): st
       return t.dataErrors.session;
     case 'storage':
       return t.dataErrors.storageUnavailable;
+    case 'not-found':
+      return t.dataErrors.notFound;
     default:
       return t.dataErrors.generic;
   }

@@ -273,8 +273,8 @@ export const en = {
     skinProfileUsed: 'Skin Profile used',
     disclaimer: 'Preliminary AI analysis only — not a medical diagnosis.',
     clearDisclaimer: 'No visible acne was detected in this image. Results are preliminary.',
-    careRecommendations: 'Care recommendations',
-    basicCareTips: 'Basic care tips',
+    moreOptions: 'More options',
+    deleteThisScan: 'Delete this scan',
     notFound: 'This scan result could not be found.',
     loadingResult: 'Loading this result…',
     loadFailedTitle: 'Couldn’t load this result',
@@ -316,12 +316,7 @@ export const en = {
     },
   },
   care: {
-    title: 'Care recommendations',
-    basedOnResult: 'Based on your result',
-    summary: (amount: AcneAmount, severity: Severity): string =>
-      amount === 'none'
-        ? 'No visible acne · No severity'
-        : `${en.result.amountValue[amount]} amount · ${en.result.severityValue[severity]} severity`,
+    sectionTitle: 'Basic care',
     introBody: 'Keep the routine gentle and introduce changes slowly.',
     introBodyClear: 'Keep a simple, gentle routine to maintain your skin.',
     morningRoutine: 'Morning routine',
@@ -341,7 +336,6 @@ export const en = {
     habitsBody: 'Avoid picking and harsh scrubs. Keep pillowcases and your phone clean.',
     professionalTitle: 'When to seek professional help',
     professionalBody: 'If acne is painful, worsening, or persistent, consult a dermatologist.',
-    backToHome: 'Back to home',
   },
   history: {
     title: 'Scan history',
@@ -361,6 +355,27 @@ export const en = {
     loadingMore: 'Loading…',
     updateFailed: 'Couldn’t update your history. Showing the scans already loaded.',
     filterNote: 'Filters apply to the scans loaded so far.',
+    manage: 'Manage',
+    selectedTitle: (count: number): string => `${count} selected`,
+    selectedAllTitle: 'All history selected',
+    selectAll: 'Select all',
+    deselectAll: 'Deselect all',
+    deleteSelected: 'Delete selected',
+    deleteCount: (count: number): string => `Delete ${count}`,
+    deleteEverything: 'Delete all history',
+    deleting: 'Deleting…',
+    selectLimit: 'You can pick up to 50 scans at a time. Use Select all to delete everything.',
+    allSelectedHint: 'All of your history is selected. Tap Deselect all to choose scans one by one.',
+    deleteOneTitle: 'Delete this scan?',
+    deleteOneBody:
+      'This scan result and any photo you allowed to be saved to improve the AI will be permanently deleted. This can’t be undone.',
+    deleteManyTitle: (count: number): string => `Delete ${count} scans?`,
+    deleteManyBody:
+      'These scan results and any photos you allowed to be saved to improve the AI will be permanently deleted. This can’t be undone.',
+    deleteAllTitle: 'Delete all history?',
+    deleteAllBody:
+      'Every scan result in your history, and any photos you allowed to be saved to improve the AI, will be permanently deleted. This can’t be undone.',
+    deletedAnnouncement: 'Deleted',
   },
 
   dataErrors: {
@@ -368,6 +383,8 @@ export const en = {
     session: 'Your session has expired. Please sign in again.',
     storageUnavailable:
       'The saved photos could not be removed right now, so nothing was deleted. Please try again in a moment.',
+    notFound: 'Some of these scans no longer exist. Your list was refreshed.',
+    historyNotReady: 'Your history is still loading. Try again in a moment.',
     generic: 'Something went wrong. Please try again.',
   },
   language: {
