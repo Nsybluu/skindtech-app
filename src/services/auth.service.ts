@@ -2,7 +2,6 @@ import * as Device from 'expo-device';
 import { Platform } from 'react-native';
 
 import type { User } from '@/types/profile';
-import type { ScanResult } from '@/types/scan';
 
 import { apiRequest } from './api';
 import {
@@ -14,12 +13,12 @@ import {
 } from './session-token.service';
 
 /**
- * What the app needs right after authentication. The Skin Profile is not part of it: the
- * provider loads it from `GET /profile/skin` once the access token is in memory.
+ * What the app needs right after authentication. The Skin Profile, AI-training consent and scan
+ * history are not part of it: the provider loads them from the backend once the access token is
+ * in memory.
  */
 export type AuthSession = {
   user: User;
-  scanHistory: ScanResult[];
 };
 
 type AuthUserPayload = {
@@ -41,12 +40,8 @@ type MeResponse = {
   data: { user: AuthUserPayload };
 };
 
-/** Scan history is hydrated in a later phase. */
 function toSession(user: AuthUserPayload): AuthSession {
-  return {
-    user: { id: user.id, name: user.displayName, email: user.email },
-    scanHistory: [],
-  };
+  return { user: { id: user.id, name: user.displayName, email: user.email } };
 }
 
 function deviceInfo() {

@@ -13,6 +13,8 @@ type ActionRowProps = {
   weight?: 'regular' | 'semibold';
   /** Standalone rows have their own card background; list rows don't. */
   standalone?: boolean;
+  /** Dims the row and ignores presses (an action that is already running). */
+  disabled?: boolean;
 };
 
 /** "Privacy policy ›" / "Delete account ›" style row. */
@@ -23,13 +25,21 @@ export function ActionRow({
   color = Colors.brand.primary,
   weight = 'regular',
   standalone = false,
+  disabled = false,
 }: ActionRowProps) {
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={label}
+      accessibilityState={{ disabled }}
+      disabled={disabled}
       onPress={onPress}
-      style={({ pressed }) => [styles.row, standalone && styles.standalone, pressed && styles.pressed]}>
+      style={({ pressed }) => [
+        styles.row,
+        standalone && styles.standalone,
+        pressed && styles.pressed,
+        disabled && styles.disabled,
+      ]}>
       {icon}
       <AppText variant="bodySmall" weight={weight} color={color} style={styles.label}>
         {label}
@@ -59,5 +69,8 @@ const styles = StyleSheet.create({
   },
   pressed: {
     opacity: 0.7,
+  },
+  disabled: {
+    opacity: 0.5,
   },
 });

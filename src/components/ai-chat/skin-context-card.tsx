@@ -12,12 +12,12 @@ import { getDetectedCategories } from '@/utils/format';
 
 /**
  * Figma "Card / Current Skin Context" — shows which data the assistant is using.
- * Reads the mock scan history and Skin Profile, so it reflects the real state.
+ * Reads the scan history and Skin Profile as loaded from the backend.
  */
 export function SkinContextCard() {
   const { t } = useI18n();
-  const { scanHistory, skinProfile } = useUserData();
-  const latestScan = scanHistory[0];
+  const { history, skinProfile } = useUserData();
+  const latestScan = history.scans[0];
 
   const scanLine = latestScan
     ? t.aiChat.contextScan(

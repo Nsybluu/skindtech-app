@@ -14,6 +14,7 @@ export const th: Translations = {
     edit: 'แก้ไข',
     view: 'ดู',
     scanAgain: 'สแกนอีกครั้ง',
+    retry: 'ลองอีกครั้ง',
     preliminary: 'เบื้องต้น',
     skinProfile: 'โปรไฟล์ผิว',
     mockupOnlyTitle: 'เวอร์ชันตัวอย่าง',
@@ -86,6 +87,9 @@ export const th: Translations = {
     tipFaceForward: 'หันหน้าตรง',
     tipNoFilters: 'ไม่ใช้ฟิลเตอร์',
     latestResult: 'ผลล่าสุด',
+    latestResultLoading: 'กำลังโหลดผลล่าสุดของคุณ…',
+    latestResultFailedTitle: 'โหลดผลล่าสุดไม่สำเร็จ',
+    latestResultFailedBody: 'ข้อมูลการสแกนของคุณยังปลอดภัย ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง',
     disclaimer: 'ผลจาก AI ใช้เพื่อคัดกรองเบื้องต้น ไม่ใช่การวินิจฉัยทางการแพทย์',
     openProfile: 'เปิดโปรไฟล์',
   },
@@ -267,6 +271,13 @@ export const th: Translations = {
     careRecommendations: 'คำแนะนำการดูแลผิว',
     basicCareTips: 'เคล็ดลับดูแลผิวเบื้องต้น',
     notFound: 'ไม่พบผลการสแกนนี้',
+    loadingResult: 'กำลังโหลดผลการสแกนนี้…',
+    loadFailedTitle: 'โหลดผลการสแกนไม่สำเร็จ',
+    photoUnavailableTitle: 'ไม่ได้บันทึกรูปภาพไว้',
+    photoUnavailableBody:
+      'ระบบไม่ได้เก็บรูปภาพไว้กับประวัติการสแกน สแกนใหม่เพื่อดูตำแหน่งที่ตรวจพบบนรูปภาพใหม่',
+    detectedAreaCount: (count: number): string =>
+      count === 0 ? 'ไม่พบบริเวณที่ตรวจพบ' : `ตรวจพบ ${count} บริเวณ`,
     demoBadge: 'ข้อมูลตัวอย่าง',
     demoDisclaimer: 'แสดงข้อมูลตัวอย่าง เนื่องจากเชื่อมต่อบริการ SKINDTECH AI ไม่ได้',
     amountValue: {
@@ -337,6 +348,21 @@ export const th: Translations = {
     emptyTitle: 'ยังไม่มีประวัติการสแกน',
     emptyBody: 'ผลการสแกนที่เสร็จสมบูรณ์จะแสดงที่นี่',
     noMatches: 'ไม่มีผลการสแกนที่ตรงกับตัวกรองนี้',
+    loading: 'กำลังโหลดประวัติการสแกน…',
+    loadFailedTitle: 'โหลดประวัติการสแกนไม่สำเร็จ',
+    loadFailedBody: 'ผลการสแกนที่บันทึกไว้ยังปลอดภัย ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง',
+    loadMore: 'โหลดเพิ่มเติม',
+    loadingMore: 'กำลังโหลด…',
+    updateFailed: 'อัปเดตประวัติไม่สำเร็จ แสดงผลการสแกนที่โหลดไว้แล้ว',
+    filterNote: 'ตัวกรองใช้กับผลการสแกนที่โหลดแล้วเท่านั้น',
+  },
+
+  dataErrors: {
+    network: 'เชื่อมต่อ SKINDTECH ไม่ได้ ตรวจสอบการเชื่อมต่ออินเทอร์เน็ตแล้วลองอีกครั้ง',
+    session: 'เซสชันหมดอายุแล้ว กรุณาเข้าสู่ระบบอีกครั้ง',
+    storageUnavailable:
+      'ตอนนี้ยังลบรูปภาพที่บันทึกไว้ไม่ได้ จึงยังไม่มีการลบข้อมูล กรุณาลองอีกครั้งในอีกสักครู่',
+    generic: 'เกิดข้อผิดพลาดบางอย่าง กรุณาลองอีกครั้ง',
   },
   language: {
     title: 'เลือกภาษา',
@@ -400,9 +426,25 @@ export const th: Translations = {
     privacyPolicy: 'นโยบายความเป็นส่วนตัว  ›',
     policyNote: 'อ่านนโยบายความเป็นส่วนตัวเพื่อดูรายละเอียดการจัดเก็บ ระยะเวลาเก็บรักษา และการลบข้อมูล',
     deleteHistoryConfirmTitle: 'ลบประวัติการสแกน?',
-    deleteHistoryConfirmBody: 'ผลการสแกนที่บันทึกไว้ทั้งหมดจะถูกลบ และไม่สามารถกู้คืนได้',
+    deleteHistoryConfirmBody:
+      'ผลการสแกนที่บันทึกไว้ทั้งหมด รวมถึงรูปภาพที่คุณอนุญาตให้เก็บไว้เพื่อพัฒนา AI จะถูกลบ และไม่สามารถกู้คืนได้',
+    deletingHistory: 'กำลังลบประวัติการสแกน…',
+    deleteHistoryDoneTitle: 'ลบประวัติการสแกนแล้ว',
+    deleteHistoryDoneBody: 'ผลการสแกนที่บันทึกไว้ถูกลบออกจาก SKINDTECH แล้ว',
+    deleteHistoryFailedTitle: 'ยังไม่ได้ลบประวัติการสแกน',
     deleteAccountConfirmTitle: 'ลบบัญชี?',
-    deleteAccountConfirmBody: 'ในเวอร์ชันตัวอย่างนี้ บัญชีจะไม่ถูกลบจริง แต่ระบบจะออกจากระบบแทน',
+    deleteAccountConfirmBody:
+      'บัญชี โปรไฟล์ผิว ประวัติการสแกน และรูปภาพที่บันทึกไว้ทั้งหมดจะถูกลบถาวร และไม่สามารถกู้คืนได้',
+    deletingAccount: 'กำลังลบบัญชี…',
+    deleteAccountFailedTitle: 'ยังไม่ได้ลบบัญชี',
+    passwordSheet: {
+      title: 'ยืนยันรหัสผ่านของคุณ',
+      body: 'กรอกรหัสผ่าน SKINDTECH เพื่อลบบัญชีของคุณถาวร การลบนี้ไม่สามารถกู้คืนได้',
+      label: 'รหัสผ่าน',
+      confirm: 'ลบบัญชี',
+      deleting: 'กำลังลบ…',
+      wrongPassword: 'รหัสผ่านไม่ถูกต้อง ลองอีกครั้ง',
+    },
   },
   about: {
     title: 'เกี่ยวกับ SKINDTECH',

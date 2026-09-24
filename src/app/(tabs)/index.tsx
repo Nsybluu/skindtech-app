@@ -2,6 +2,7 @@ import { router } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { LatestResultCard } from '@/components/home/latest-result-card';
+import { LatestResultStatus } from '@/components/home/latest-result-status';
 import { ScanTipsRow } from '@/components/home/scan-tips-row';
 import { StartScanCard } from '@/components/home/start-scan-card';
 import { AppIcon } from '@/components/ui/app-icon';
@@ -21,10 +22,10 @@ import { getGreetingPeriod } from '@/utils/format';
 /** Figma 04 — Home */
 export default function HomeScreen() {
   const { t } = useI18n();
-  const { user, scanHistory } = useUserData();
+  const { user, history } = useUserData();
   const { top } = useDesignInsets();
   const startScan = useStartScan();
-  const latestResult = scanHistory[0];
+  const latestResult = history.scans[0];
 
   return (
     <ScreenBackground>
@@ -63,6 +64,8 @@ export default function HomeScreen() {
               result={latestResult}
               onPress={() => router.push({ pathname: '/scan-result', params: { id: latestResult.id } })}
             />
+          ) : history.status === 'loading' || history.status === 'failed' ? (
+            <LatestResultStatus status={history.status} onRetry={() => void history.refresh()} />
           ) : null}
 
           <Notice

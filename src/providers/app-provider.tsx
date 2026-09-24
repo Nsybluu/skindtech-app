@@ -3,8 +3,10 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState, ty
 import { authService, type AuthSession } from '@/services/auth.service';
 import { ConsentController, type ConsentSnapshot, type ConsentValue } from '@/services/consent-controller';
 import { consentService } from '@/services/consent.service';
+import { HistoryController, type HistorySnapshot } from '@/services/history-controller';
 import { ProfileController, type ProfileSnapshot, type ProfileStatus } from '@/services/profile-controller';
 import { profileService } from '@/services/profile.service';
+import { scanHistoryService } from '@/services/scan-history.service';
 import { setSessionInvalidatedHandler } from '@/services/session-token.service';
 import type { SkinProfile, User } from '@/types/profile';
 import type { ScanResult } from '@/types/scan';
@@ -14,6 +16,30 @@ type SessionValue = {
   isSignedIn: boolean;
   signIn: (session: AuthSession) => void;
   signOut: () => void;
+};
+
+/** The scan history as stored by the backend, plus what the screens can do with it. */
+type HistoryValue = Omit<HistorySnapshot, 'nextCursor'> & {
+  /** More (older) scans can be loaded. */
+  hasMore: boolean;
+  /**
+   * Reloads the newest page: pull-to-refresh, and "Retry" after a failed first load.
+   * Never throws; a failure is reported through `status` / `loadError`.
+   */
+  refresh: () => Promise<void>;
+  /** Loads the next older page. Ignored while another load is running. */
+  loadMore: () => Promise<void>;
+  /** A scan that just completed in this session: shown first, without duplicating it. */
+  add: (result: ScanResult) => void;
+  /** A scan from memory only, never from the backend. */
+  find: (id: string) => ScanResult | undefined;
+  /** A scan from memory, or from `GET /scans/:id`. Rejects with the API error. */
+  fetch: (id: string) => Promise<ScanResult>;
+  /**
+   * Deletes the whole history on the backend, then clears it locally. Resolves `false` when a
+   * deletion is already running, rejects (keeping the history) when the backend refused.
+   */
+  deleteAll: () => Promise<boolean>;
 };
 
 type UserDataValue = {
@@ -35,10 +61,7 @@ type UserDataValue = {
   saveSkinProfile: (profile: SkinProfile) => Promise<SkinProfile | null>;
   pendingPhotoUri: string | null;
   setPendingPhotoUri: (uri: string | null) => void;
-  scanHistory: ScanResult[];
-  addScanResult: (result: ScanResult) => void;
-  clearScanHistory: () => void;
-  getScanResult: (id: string) => ScanResult | undefined;
+  history: HistoryValue;
   /**
    * Whether scan photos may be saved to improve the AI, as confirmed by the backend.
    * `null` means not granted or not asked yet: the consent sheet asks.
@@ -71,8 +94,8 @@ const emptyUser: User = { id: '', name: '', email: '' };
 const SESSION_BOOT_MAX_MS = 6_000;
 
 /**
- * Auth state is restored from the rotating refresh token in SecureStore.
- * Profile and scan history are hydrated in their later backend phases.
+ * Auth state is restored from the rotating refresh token in SecureStore. Once the tokens are in
+ * memory the Skin Profile, AI-training consent and scan history are loaded from the backend.
  */
 export function AppProvider({ children }: { children: ReactNode }) {
   const [isSessionReady, setIsSessionReady] = useState(false);
@@ -94,7 +117,26 @@ export function AppProvider({ children }: { children: ReactNode }) {
       ),
   );
   const [pendingPhotoUri, setPendingPhotoUri] = useState<string | null>(null);
-  const [scanHistory, setScanHistory] = useState<ScanResult[]>([]);
+  const [historyState, setHistoryState] = useState<HistorySnapshot>({
+    scans: [],
+    status: 'idle',
+    refreshing: false,
+    loadingMore: false,
+    nextCursor: null,
+    loadError: false,
+    deleting: false,
+  });
+  const [historyController] = useState(
+    () =>
+      new HistoryController(
+        {
+          list: ({ cursor }) => scanHistoryService.listScans({ cursor }),
+          get: (id) => scanHistoryService.getScan(id),
+          deleteAll: () => scanHistoryService.deleteHistory(),
+        },
+        setHistoryState,
+      ),
+  );
   const [consent, setConsent] = useState<ConsentSnapshot>({ value: null, saving: false });
   const [consentController] = useState(
     () =>
@@ -111,16 +153,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
       signedInRef.current = true;
       setUser(session.user);
       setPendingPhotoUri(null);
-      setScanHistory(session.scanHistory);
       setIsSignedIn(true);
       // Every way in (email, Google, restored session) has its tokens in memory by now.
-      // The two loads are independent, and each drops answers that belong to an earlier session.
+      // The loads are independent and none of them is awaited, so a slow backend never holds up
+      // signing in. Each one drops answers that belong to an earlier session.
       profileController.reset();
       void profileController.hydrate();
       consentController.reset();
       void consentController.hydrate();
+      historyController.reset();
+      void historyController.hydrate();
     },
-    [consentController, profileController],
+    [consentController, historyController, profileController],
   );
 
   const signOut = useCallback(() => {
@@ -128,10 +172,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setIsSignedIn(false);
     setUser(emptyUser);
     setPendingPhotoUri(null);
-    setScanHistory([]);
     profileController.reset();
     consentController.reset();
-  }, [consentController, profileController]);
+    historyController.reset();
+  }, [consentController, historyController, profileController]);
 
   useEffect(() => {
     let active = true;
@@ -177,6 +221,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [consentController],
   );
   const getAiImprovementConsent = useCallback(() => consentController.current, [consentController]);
+  const refreshHistory = useCallback(() => historyController.refresh(), [historyController]);
+  const loadMoreHistory = useCallback(() => historyController.loadMore(), [historyController]);
+  const addScanResult = useCallback((result: ScanResult) => historyController.add(result), [historyController]);
+  const findScan = useCallback((id: string) => historyController.find(id), [historyController]);
+  const fetchScan = useCallback((id: string) => historyController.loadDetail(id), [historyController]);
+  const deleteHistory = useCallback(() => historyController.deleteAll(), [historyController]);
 
   return (
     <SessionContext.Provider value={{ isSessionReady, isSignedIn, signIn, signOut }}>
@@ -191,10 +241,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
           saveSkinProfile,
           pendingPhotoUri,
           setPendingPhotoUri,
-          scanHistory,
-          addScanResult: (result) => setScanHistory((current) => [result, ...current]),
-          clearScanHistory: () => setScanHistory([]),
-          getScanResult: (id) => scanHistory.find((scan) => scan.id === id),
+          history: {
+            scans: historyState.scans,
+            status: historyState.status,
+            refreshing: historyState.refreshing,
+            loadingMore: historyState.loadingMore,
+            loadError: historyState.loadError,
+            deleting: historyState.deleting,
+            hasMore: historyState.nextCursor !== null,
+            refresh: refreshHistory,
+            loadMore: loadMoreHistory,
+            add: addScanResult,
+            find: findScan,
+            fetch: fetchScan,
+            deleteAll: deleteHistory,
+          },
           aiImprovementConsent: consent.value,
           isSavingConsent: consent.saving,
           getAiImprovementConsent,

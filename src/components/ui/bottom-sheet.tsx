@@ -1,5 +1,14 @@
 import type { ReactNode } from 'react';
-import { Modal, Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  Pressable,
+  StyleSheet,
+  View,
+  type StyleProp,
+  type ViewStyle,
+} from 'react-native';
 import Animated, { SlideInDown } from 'react-native-reanimated';
 
 import { Colors } from '@/constants/colors';
@@ -15,6 +24,8 @@ type BottomSheetProps = {
   /** Figma bottom padding before the home indicator is taken into account. */
   bottomPadding?: number;
   style?: StyleProp<ViewStyle>;
+  /** Lifts the sheet above the keyboard (sheets with a text field). */
+  keyboardAware?: boolean;
 };
 
 /** Modal sheet with dimmed backdrop and grab handle (Language, AI consent). */
@@ -25,6 +36,7 @@ export function BottomSheet({
   handleColor,
   bottomPadding = Spacing.xl,
   style,
+  keyboardAware = false,
 }: BottomSheetProps) {
   const { t } = useI18n();
   const { bottom } = useDesignInsets();
@@ -37,7 +49,10 @@ export function BottomSheet({
       statusBarTranslucent
       navigationBarTranslucent
       onRequestClose={onClose}>
-      <View style={styles.root}>
+      <KeyboardAvoidingView
+        enabled={keyboardAware}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.root}>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={t.common.cancel}
@@ -51,7 +66,7 @@ export function BottomSheet({
           <View style={[styles.handle, { backgroundColor: handleColor }]} />
           <View style={styles.content}>{children}</View>
         </Animated.View>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }

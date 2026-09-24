@@ -17,6 +17,7 @@ export const en = {
     edit: 'Edit',
     view: 'View',
     scanAgain: 'Scan again',
+    retry: 'Try again',
     preliminary: 'Preliminary',
     skinProfile: 'Skin Profile',
     mockupOnlyTitle: 'Mockup only',
@@ -90,6 +91,9 @@ export const en = {
     tipFaceForward: 'Face forward',
     tipNoFilters: 'No filters',
     latestResult: 'Latest result',
+    latestResultLoading: 'Loading your latest result…',
+    latestResultFailedTitle: 'Couldn’t load your latest result',
+    latestResultFailedBody: 'Your scans are safe. Check your connection and try again.',
     disclaimer: 'AI results support initial screening and are not a medical diagnosis.',
     openProfile: 'Open profile',
   },
@@ -272,6 +276,13 @@ export const en = {
     careRecommendations: 'Care recommendations',
     basicCareTips: 'Basic care tips',
     notFound: 'This scan result could not be found.',
+    loadingResult: 'Loading this result…',
+    loadFailedTitle: 'Couldn’t load this result',
+    photoUnavailableTitle: 'Photo not saved',
+    photoUnavailableBody:
+      'Photos are not kept with your scan history. Scan again to see detected areas on a new photo.',
+    detectedAreaCount: (count: number): string =>
+      count === 0 ? 'No areas detected' : count === 1 ? '1 area detected' : `${count} areas detected`,
     demoBadge: 'Demo data',
     demoDisclaimer: 'Sample data shown because the SKINDTECH AI service could not be reached.',
     amountValue: {
@@ -343,6 +354,21 @@ export const en = {
     emptyTitle: 'No scans yet',
     emptyBody: 'Completed scans will appear here.',
     noMatches: 'No scans match this filter.',
+    loading: 'Loading your scans…',
+    loadFailedTitle: 'Couldn’t load your history',
+    loadFailedBody: 'Your saved scans are safe. Check your connection and try again.',
+    loadMore: 'Load more',
+    loadingMore: 'Loading…',
+    updateFailed: 'Couldn’t update your history. Showing the scans already loaded.',
+    filterNote: 'Filters apply to the scans loaded so far.',
+  },
+
+  dataErrors: {
+    network: 'Can’t reach SKINDTECH. Check your connection and try again.',
+    session: 'Your session has expired. Please sign in again.',
+    storageUnavailable:
+      'The saved photos could not be removed right now, so nothing was deleted. Please try again in a moment.',
+    generic: 'Something went wrong. Please try again.',
   },
   language: {
     title: 'Choose language',
@@ -410,10 +436,25 @@ export const en = {
     privacyPolicy: 'Privacy policy  ›',
     policyNote: 'Review the Privacy Policy for storage, retention, and deletion details.',
     deleteHistoryConfirmTitle: 'Delete scan history?',
-    deleteHistoryConfirmBody: 'All saved scan results will be removed. This cannot be undone.',
+    deleteHistoryConfirmBody:
+      'All saved scan results, and any photos you allowed to be saved for AI improvement, will be removed. This cannot be undone.',
+    deletingHistory: 'Deleting scan history…',
+    deleteHistoryDoneTitle: 'Scan history deleted',
+    deleteHistoryDoneBody: 'Your saved scan results were removed from SKINDTECH.',
+    deleteHistoryFailedTitle: 'Scan history not deleted',
     deleteAccountConfirmTitle: 'Delete account?',
     deleteAccountConfirmBody:
-      'In this mockup, your account is not deleted — you will be signed out instead.',
+      'Your account, Skin Profile, scan history and any saved photos will be permanently deleted. This cannot be undone.',
+    deletingAccount: 'Deleting account…',
+    deleteAccountFailedTitle: 'Account not deleted',
+    passwordSheet: {
+      title: 'Confirm your password',
+      body: 'Enter your SKINDTECH password to permanently delete your account. This cannot be undone.',
+      label: 'Password',
+      confirm: 'Delete account',
+      deleting: 'Deleting…',
+      wrongPassword: 'That password isn’t correct. Try again.',
+    },
   },
   about: {
     title: 'About SKINDTECH',

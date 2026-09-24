@@ -1,9 +1,10 @@
 import { router } from 'expo-router';
-import { useEffect, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 
 import { ActionRow } from '@/components/info/action-row';
 import { InfoRow } from '@/components/info/info-row';
+import { DeleteAccountSheet } from '@/components/privacy/delete-account-sheet';
 import { AppIcon } from '@/components/ui/app-icon';
 import { AppScreen } from '@/components/ui/app-screen';
 import { AppText } from '@/components/ui/app-text';
@@ -17,15 +18,31 @@ import { Alpha, Colors } from '@/constants/colors';
 import { Radius, Spacing } from '@/constants/spacing';
 import { useI18n } from '@/i18n/i18n-provider';
 import { useSession, useUserData } from '@/providers/app-provider';
-import { authService } from '@/services/auth.service';
-import { scanService } from '@/services/scan.service';
+import { AccountDeletionController, type AccountDeletionSnapshot } from '@/services/account-deletion-controller';
+import { accountService } from '@/services/account.service';
 import { confirmDestructive, showMockupOnlyAlert } from '@/utils/alerts';
+import { dataErrorMessage, dataErrorMessageForKind } from '@/utils/data-errors';
 
 /** Figma 12 — Privacy & data */
 export default function PrivacyScreen() {
   const { t } = useI18n();
   const { signOut } = useSession();
-  const { aiImprovementConsent, isSavingConsent, refreshAiConsent, saveAiConsent, clearScanHistory } = useUserData();
+  const { aiImprovementConsent, isSavingConsent, refreshAiConsent, saveAiConsent, history } = useUserData();
+  const [deletion, setDeletion] = useState<AccountDeletionSnapshot>({ busy: false, needsPassword: false });
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [accountDeletion] = useState(
+    () =>
+      new AccountDeletionController(
+        accountService,
+        // The backend deleted the account and the tokens are gone: drop every local copy of the
+        // user's data and leave the signed-in screens. The logout endpoint is not called.
+        () => {
+          router.dismissAll();
+          signOut();
+        },
+        setDeletion,
+      ),
+  );
 
   // Show what the backend really has, not what this device last remembered.
   useEffect(() => {
@@ -41,30 +58,65 @@ export default function PrivacyScreen() {
     }
   };
 
-  const deleteHistory = () =>
+  const anyDeletionRunning = history.deleting || deletion.busy;
+
+  const deleteHistory = () => {
+    if (anyDeletionRunning) return;
     confirmDestructive({
       title: t.privacy.deleteHistoryConfirmTitle,
       message: t.privacy.deleteHistoryConfirmBody,
       confirmLabel: t.common.delete,
       cancelLabel: t.common.cancel,
       onConfirm: async () => {
-        await scanService.deleteHistory();
-        clearScanHistory();
+        try {
+          // The history is cleared on this device only after the backend confirmed the deletion.
+          if (await history.deleteAll()) {
+            Alert.alert(t.privacy.deleteHistoryDoneTitle, t.privacy.deleteHistoryDoneBody, [{ text: t.common.ok }]);
+          }
+        } catch (error) {
+          Alert.alert(t.privacy.deleteHistoryFailedTitle, dataErrorMessage(error, t), [{ text: t.common.ok }]);
+        }
       },
     });
+  };
 
-  const deleteAccount = () =>
+  const deleteAccount = () => {
+    if (anyDeletionRunning || deletion.needsPassword) return;
     confirmDestructive({
       title: t.privacy.deleteAccountConfirmTitle,
       message: t.privacy.deleteAccountConfirmBody,
       confirmLabel: t.common.delete,
       cancelLabel: t.common.cancel,
       onConfirm: async () => {
-        await authService.signOut();
-        router.dismissAll();
-        signOut();
+        setPasswordError(null);
+        // Google accounts have no password and are deleted right away; an email account makes
+        // the backend answer INVALID_CREDENTIALS, which opens the password sheet instead.
+        const result = await accountDeletion.start();
+        if (result.status === 'failed') {
+          Alert.alert(t.privacy.deleteAccountFailedTitle, dataErrorMessageForKind(result.kind, t), [
+            { text: t.common.ok },
+          ]);
+        }
       },
     });
+  };
+
+  const submitPassword = async (password: string) => {
+    setPasswordError(null);
+    const result = await accountDeletion.submitPassword(password);
+    if (result.status === 'failed') {
+      setPasswordError(
+        result.kind === 'invalid-credentials'
+          ? t.privacy.passwordSheet.wrongPassword
+          : dataErrorMessageForKind(result.kind, t),
+      );
+    }
+  };
+
+  const closePasswordSheet = () => {
+    setPasswordError(null);
+    accountDeletion.cancel();
+  };
 
   return (
     <AppScreen
@@ -126,11 +178,17 @@ export default function PrivacyScreen() {
 
       <Section title={t.privacy.yourControls}>
         <ListGroup>
-          <ActionRow icon={<AppIcon icon={TrashIcon} size={18} />} label={t.privacy.deleteHistory} onPress={deleteHistory} />
+          <ActionRow
+            icon={<AppIcon icon={TrashIcon} size={18} />}
+            label={history.deleting ? t.privacy.deletingHistory : t.privacy.deleteHistory}
+            disabled={anyDeletionRunning}
+            onPress={deleteHistory}
+          />
           <ActionRow
             icon={<AppIcon icon={UserRoundMinusIcon} size={18} />}
-            label={t.privacy.deleteAccount}
+            label={deletion.busy && !deletion.needsPassword ? t.privacy.deletingAccount : t.privacy.deleteAccount}
             weight="semibold"
+            disabled={anyDeletionRunning}
             onPress={deleteAccount}
           />
         </ListGroup>
@@ -157,6 +215,14 @@ export default function PrivacyScreen() {
       <AppText variant="footnote" color={Colors.text.muted} align="center">
         {t.privacy.policyNote}
       </AppText>
+
+      <DeleteAccountSheet
+        visible={deletion.needsPassword}
+        busy={deletion.busy}
+        error={passwordError}
+        onSubmit={(password) => void submitPassword(password)}
+        onClose={closePasswordSheet}
+      />
     </AppScreen>
   );
 }

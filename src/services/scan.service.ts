@@ -4,7 +4,7 @@ import { mockClearScanResult, mockScanResult } from '@/mocks/scan';
 import type { SkinProfile } from '@/types/profile';
 import type { ScanOutcome, ScanResult } from '@/types/scan';
 
-import { apiRequest, mockResponse } from './api';
+import { apiRequest } from './api';
 import { classifyScanFailure, isConnectivityFailure } from './scan-failure';
 
 /**
@@ -86,9 +86,5 @@ export const scanService = {
 
       return { status: 'failed', reason };
     }
-  },
-
-  deleteHistory() {
-    return mockResponse(undefined);
   },
 };

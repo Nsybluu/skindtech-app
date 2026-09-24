@@ -27,7 +27,7 @@ function failureRoute(reason: ScanFailureReason) {
 /** Figma 07C — Analyzing. Uploads the selected image to the SKINDTECH API. */
 export default function AnalyzingScreen() {
   const { t } = useI18n();
-  const { getAiImprovementConsent, getSkinProfile, pendingPhotoUri, addScanResult } = useUserData();
+  const { getAiImprovementConsent, getSkinProfile, pendingPhotoUri, history } = useUserData();
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = t.analyzing.steps.length;
 
@@ -45,7 +45,7 @@ export default function AnalyzingScreen() {
       .then((outcome) => {
         if (cancelled) return;
         if (outcome.status === 'success') {
-          addScanResult(outcome.result);
+          history.add(outcome.result);
           router.replace({ pathname: '/scan-result', params: { id: outcome.result.id } });
           return;
         }

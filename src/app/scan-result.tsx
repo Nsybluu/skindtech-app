@@ -13,30 +13,47 @@ import { AppText } from '@/components/ui/app-text';
 import { InfoIcon } from '@/components/ui/icons';
 import { Notice } from '@/components/ui/notice';
 import { ScreenHeader } from '@/components/ui/screen-header';
+import { StateCard } from '@/components/ui/state-card';
 import { Colors } from '@/constants/colors';
 import { Radius, Spacing } from '@/constants/spacing';
+import { useScanResult } from '@/hooks/use-scan-result';
 import { useI18n } from '@/i18n/i18n-provider';
-import { useUserData } from '@/providers/app-provider';
+import { dataErrorMessageForKind } from '@/utils/data-errors';
 import { formatScanDate, getDetectedCategories } from '@/utils/format';
 
 /** Figma 08 — Scan Result (and 08A when nothing was detected). */
 export default function ScanResultScreen() {
   const { t, language } = useI18n();
   const { id } = useLocalSearchParams<{ id?: string }>();
-  const { getScanResult, scanHistory } = useUserData();
+  const state = useScanResult(id);
 
-  const result = id ? getScanResult(id) : scanHistory[0];
-
-  if (!result) {
+  if (state.status !== 'ready') {
     return (
       <AppScreen header={<ScreenHeader title={t.result.title} gap={Spacing.m} />}>
-        <AppText variant="body" color={Colors.text.secondary}>
-          {t.result.notFound}
-        </AppText>
+        {state.status === 'loading' ? (
+          <StateCard loading title={t.result.loadingResult} />
+        ) : state.status === 'not-found' ? (
+          <StateCard
+            icon={<AppIcon icon={InfoIcon} size={22} />}
+            title={t.result.notFound}
+            actionLabel={t.common.back}
+            onAction={() => router.back()}
+          />
+        ) : (
+          <StateCard
+            icon={<AppIcon icon={InfoIcon} size={22} />}
+            title={t.result.loadFailedTitle}
+            body={dataErrorMessageForKind(state.kind, t)}
+            // A dead session is being signed out already: retrying would not help.
+            actionLabel={state.kind === 'session' ? undefined : t.common.retry}
+            onAction={state.retry}
+          />
+        )}
       </AppScreen>
     );
   }
 
+  const { result } = state;
   const categories = getDetectedCategories(result);
   const isClear = result.amount === 'none';
 

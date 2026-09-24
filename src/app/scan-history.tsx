@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ScanHistoryCard } from '@/components/history/scan-history-card';
+import { AppButton } from '@/components/ui/app-button';
 import { AppIcon } from '@/components/ui/app-icon';
 import { AppScreen } from '@/components/ui/app-screen';
 import { AppText } from '@/components/ui/app-text';
@@ -10,6 +11,7 @@ import { IconContainer } from '@/components/ui/icon-container';
 import { InfoIcon, RotateCcwClockIcon } from '@/components/ui/icons';
 import { Notice } from '@/components/ui/notice';
 import { ScreenHeader } from '@/components/ui/screen-header';
+import { StateCard } from '@/components/ui/state-card';
 import { Alpha, Colors } from '@/constants/colors';
 import { Radius, Spacing } from '@/constants/spacing';
 import { useI18n } from '@/i18n/i18n-provider';
@@ -21,8 +23,13 @@ type Filter = 'all' | Extract<Severity, 'mild' | 'moderate' | 'severe'>;
 /** Figma 10 — Scan History. */
 export default function ScanHistoryScreen() {
   const { t } = useI18n();
-  const { scanHistory } = useUserData();
+  const { history } = useUserData();
   const [filter, setFilter] = useState<Filter>('all');
+  const scans = history.scans;
+  // Nothing to show yet: the first page is still coming, or it failed. Neither is "no scans".
+  const isLoadingFirst = history.status === 'loading' && scans.length === 0;
+  const isFailed = history.status === 'failed';
+  const isEmpty = history.status === 'ready' && scans.length === 0;
 
   const filters: { value: Filter; label: string }[] = [
     { value: 'all', label: t.history.filterAll },
@@ -31,11 +38,14 @@ export default function ScanHistoryScreen() {
     { value: 'severe', label: t.result.severityValue.severe },
   ];
 
-  const visibleScans =
-    filter === 'all' ? scanHistory : scanHistory.filter((scan) => scan.severity === filter);
+  // Filters work on the scans loaded so far; "Load more" brings in older ones.
+  const visibleScans = filter === 'all' ? scans : scans.filter((scan) => scan.severity === filter);
 
   return (
-    <AppScreen header={<ScreenHeader title={t.history.title} titleVariant="screenTitle" />}>
+    <AppScreen
+      header={<ScreenHeader title={t.history.title} titleVariant="screenTitle" />}
+      onRefresh={() => void history.refresh()}
+      refreshing={history.refreshing}>
       <View style={styles.intro}>
         <IconContainer size={40} radius={20}>
           <AppIcon icon={RotateCcwClockIcon} size={20} />
@@ -46,11 +56,13 @@ export default function ScanHistoryScreen() {
             {t.history.introBody}
           </AppText>
         </View>
-        <View style={styles.countBadge}>
-          <AppText variant="caption" weight="semibold" color={Colors.brand.primary}>
-            {scanHistory.length}
-          </AppText>
-        </View>
+        {scans.length > 0 || isEmpty ? (
+          <View style={styles.countBadge}>
+            <AppText variant="caption" weight="semibold" color={Colors.brand.primary}>
+              {history.hasMore ? `${scans.length}+` : scans.length}
+            </AppText>
+          </View>
+        ) : null}
       </View>
 
       <View style={styles.filters}>
@@ -84,26 +96,66 @@ export default function ScanHistoryScreen() {
         {t.history.recentScans}
       </AppText>
 
-      {visibleScans.length > 0 ? (
-        visibleScans.map((scan) => (
-          <ScanHistoryCard
-            key={scan.id}
-            result={scan}
-            onPress={() => router.push({ pathname: '/scan-result', params: { id: scan.id } })}
-          />
-        ))
-      ) : (
+      {isLoadingFirst ? <StateCard loading title={t.history.loading} /> : null}
+
+      {isFailed ? (
+        <StateCard
+          icon={<AppIcon icon={InfoIcon} size={22} />}
+          title={t.history.loadFailedTitle}
+          body={t.history.loadFailedBody}
+          actionLabel={t.common.retry}
+          onAction={() => void history.refresh()}
+        />
+      ) : null}
+
+      {visibleScans.map((scan) => (
+        <ScanHistoryCard
+          key={scan.id}
+          result={scan}
+          onPress={() => router.push({ pathname: '/scan-result', params: { id: scan.id } })}
+        />
+      ))}
+
+      {isEmpty ? (
         <View style={styles.empty}>
           <AppText variant="titleSmall" color={Colors.text.secondary} align="center">
-            {scanHistory.length === 0 ? t.history.emptyTitle : t.history.noMatches}
+            {t.history.emptyTitle}
           </AppText>
-          {scanHistory.length === 0 ? (
-            <AppText variant="caption" color={Colors.text.muted} align="center">
-              {t.history.emptyBody}
-            </AppText>
-          ) : null}
+          <AppText variant="caption" color={Colors.text.muted} align="center">
+            {t.history.emptyBody}
+          </AppText>
         </View>
-      )}
+      ) : null}
+
+      {scans.length > 0 && visibleScans.length === 0 ? (
+        <View style={styles.empty}>
+          <AppText variant="titleSmall" color={Colors.text.secondary} align="center">
+            {t.history.noMatches}
+          </AppText>
+        </View>
+      ) : null}
+
+      {filter !== 'all' && history.hasMore ? (
+        <AppText variant="footnote" color={Colors.text.muted} align="center">
+          {t.history.filterNote}
+        </AppText>
+      ) : null}
+
+      {history.loadError && !isFailed ? (
+        <AppText variant="caption" color={Colors.brand.primary} align="center" accessibilityLiveRegion="polite">
+          {t.history.updateFailed}
+        </AppText>
+      ) : null}
+
+      {history.status === 'ready' && history.hasMore ? (
+        <AppButton
+          variant="secondary"
+          label={history.loadingMore ? t.history.loadingMore : t.history.loadMore}
+          // Locked while a page is loading, so a second tap cannot ask for the same page twice.
+          disabled={history.loadingMore || history.refreshing}
+          onPress={() => void history.loadMore()}
+        />
+      ) : null}
 
       <Notice
         icon={<AppIcon icon={InfoIcon} size={16} />}

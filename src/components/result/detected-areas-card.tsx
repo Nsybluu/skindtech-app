@@ -2,9 +2,9 @@ import { Image } from 'expo-image';
 import { useState } from 'react';
 import { StyleSheet, View, type LayoutChangeEvent } from 'react-native';
 
-import ClearFaceIcon from '@/assets/illustrations/clear-face.svg';
-import ClearFaceFrameIcon from '@/assets/illustrations/clear-face-frame.svg';
+import { AppIcon } from '@/components/ui/app-icon';
 import { AppText } from '@/components/ui/app-text';
+import { ImageOffIcon } from '@/components/ui/icons';
 import { Alpha, Colors } from '@/constants/colors';
 import { Radius, Spacing } from '@/constants/spacing';
 import { useI18n } from '@/i18n/i18n-provider';
@@ -16,14 +16,60 @@ import { SegmentedControl, type SegmentOption } from './segmented-control';
 
 type ImageMode = 'original' | 'detected';
 
-const PHOTO_WIDTH = 180;
-const PHOTO_HEIGHT = 188;
+const PLACEHOLDER_HEIGHT = 188;
 /** Portrait phone photos fill the card at their own shape; only extreme shapes are cropped. */
+const DEFAULT_ASPECT = 180 / 188;
 const MIN_PHOTO_ASPECT = 0.75;
 const MAX_PHOTO_ASPECT = 1.5;
 
-/** Figma "Card / Detected Areas" (and "Card / Reviewed Image" when nothing was found). */
+/**
+ * Figma "Card / Detected Areas" (and "Card / Reviewed Image" when nothing was found).
+ *
+ * The photo exists only for a scan made in this session (`photoUri`). A scan loaded from the
+ * backend has none, and no picture is made up for it: `NoPhotoCard` says so instead and keeps
+ * the detection summary.
+ */
 export function DetectedAreasCard({ result, categories }: { result: ScanResult; categories: AcneCategory[] }) {
+  if (!result.photoUri) return <NoPhotoCard result={result} />;
+  return <PhotoCard result={result} photoUri={result.photoUri} categories={categories} />;
+}
+
+function NoPhotoCard({ result }: { result: ScanResult }) {
+  const { t } = useI18n();
+  const count = result.detectionAreas.length;
+
+  return (
+    <View style={styles.card}>
+      <View style={styles.header}>
+        <AppText variant="titleSmall" accessibilityRole="header">
+          {count > 0 ? t.result.detectedAreas : t.result.reviewedImage}
+        </AppText>
+      </View>
+      <View style={[styles.imageBox, styles.imageBoxPlaceholder, styles.noPhoto]}>
+        <AppIcon icon={ImageOffIcon} size={26} color={Colors.text.onBrand} />
+        <AppText variant="caption" weight="semibold" color={Colors.text.onBrand} align="center">
+          {t.result.photoUnavailableTitle}
+        </AppText>
+        <AppText variant="footnote" color={Alpha.white(0.8)} align="center">
+          {t.result.photoUnavailableBody}
+        </AppText>
+      </View>
+      <AppText variant="caption" color={Colors.text.secondary}>
+        {t.result.detectedAreaCount(count)}
+      </AppText>
+    </View>
+  );
+}
+
+function PhotoCard({
+  result,
+  photoUri,
+  categories,
+}: {
+  result: ScanResult;
+  photoUri: string;
+  categories: AcneCategory[];
+}) {
   const { t } = useI18n();
   const hasDetections = result.detectionAreas.length > 0;
   const [mode, setMode] = useState<ImageMode>(hasDetections ? 'detected' : 'original');
@@ -40,18 +86,12 @@ export function DetectedAreasCard({ result, categories }: { result: ScanResult; 
     setBox((current) => (current.width === width && current.height === height ? current : { width, height }));
   };
 
-  const photoSource = result.photoUri
-    ? { uri: result.photoUri }
-    : hasDetections
-      ? require('@/assets/images/detected-face-dark.png')
-      : null;
-
   // The box takes the photo's own shape so it fills the card edge to edge.
   // Boxes are relative to the analysed image, so the overlay is mapped with the
   // same "cover" maths the image uses (identical unless the shape was clamped).
   const sourceAspect = result.image
     ? result.image.width / result.image.height
-    : (loadedAspect ?? PHOTO_WIDTH / PHOTO_HEIGHT);
+    : (loadedAspect ?? DEFAULT_ASPECT);
   const boxAspect = Math.min(Math.max(sourceAspect, MIN_PHOTO_ASPECT), MAX_PHOTO_ASPECT);
   const coversWidth = sourceAspect >= boxAspect;
   const renderedWidth = coversWidth ? box.height * sourceAspect : box.width;
@@ -73,26 +113,17 @@ export function DetectedAreasCard({ result, categories }: { result: ScanResult; 
         <SegmentedControl options={options} value={mode} onChange={setMode} />
       </View>
 
-      <View
-        style={[styles.imageBox, photoSource ? { aspectRatio: boxAspect } : styles.imageBoxPlaceholder]}
-        onLayout={onLayout}>
-        {photoSource ? (
-          <Image
-            source={photoSource}
-            contentFit="cover"
-            style={StyleSheet.absoluteFill}
-            onLoad={(event) => {
-              const { width, height } = event.source;
-              if (width > 0 && height > 0) setLoadedAspect(width / height);
-            }}
-            accessibilityIgnoresInvertColors
-          />
-        ) : (
-          <View style={styles.photo}>
-            <ClearFaceFrameIcon style={styles.clearFrame} />
-            <ClearFaceIcon style={styles.clearFace} />
-          </View>
-        )}
+      <View style={[styles.imageBox, { aspectRatio: boxAspect }]} onLayout={onLayout}>
+        <Image
+          source={{ uri: photoUri }}
+          contentFit="cover"
+          style={StyleSheet.absoluteFill}
+          onLoad={(event) => {
+            const { width, height } = event.source;
+            if (width > 0 && height > 0) setLoadedAspect(width / height);
+          }}
+          accessibilityIgnoresInvertColors
+        />
 
         {showAreas ? (
           <DetectionOverlay
@@ -144,23 +175,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  // The illustrated "clear skin" placeholder has no photo shape to follow.
+  // With no photo there is no shape to follow.
   imageBoxPlaceholder: {
-    height: PHOTO_HEIGHT,
+    height: PLACEHOLDER_HEIGHT,
   },
-  photo: {
-    width: PHOTO_WIDTH,
-    height: PHOTO_HEIGHT,
-  },
-  clearFrame: {
-    position: 'absolute',
-    left: 13.9,
-    top: 16.9,
-  },
-  clearFace: {
-    position: 'absolute',
-    left: 35.9,
-    top: 20.9,
+  noPhoto: {
+    gap: Spacing.s,
+    paddingHorizontal: Spacing.xl,
   },
   legend: {
     position: 'absolute',

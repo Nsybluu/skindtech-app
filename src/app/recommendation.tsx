@@ -14,16 +14,17 @@ import { Notice } from '@/components/ui/notice';
 import { ScreenHeader } from '@/components/ui/screen-header';
 import { Alpha, Colors } from '@/constants/colors';
 import { Radius, Spacing } from '@/constants/spacing';
+import { useScanResult } from '@/hooks/use-scan-result';
 import { useI18n } from '@/i18n/i18n-provider';
-import { useUserData } from '@/providers/app-provider';
 
 /** Figma 09 — Care Recommendations (static, non-medical guidance). */
 export default function RecommendationScreen() {
   const { t } = useI18n();
   const { id } = useLocalSearchParams<{ id?: string }>();
-  const { getScanResult, scanHistory } = useUserData();
-
-  const result = (id ? getScanResult(id) : undefined) ?? scanHistory[0];
+  // The guidance below is static; the scan only adds the one-line summary. While it loads, or if
+  // it cannot be found, the guidance is shown without a summary rather than with another scan's.
+  const state = useScanResult(id);
+  const result = state.status === 'ready' ? state.result : undefined;
   const isClear = result ? result.amount === 'none' : false;
 
   return (

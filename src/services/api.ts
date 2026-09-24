@@ -61,6 +61,12 @@ export async function apiRequest<T>(
     });
 
     if (response.status === 401 && authenticated && retryAuthentication) {
+      const rejection = await readApiError(response);
+      // `INVALID_CREDENTIALS` on an authenticated call means the password sent in the body was
+      // wrong (DELETE /account), not that the session expired. Refreshing would rotate the
+      // refresh token for nothing and then get the same answer.
+      if (rejection.code === 'INVALID_CREDENTIALS') throw rejection;
+
       // The server kills the previous access token as soon as the session is
       // rotated, so a request that was already in flight when another one
       // refreshed gets a 401 for a perfectly healthy session. In that case the
@@ -73,6 +79,7 @@ export async function apiRequest<T>(
         clearTimeout(timeout);
         return apiRequest<T>(path, init, { authenticated: true, retryAuthentication: false });
       }
+      throw rejection;
     }
 
     if (!response.ok) {

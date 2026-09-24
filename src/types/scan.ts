@@ -15,6 +15,12 @@ export type AcneLesionType = 'comedone' | 'papule' | 'pustule' | 'nodule';
 /** Groups shown in the UI ("Comedonal acne", "Inflammatory acne"). */
 export type AcneCategory = 'comedonal' | 'inflammatory';
 
+/** The allowed values of the enums above, for checking backend responses at runtime. */
+export const SEVERITIES = ['none', 'mild', 'moderate', 'severe'] as const satisfies readonly Severity[];
+export const ACNE_AMOUNTS = ['none', 'mild', 'moderate', 'high'] as const satisfies readonly AcneAmount[];
+export const ACNE_LESION_TYPES = ['comedone', 'papule', 'pustule', 'nodule'] as const satisfies readonly AcneLesionType[];
+export const ACNE_CATEGORIES = ['comedonal', 'inflammatory'] as const satisfies readonly AcneCategory[];
+
 export type DetectedAcneType = {
   type: AcneLesionType;
   /** 0–1 model confidence */
@@ -43,7 +49,11 @@ export type ScanResult = {
   modelVersion?: string;
   /** True when the result came from the offline demo fallback, not the AI service. */
   isDemoData?: boolean;
-  /** Local device URI; the inference service does not persist the photo. */
+  /**
+   * Local device URI of the photo just taken. Only a scan made in this app session has one:
+   * the inference service does not persist photos and the history endpoints never return them,
+   * so a scan loaded from the backend has none.
+   */
   photoUri?: string;
   image?: { width: number; height: number };
   amount: AcneAmount;

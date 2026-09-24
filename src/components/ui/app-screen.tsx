@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   View,
@@ -9,6 +10,7 @@ import {
   type ViewStyle,
 } from 'react-native';
 
+import { Colors } from '@/constants/colors';
 import { Layout, Spacing } from '@/constants/spacing';
 import { useDesignInsets } from '@/hooks/use-design-insets';
 
@@ -26,6 +28,9 @@ type AppScreenProps = {
   gap?: number;
   contentStyle?: StyleProp<ViewStyle>;
   keyboardAware?: boolean;
+  /** Adds pull-to-refresh to the scrolling body. */
+  onRefresh?: () => void;
+  refreshing?: boolean;
 };
 
 /** Standard in-app screen: gradient, fixed header, scrolling body, optional action bar. */
@@ -37,6 +42,8 @@ export function AppScreen({
   gap = Spacing.m,
   contentStyle,
   keyboardAware = false,
+  onRefresh,
+  refreshing = false,
 }: AppScreenProps) {
   const { top, bottom } = useDesignInsets();
 
@@ -57,6 +64,16 @@ export function AppScreen({
           },
         ]}
         keyboardShouldPersistTaps="handled"
+        refreshControl={
+          onRefresh ? (
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={Colors.brand.primary}
+              colors={[Colors.brand.primary]}
+            />
+          ) : undefined
+        }
         showsVerticalScrollIndicator={false}>
         <View style={[styles.constrained, { gap }, contentStyle]}>{children}</View>
       </ScrollView>
