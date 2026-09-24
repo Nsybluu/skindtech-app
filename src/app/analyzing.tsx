@@ -27,7 +27,7 @@ function failureRoute(reason: ScanFailureReason) {
 /** Figma 07C — Analyzing. Uploads the selected image to the SKINDTECH API. */
 export default function AnalyzingScreen() {
   const { t } = useI18n();
-  const { getAiImprovementConsent, pendingPhotoUri, skinProfile, addScanResult } = useUserData();
+  const { getAiImprovementConsent, getSkinProfile, pendingPhotoUri, addScanResult } = useUserData();
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = t.analyzing.steps.length;
 
@@ -41,7 +41,7 @@ export default function AnalyzingScreen() {
 
     scanService
       // Only a backend-confirmed `true` lets the photo be kept; unknown or declined never does.
-      .analyzePhoto(pendingPhotoUri, skinProfile, getAiImprovementConsent() === true)
+      .analyzePhoto(pendingPhotoUri, getSkinProfile(), getAiImprovementConsent() === true)
       .then((outcome) => {
         if (cancelled) return;
         if (outcome.status === 'success') {

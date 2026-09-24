@@ -1,7 +1,7 @@
 import * as Device from 'expo-device';
 import { Platform } from 'react-native';
 
-import type { SkinProfile, User } from '@/types/profile';
+import type { User } from '@/types/profile';
 import type { ScanResult } from '@/types/scan';
 
 import { apiRequest } from './api';
@@ -13,10 +13,12 @@ import {
   type AuthTokens,
 } from './session-token.service';
 
-/** What the app needs right after authentication (user + bootstrap data). */
+/**
+ * What the app needs right after authentication. The Skin Profile is not part of it: the
+ * provider loads it from `GET /profile/skin` once the access token is in memory.
+ */
 export type AuthSession = {
   user: User;
-  skinProfile: SkinProfile | null;
   scanHistory: ScanResult[];
 };
 
@@ -39,11 +41,10 @@ type MeResponse = {
   data: { user: AuthUserPayload };
 };
 
-/** A freshly authenticated account has no hydrated profile or history yet (backend Phase 4/5). */
+/** Scan history is hydrated in a later phase. */
 function toSession(user: AuthUserPayload): AuthSession {
   return {
     user: { id: user.id, name: user.displayName, email: user.email },
-    skinProfile: null,
     scanHistory: [],
   };
 }

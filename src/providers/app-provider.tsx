@@ -3,6 +3,8 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState, ty
 import { authService, type AuthSession } from '@/services/auth.service';
 import { ConsentController, type ConsentSnapshot, type ConsentValue } from '@/services/consent-controller';
 import { consentService } from '@/services/consent.service';
+import { ProfileController, type ProfileSnapshot, type ProfileStatus } from '@/services/profile-controller';
+import { profileService } from '@/services/profile.service';
 import { setSessionInvalidatedHandler } from '@/services/session-token.service';
 import type { SkinProfile, User } from '@/types/profile';
 import type { ScanResult } from '@/types/scan';
@@ -16,8 +18,21 @@ type SessionValue = {
 
 type UserDataValue = {
   user: User;
+  /** The Skin Profile as stored by the backend (`null`: none saved, or not loaded yet). */
   skinProfile: SkinProfile | null;
-  setSkinProfile: (profile: SkinProfile) => void;
+  /** True while the profile is being loaded after sign-in or session restore. */
+  isSkinProfileLoading: boolean;
+  /** True while a profile change is being saved on the backend. */
+  isSavingSkinProfile: boolean;
+  /** Latest profile, read synchronously (use this when starting a scan). */
+  getSkinProfile: () => SkinProfile | null;
+  /** Resolves with the profile once its first load finished (retries a failed load). */
+  ensureSkinProfile: () => Promise<SkinProfile | null>;
+  /**
+   * Saves the profile on the backend first. Resolves with what the backend stored (`null` if a
+   * save is already running) and rejects when it could not be saved: nothing local changes then.
+   */
+  saveSkinProfile: (profile: SkinProfile) => Promise<SkinProfile | null>;
   pendingPhotoUri: string | null;
   setPendingPhotoUri: (uri: string | null) => void;
   scanHistory: ScanResult[];
@@ -63,7 +78,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [isSessionReady, setIsSessionReady] = useState(false);
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [user, setUser] = useState<User>(emptyUser);
-  const [skinProfile, setSkinProfile] = useState<SkinProfile | null>(null);
+  const [profileState, setProfileState] = useState<ProfileSnapshot>({
+    profile: null,
+    status: 'idle' as ProfileStatus,
+    saving: false,
+  });
+  const [profileController] = useState(
+    () =>
+      new ProfileController(
+        {
+          get: () => profileService.getSkinProfile(),
+          put: (profile) => profileService.saveSkinProfile(profile),
+        },
+        setProfileState,
+      ),
+  );
   const [pendingPhotoUri, setPendingPhotoUri] = useState<string | null>(null);
   const [scanHistory, setScanHistory] = useState<ScanResult[]>([]);
   const [consent, setConsent] = useState<ConsentSnapshot>({ value: null, saving: false });
@@ -81,26 +110,28 @@ export function AppProvider({ children }: { children: ReactNode }) {
     (session: AuthSession) => {
       signedInRef.current = true;
       setUser(session.user);
-      setSkinProfile(session.skinProfile);
       setPendingPhotoUri(null);
       setScanHistory(session.scanHistory);
       setIsSignedIn(true);
       // Every way in (email, Google, restored session) has its tokens in memory by now.
+      // The two loads are independent, and each drops answers that belong to an earlier session.
+      profileController.reset();
+      void profileController.hydrate();
       consentController.reset();
       void consentController.hydrate();
     },
-    [consentController],
+    [consentController, profileController],
   );
 
   const signOut = useCallback(() => {
     signedInRef.current = false;
     setIsSignedIn(false);
     setUser(emptyUser);
-    setSkinProfile(null);
     setPendingPhotoUri(null);
     setScanHistory([]);
+    profileController.reset();
     consentController.reset();
-  }, [consentController]);
+  }, [consentController, profileController]);
 
   useEffect(() => {
     let active = true;
@@ -134,6 +165,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     };
   }, [signIn, signOut]);
 
+  const ensureSkinProfile = useCallback(() => profileController.ensure(), [profileController]);
+  const saveSkinProfile = useCallback(
+    (profile: SkinProfile) => profileController.save(profile),
+    [profileController],
+  );
+  const getSkinProfile = useCallback(() => profileController.current, [profileController]);
   const refreshAiConsent = useCallback(() => consentController.hydrate(), [consentController]);
   const saveAiConsent = useCallback(
     (granted: boolean) => consentController.save(granted),
@@ -146,8 +183,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
       <UserDataContext.Provider
         value={{
           user,
-          skinProfile,
-          setSkinProfile,
+          skinProfile: profileState.profile,
+          isSkinProfileLoading: profileState.status === 'loading',
+          isSavingSkinProfile: profileState.saving,
+          getSkinProfile,
+          ensureSkinProfile,
+          saveSkinProfile,
           pendingPhotoUri,
           setPendingPhotoUri,
           scanHistory,

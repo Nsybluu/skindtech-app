@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState, type ReactNode } from 'react';
-import { StyleSheet, TextInput, View, type StyleProp, type TextStyle } from 'react-native';
+import { Alert, StyleSheet, TextInput, View, type StyleProp, type TextStyle } from 'react-native';
 
 import { OptionChips, type ChipOption } from '@/components/profile/option-chips';
 import { ActionBar } from '@/components/ui/action-bar';
@@ -17,21 +17,38 @@ import { Radius, Spacing } from '@/constants/spacing';
 import { FontFamily } from '@/constants/typography';
 import { useI18n } from '@/i18n/i18n-provider';
 import { useUserData } from '@/providers/app-provider';
-import { profileService } from '@/services/profile.service';
 import type { SkinConcern, SkinSensitivity, SkinType } from '@/types/profile';
+
+/** The backend rejects longer ingredient text. */
+const INGREDIENTS_MAX_LENGTH = 1_000;
+
+type Draft = {
+  skinType: SkinType | null;
+  sensitivity: SkinSensitivity | null;
+  concerns: SkinConcern[];
+  ingredients: string;
+};
 
 /** Figma 06 — Skin Profile. Required before the first scan. */
 export default function SkinProfileScreen() {
   const { t } = useI18n();
   const { next } = useLocalSearchParams<{ next?: string }>();
-  const { skinProfile, setSkinProfile } = useUserData();
+  const { skinProfile, isSkinProfileLoading, isSavingSkinProfile, saveSkinProfile } = useUserData();
 
-  const [skinType, setSkinType] = useState<SkinType | null>(skinProfile?.skinType ?? null);
-  const [sensitivity, setSensitivity] = useState<SkinSensitivity | null>(
-    skinProfile?.sensitivity ?? null,
-  );
-  const [concerns, setConcerns] = useState<SkinConcern[]>(skinProfile?.concerns ?? []);
-  const [ingredients, setIngredients] = useState(skinProfile?.ingredientsToAvoid ?? '');
+  // Until the user changes something the form simply shows the saved profile, which may
+  // arrive after this screen opened. Once they edit, their draft is never overwritten.
+  const saved: Draft = {
+    skinType: skinProfile?.skinType ?? null,
+    sensitivity: skinProfile?.sensitivity ?? null,
+    concerns: skinProfile?.concerns ?? [],
+    ingredients: skinProfile?.ingredientsToAvoid ?? '',
+  };
+  const [draft, setDraft] = useState<Draft | null>(null);
+  const { skinType, sensitivity, concerns, ingredients } = draft ?? saved;
+  const update = (patch: Partial<Draft>) => {
+    if (isSavingSkinProfile) return;
+    setDraft({ skinType, sensitivity, concerns, ingredients, ...patch });
+  };
 
   const skinTypeRows: ChipOption<SkinType>[][] = [
     [
@@ -65,23 +82,29 @@ export default function SkinProfileScreen() {
     ],
   ];
 
-  const canSave = skinType !== null && sensitivity !== null;
+  // Saving replaces the stored profile, so wait until the current one has loaded.
+  const canSave = skinType !== null && sensitivity !== null && !isSkinProfileLoading;
 
+  // The backend must confirm the save before anything changes: a failure keeps what the user typed.
   const save = async () => {
-    if (!skinType || !sensitivity) return;
+    if (!skinType || !sensitivity || !canSave || isSavingSkinProfile) return;
 
-    const profile = await profileService.saveSkinProfile({
-      skinType,
-      sensitivity,
-      concerns,
-      ingredientsToAvoid: ingredients.trim(),
-    });
-    setSkinProfile(profile);
+    try {
+      const stored = await saveSkinProfile({
+        skinType,
+        sensitivity,
+        concerns,
+        ingredientsToAvoid: ingredients.trim(),
+      });
+      if (stored === null) return; // a save is already running
 
-    if (next === 'scan') {
-      router.dismissTo('/scan');
-    } else {
-      router.back();
+      if (next === 'scan') {
+        router.dismissTo('/scan');
+      } else {
+        router.back();
+      }
+    } catch {
+      Alert.alert(t.skinProfile.saveFailedTitle, t.skinProfile.saveFailedBody, [{ text: t.common.ok }]);
     }
   };
 
@@ -98,9 +121,9 @@ export default function SkinProfileScreen() {
       footer={
         <ActionBar bordered>
           <AppButton
-            label={t.skinProfile.save}
-            onPress={save}
-            disabled={!canSave}
+            label={isSavingSkinProfile ? t.skinProfile.saving : t.skinProfile.save}
+            onPress={() => void save()}
+            disabled={!canSave || isSavingSkinProfile}
             textVariant="buttonLarge"
             style={styles.saveButton}
           />
@@ -120,7 +143,7 @@ export default function SkinProfileScreen() {
         <OptionChips
           rows={skinTypeRows}
           isSelected={(value) => value === skinType}
-          onPress={setSkinType}
+          onPress={(value) => update({ skinType: value })}
         />
       </Field>
 
@@ -128,7 +151,7 @@ export default function SkinProfileScreen() {
         <OptionChips
           rows={sensitivityRows}
           isSelected={(value) => value === sensitivity}
-          onPress={setSensitivity}
+          onPress={(value) => update({ sensitivity: value })}
         />
       </Field>
 
@@ -138,11 +161,11 @@ export default function SkinProfileScreen() {
           multiple
           isSelected={(value) => concerns.includes(value)}
           onPress={(value) =>
-            setConcerns((current) =>
-              current.includes(value)
-                ? current.filter((concern) => concern !== value)
-                : [...current, value],
-            )
+            update({
+              concerns: concerns.includes(value)
+                ? concerns.filter((concern) => concern !== value)
+                : [...concerns, value],
+            })
           }
         />
       </Field>
@@ -150,7 +173,8 @@ export default function SkinProfileScreen() {
       <Field label={t.skinProfile.ingredients}>
         <TextInput
           value={ingredients}
-          onChangeText={setIngredients}
+          onChangeText={(text) => update({ ingredients: text })}
+          maxLength={INGREDIENTS_MAX_LENGTH}
           placeholder={t.skinProfile.ingredientsPlaceholder}
           placeholderTextColor={Colors.text.muted}
           selectionColor={Colors.brand.primary}

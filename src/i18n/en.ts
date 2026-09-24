@@ -159,6 +159,9 @@ export const en = {
     ingredientsPlaceholder: 'e.g. Fragrance, alcohol — or None known',
     disclaimer: 'Skin data and scan results support initial guidance, not a medical diagnosis.',
     save: 'Save Skin Profile',
+    saving: 'Saving…',
+    saveFailedTitle: 'Could not save your Skin Profile',
+    saveFailedBody: 'Your Skin Profile was not saved. Your answers are still here. Check your connection and try again.',
   },
   scan: {
     title: 'Scan your skin',

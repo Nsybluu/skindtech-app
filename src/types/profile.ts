@@ -1,8 +1,11 @@
-export type SkinType = 'oily' | 'dry' | 'combination' | 'normal' | 'notSure';
+export const SKIN_TYPES = ['oily', 'dry', 'combination', 'normal', 'notSure'] as const;
+export type SkinType = (typeof SKIN_TYPES)[number];
 
-export type SkinSensitivity = 'sensitive' | 'notSensitive' | 'notSure';
+export const SKIN_SENSITIVITIES = ['sensitive', 'notSensitive', 'notSure'] as const;
+export type SkinSensitivity = (typeof SKIN_SENSITIVITIES)[number];
 
-export type SkinConcern = 'acne' | 'excessOil' | 'dryness' | 'redness' | 'acneMarks';
+export const SKIN_CONCERNS = ['acne', 'excessOil', 'dryness', 'redness', 'acneMarks'] as const;
+export type SkinConcern = (typeof SKIN_CONCERNS)[number];
 
 export type SkinProfile = {
   skinType: SkinType;

@@ -2,7 +2,7 @@ import { CameraView, useCameraPermissions, type CameraType } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { Alert, Linking, Pressable, StyleSheet } from 'react-native';
+import { ActivityIndicator, Alert, Linking, Pressable, StyleSheet } from 'react-native';
 
 import { cameraAccessoryStyles, CameraFrame } from '@/components/scan/camera-frame';
 import { CameraPlaceholder } from '@/components/scan/camera-placeholder';
@@ -11,6 +11,7 @@ import { ScanFlowLayout } from '@/components/scan/scan-flow-layout';
 import { ScanNote, ScanNotice } from '@/components/scan/scan-notice';
 import { AppIcon } from '@/components/ui/app-icon';
 import { SwitchCameraIcon } from '@/components/ui/icons';
+import { ScreenBackground } from '@/components/ui/screen-background';
 import { goBackOr } from '@/components/ui/screen-header';
 import { Colors } from '@/constants/colors';
 import { useI18n } from '@/i18n/i18n-provider';
@@ -19,7 +20,7 @@ import { useUserData } from '@/providers/app-provider';
 /** Figma 07 — Scan with a live Expo camera and gallery import. */
 export default function ScanScreen() {
   const { t } = useI18n();
-  const { skinProfile, setPendingPhotoUri } = useUserData();
+  const { skinProfile, isSkinProfileLoading, setPendingPhotoUri } = useUserData();
   // "Choose another" on the photo-problem screen passes a new `pick` value to open the library.
   const { pick } = useLocalSearchParams<{ pick?: string }>();
   const cameraRef = useRef<CameraView>(null);
@@ -91,7 +92,16 @@ export default function ScanScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pick]);
 
-  // A Skin Profile is required before the first scan.
+  // A Skin Profile is required before the first scan. While it is still loading, wait:
+  // sending a returning user to the empty form would look like their profile was lost.
+  if (!skinProfile && isSkinProfileLoading) {
+    return (
+      <ScreenBackground style={styles.loading}>
+        <ActivityIndicator color={Colors.brand.primary} />
+      </ScreenBackground>
+    );
+  }
+
   if (!skinProfile) {
     return <Redirect href={{ pathname: '/skin-profile', params: { next: 'scan' } }} />;
   }
@@ -155,6 +165,10 @@ export default function ScanScreen() {
 }
 
 const styles = StyleSheet.create({
+  loading: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   camera: {
     flex: 1,
   },
