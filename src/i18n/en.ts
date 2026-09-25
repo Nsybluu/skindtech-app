@@ -1,5 +1,12 @@
 import type { AcneAmount, AcneCategory, Severity } from '@/types/scan';
 import type { SkinConcern, SkinSensitivity, SkinType } from '@/types/profile';
+import type {
+  CareBasic,
+  CareDisclaimer,
+  CareHabit,
+  CareStep,
+  ProfessionalHelpReason,
+} from '@/types/recommendation';
 
 export type GreetingPeriod = 'morning' | 'afternoon' | 'evening';
 
@@ -270,7 +277,13 @@ export const en = {
     acneTypesDetected: 'Acne types detected',
     acneTypeAssessment: 'Acne type assessment',
     noVisibleTypes: 'No visible acne types detected',
-    skinProfileUsed: 'Skin Profile used',
+    skinProfileUsed: 'Skin Profile used for this scan',
+    snapshotNone: 'No Skin Profile was saved for this scan.',
+    snapshotNote: 'Saved with this scan. Changing your profile later does not change it.',
+    snapshotConcerns: (list: string): string => `Concerns: ${list}`,
+    snapshotAvoid: (text: string): string => `Avoid: ${text}`,
+    currentProfile: 'Current profile',
+    currentProfileHint: 'Opens your current Skin Profile, not the one used for this scan',
     disclaimer: 'Preliminary AI analysis only — not a medical diagnosis.',
     clearDisclaimer: 'No visible acne was detected in this image. Results are preliminary.',
     moreOptions: 'More options',
@@ -322,20 +335,44 @@ export const en = {
     morningRoutine: 'Morning routine',
     eveningRoutine: 'Evening routine',
     stepCount: (count: number) => `${count} steps`,
-    morningSteps: ['Gentle cleanser', 'Lightweight moisturizer', 'Broad-spectrum sunscreen'],
-    eveningSteps: [
-      'Gentle cleanser',
-      'Optional acne-care product — introduce slowly',
-      'Lightweight moisturizer',
-    ],
+    /** The backend sends semantic keys; the wording is ours, in both languages. */
+    step: {
+      gentle_cleanser: 'Gentle cleanser',
+      lightweight_moisturizer: 'Lightweight moisturizer',
+      broad_spectrum_sunscreen: 'Broad-spectrum sunscreen',
+      optional_acne_care_product: 'Optional acne-care product — introduce slowly',
+    } satisfies Record<CareStep, string>,
     basicsTitle: 'Skincare basics to consider',
-    basicCleanser: 'Gentle\ncleanser',
-    basicMoisturizer: 'Lightweight\nmoisturizer',
-    basicSunscreen: 'Non-comedogenic\nSPF',
+    basic: {
+      gentle_cleanser: 'Gentle\ncleanser',
+      lightweight_moisturizer: 'Lightweight\nmoisturizer',
+      non_comedogenic_spf: 'Non-comedogenic\nSPF',
+    } satisfies Record<CareBasic, string>,
     habitsTitle: 'Simple habits',
-    habitsBody: 'Avoid picking and harsh scrubs. Keep pillowcases and your phone clean.',
+    habit: {
+      avoid_picking: 'Avoid picking at your skin.',
+      avoid_harsh_scrubs: 'Avoid harsh scrubs.',
+      clean_pillowcases_and_phone: 'Keep pillowcases and your phone clean.',
+    } satisfies Record<CareHabit, string>,
+    personalizedTitle: 'Personalized guidance',
     professionalTitle: 'When to seek professional help',
     professionalBody: 'If acne is painful, worsening, or persistent, consult a dermatologist.',
+    professionalRecommendedTitle: 'Consider seeing a dermatologist',
+    professionalRecommendedBody:
+      'Based on this result, it may help to have your skin checked by a dermatologist.',
+    professionalReason: {
+      severe_pattern: 'The result shows a more severe pattern.',
+      nodules_detected: 'Deeper, nodule-like bumps were detected.',
+      painful_worsening_or_persistent: 'Acne that is painful, worsening, or persistent is worth checking too.',
+    } satisfies Record<ProfessionalHelpReason, string>,
+    disclaimer: {
+      general_care_not_diagnosis: 'General skincare guidance only — not a diagnosis or treatment.',
+    } satisfies Record<CareDisclaimer, string>,
+    loading: 'Loading care guidance…',
+    loadFailedTitle: 'Couldn’t load care guidance',
+    notFoundTitle: 'No care guidance for this scan yet',
+    notFoundBody: 'Guidance is created together with the scan. Try again in a moment.',
+    demoNotice: 'Sample guidance for demo data. Real scans show the guidance saved with your scan.',
   },
   history: {
     title: 'Scan history',

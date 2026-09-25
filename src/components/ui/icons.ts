@@ -40,6 +40,7 @@ export { default as RotateCcwClockIcon } from 'lucide-react-native/icons/rotate-
 export { default as ScanFaceIcon } from 'lucide-react-native/icons/scan-face';
 export { default as SendHorizontalIcon } from 'lucide-react-native/icons/send-horizontal';
 export { default as ShieldCheckIcon } from 'lucide-react-native/icons/shield-check';
+export { default as SparklesIcon } from 'lucide-react-native/icons/sparkles';
 export { default as SoapDispenserDropletIcon } from 'lucide-react-native/icons/soap-dispenser-droplet';
 export { default as SunIcon } from 'lucide-react-native/icons/sun';
 export { default as SunMediumIcon } from 'lucide-react-native/icons/sun-medium';

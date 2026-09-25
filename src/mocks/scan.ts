@@ -16,7 +16,7 @@ export const mockDetectionAreas: AcneDetectionArea[] = [
   { id: 'area-3', category: 'comedonal', box: { x: 0.4833, y: 0.516, width: 0.2556, height: 0.2021 } },
 ];
 
-export const mockScanResult: Omit<ScanResult, 'id' | 'scannedAt'> = {
+export const mockScanResult: Omit<ScanResult, 'id' | 'scannedAt' | 'skinProfileSnapshot'> = {
   amount: 'moderate',
   severity: 'moderate',
   detectedTypes: [
@@ -28,7 +28,7 @@ export const mockScanResult: Omit<ScanResult, 'id' | 'scannedAt'> = {
 };
 
 /** Figma 08A — no visible acne. */
-export const mockClearScanResult: Omit<ScanResult, 'id' | 'scannedAt'> = {
+export const mockClearScanResult: Omit<ScanResult, 'id' | 'scannedAt' | 'skinProfileSnapshot'> = {
   amount: 'none',
   severity: 'none',
   detectedTypes: [],

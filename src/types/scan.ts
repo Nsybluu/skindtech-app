@@ -1,3 +1,5 @@
+import type { SkinProfile } from './profile';
+
 /**
  * Scan domain types.
  *
@@ -56,6 +58,12 @@ export type ScanResult = {
    */
   photoUri?: string;
   image?: { width: number; height: number };
+  /**
+   * The Skin Profile that was in effect when this scan was made, exactly as the backend stored it.
+   * It never changes afterwards, whatever the user does to their current profile. `null` means no
+   * profile was saved for this scan; screens must say so instead of showing the current profile.
+   */
+  skinProfileSnapshot: SkinProfile | null;
   amount: AcneAmount;
   severity: Severity;
   detectedTypes: DetectedAcneType[];

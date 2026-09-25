@@ -36,7 +36,7 @@ export function RoutineCard({ title, icon, iconBackground, steps }: RoutineCardP
 
       <View style={styles.steps}>
         {steps.map((step, index) => (
-          <AppText key={step} variant="bodySmall" color={Colors.text.secondary}>
+          <AppText key={`${index}-${step}`} variant="bodySmall" color={Colors.text.secondary}>
             {`${index + 1}   ${step}`}
           </AppText>
         ))}

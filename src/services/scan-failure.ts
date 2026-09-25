@@ -20,6 +20,9 @@ export function classifyScanFailure(error: unknown): ScanFailureReason {
   // The image check runs first: the backend currently answers 502 for a rejected
   // photo, which would otherwise be mistaken for "service unavailable".
   if (IMAGE_PROBLEM_CODES.has(error.code)) return 'image-rejected';
+  // The backend answered 2xx but not with a scan the app can trust: not a connectivity problem,
+  // so it is never covered up by the demo fallback.
+  if (error.code === 'INVALID_RESPONSE') return 'unknown';
   if (error.statusCode === 0 || error.code === 'NETWORK_ERROR') return 'network';
   if (error.statusCode === 401) return 'session';
   if (error.statusCode === 429) return 'rate-limited';

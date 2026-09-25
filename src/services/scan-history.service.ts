@@ -14,6 +14,8 @@ import {
 
 import { apiRequest } from './api';
 import { ApiError } from './api-error';
+import { invalidResponse, isNumber, isRecord, oneOf } from './response-guards';
+import { parseSkinProfile } from './skin-profile-parser';
 
 export const HISTORY_PAGE_SIZE = 20;
 const MAX_PAGE_SIZE = 50;
@@ -29,17 +31,7 @@ export type ScanPage = {
 type ListResponse = { status: 'success'; data: { scans: unknown; nextCursor: unknown } };
 type DetailResponse = { status: 'success'; data: { scan: unknown } };
 
-const invalid = () => new ApiError(502, 'INVALID_RESPONSE');
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null && !Array.isArray(value);
-
-const isNumber = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value);
-
-function oneOf<T extends string>(allowed: readonly T[], value: unknown): T {
-  if (!allowed.includes(value as T)) throw invalid();
-  return value as T;
-}
+const invalid = invalidResponse;
 
 function parseDetectedType(value: unknown): DetectedAcneType {
   if (!isRecord(value)) throw invalid();
@@ -65,10 +57,15 @@ function parseDetectionArea(value: unknown): AcneDetectionArea {
  * error, so a malformed answer can never be shown as (or mistaken for) an empty history.
  * There is deliberately no `photoUri`: the backend never returns photos, and the training
  * images kept in R2 are never shown back to the user.
+ *
+ * `skinProfileSnapshot` must be present: `null` is a valid answer ("no profile was saved"), but a
+ * missing or malformed one is an error, never silently turned into `null`.
  */
-function parseScan(value: unknown): ScanResult {
+export function parseScan(value: unknown): ScanResult {
   if (!isRecord(value)) throw invalid();
   const { id, scannedAt, modelVersion, image, amount, severity, detectedTypes, detectionAreas } = value;
+  const snapshot = value.skinProfileSnapshot;
+  if (snapshot === undefined) throw invalid();
 
   if (typeof id !== 'string' || id === '') throw invalid();
   if (typeof scannedAt !== 'string' || Number.isNaN(Date.parse(scannedAt))) throw invalid();
@@ -87,6 +84,7 @@ function parseScan(value: unknown): ScanResult {
     scannedAt,
     ...(typeof modelVersion === 'string' ? { modelVersion } : {}),
     ...(imageSize ? { image: imageSize } : {}),
+    skinProfileSnapshot: snapshot === null ? null : parseSkinProfile(snapshot),
     amount: oneOf<AcneAmount>(ACNE_AMOUNTS, amount),
     severity: oneOf<Severity>(SEVERITIES, severity),
     detectedTypes: detectedTypes.map(parseDetectedType),

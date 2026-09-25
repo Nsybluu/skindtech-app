@@ -6,6 +6,8 @@ import { consentService } from '@/services/consent.service';
 import { HistoryController, type HistorySnapshot } from '@/services/history-controller';
 import { ProfileController, type ProfileSnapshot, type ProfileStatus } from '@/services/profile-controller';
 import { profileService } from '@/services/profile.service';
+import { RecommendationController } from '@/services/recommendation-controller';
+import { recommendationService } from '@/services/recommendation.service';
 import { scanHistoryService } from '@/services/scan-history.service';
 import { setSessionInvalidatedHandler } from '@/services/session-token.service';
 import type { SkinProfile, User } from '@/types/profile';
@@ -74,6 +76,8 @@ type UserDataValue = {
   pendingPhotoUri: string | null;
   setPendingPhotoUri: (uri: string | null) => void;
   history: HistoryValue;
+  /** Care recommendations by scan id, loaded from the backend on demand (see `useRecommendation`). */
+  recommendations: RecommendationController;
   /**
    * Whether scan photos may be saved to improve the AI, as confirmed by the backend.
    * `null` means not granted or not asked yet: the consent sheet asks.
@@ -128,6 +132,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setProfileState,
       ),
   );
+  const [recommendationController] = useState(
+    () => new RecommendationController({ get: (scanId) => recommendationService.getRecommendation(scanId) }),
+  );
   const [pendingPhotoUri, setPendingPhotoUri] = useState<string | null>(null);
   const [historyState, setHistoryState] = useState<HistorySnapshot>({
     scans: [],
@@ -179,8 +186,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       void consentController.hydrate();
       historyController.reset();
       void historyController.hydrate();
+      recommendationController.reset();
     },
-    [consentController, historyController, profileController],
+    [consentController, historyController, profileController, recommendationController],
   );
 
   const signOut = useCallback(() => {
@@ -191,7 +199,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     profileController.reset();
     consentController.reset();
     historyController.reset();
-  }, [consentController, historyController, profileController]);
+    recommendationController.reset();
+  }, [consentController, historyController, profileController, recommendationController]);
 
   useEffect(() => {
     let active = true;
@@ -242,10 +251,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const addScanResult = useCallback((result: ScanResult) => historyController.add(result), [historyController]);
   const findScan = useCallback((id: string) => historyController.find(id), [historyController]);
   const fetchScan = useCallback((id: string) => historyController.loadDetail(id), [historyController]);
-  const deleteHistory = useCallback(() => historyController.deleteAll(), [historyController]);
+  const deleteHistory = useCallback(async () => {
+    const deleted = await historyController.deleteAll();
+    // Every scan is gone, and so is what was known about their recommendations.
+    if (deleted) recommendationController.reset();
+    return deleted;
+  }, [historyController, recommendationController]);
   const deleteSelectedScans = useCallback(
-    (ids: string[]) => historyController.deleteSelected(ids),
-    [historyController],
+    async (ids: string[]) => {
+      const deleted = await historyController.deleteSelected(ids);
+      if (deleted) recommendationController.forget(ids);
+      return deleted;
+    },
+    [historyController, recommendationController],
   );
   const beginSelection = useCallback(() => historyController.beginSelection(), [historyController]);
   const endSelection = useCallback(() => historyController.endSelection(), [historyController]);
@@ -290,6 +308,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
             selectAll,
             clearSelection,
           },
+          recommendations: recommendationController,
           aiImprovementConsent: consent.value,
           isSavingConsent: consent.saving,
           getAiImprovementConsent,

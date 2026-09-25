@@ -17,31 +17,29 @@ export function formatSkinProfileShort(profile: SkinProfile | null, t: Translati
   return `${t.skinProfileSummary.skinTypeShort[profile.skinType]} · ${t.skinProfileSummary.sensitivity[profile.sensitivity]}`;
 }
 
-type SkinProfileSummaryProps = {
-  /** Figma uses a taller row with "View" on the result screen. */
-  variant?: 'scan' | 'result';
-};
-
-/** "Skin Profile · Oily · Sensitive — Edit/View" row. */
-export function SkinProfileSummary({ variant = 'scan' }: SkinProfileSummaryProps) {
+/**
+ * "Skin Profile · Oily · Sensitive — Edit" row of the scan flow. It shows the CURRENT profile, which
+ * is the one the next scan will use. A finished scan shows its own snapshot instead
+ * (see `SkinProfileSnapshotCard`), never this.
+ */
+export function SkinProfileSummary() {
   const { t } = useI18n();
   const { skinProfile } = useUserData();
-  const isResult = variant === 'result';
-  const action = isResult ? t.common.view : t.common.edit;
+  const action = t.common.edit;
 
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={`${t.common.skinProfile}, ${action}`}
       onPress={() => router.push('/skin-profile')}
-      style={({ pressed }) => [styles.bar, isResult && styles.resultBar, pressed && styles.pressed]}>
+      style={({ pressed }) => [styles.bar, pressed && styles.pressed]}>
       <View style={styles.content}>
         <IconContainer size={30} radius={Radius.m}>
           <AppIcon icon={FaceSlightlySmilingIcon} size={16} />
         </IconContainer>
         <View style={styles.copy}>
           <AppText variant="captionSemibold" numberOfLines={1}>
-            {isResult ? t.result.skinProfileUsed : t.common.skinProfile}
+            {t.common.skinProfile}
           </AppText>
           <AppText variant="caption" color={Colors.text.muted} numberOfLines={1}>
             {formatSkinProfileShort(skinProfile, t)}
@@ -66,9 +64,6 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.s,
     borderRadius: Radius.l,
     backgroundColor: Colors.surface.notice,
-  },
-  resultBar: {
-    minHeight: 60,
   },
   content: {
     flex: 1,

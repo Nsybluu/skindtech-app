@@ -15,6 +15,8 @@ type NoticeProps = {
   tone?: NoticeTone;
   /** Title color; Figma uses ink for informational and rose for warnings. */
   titleColor?: string;
+  /** Extra rows under the message (for example a short list of reasons). */
+  children?: ReactNode;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -34,6 +36,7 @@ export function Notice({
   title,
   tone = 'rose',
   titleColor = Colors.brand.primary,
+  children,
   style,
 }: NoticeProps) {
   return (
@@ -48,6 +51,7 @@ export function Notice({
         <AppText variant="caption" color={Colors.text.secondary}>
           {message}
         </AppText>
+        {children}
       </View>
     </View>
   );

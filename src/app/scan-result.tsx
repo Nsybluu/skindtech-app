@@ -2,12 +2,12 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet } from 'react-native';
 
-import { CareGuidance } from '@/components/care/care-guidance';
+import { CareSection } from '@/components/care/care-section';
 import { AcneTypesSection } from '@/components/result/acne-types-section';
 import { DetectedAreasCard } from '@/components/result/detected-areas-card';
 import { OverallAnalysisCard } from '@/components/result/overall-analysis-card';
 import { ScanActionsSheet } from '@/components/result/scan-actions-sheet';
-import { SkinProfileSummary } from '@/components/scan/skin-profile-summary';
+import { SkinProfileSnapshotCard } from '@/components/result/skin-profile-snapshot-card';
 import { ActionBar } from '@/components/ui/action-bar';
 import { AppButton } from '@/components/ui/app-button';
 import { AppIcon } from '@/components/ui/app-icon';
@@ -20,10 +20,12 @@ import { goBackOr, ScreenHeader } from '@/components/ui/screen-header';
 import { StateCard } from '@/components/ui/state-card';
 import { Colors } from '@/constants/colors';
 import { Radius, Spacing } from '@/constants/spacing';
+import { useRecommendation } from '@/hooks/use-recommendation';
 import { useScanResult } from '@/hooks/use-scan-result';
 import { useI18n } from '@/i18n/i18n-provider';
 import { useUserData } from '@/providers/app-provider';
 import { dataErrorMessage, dataErrorMessageForKind } from '@/utils/data-errors';
+import { recommendationTarget } from '@/utils/recommendation-target';
 import { formatScanDate, getDetectedCategories } from '@/utils/format';
 
 /**
@@ -36,6 +38,9 @@ export default function ScanResultScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
   const { history } = useUserData();
   const state = useScanResult(id);
+  // The scan above is complete on its own; its care guidance loads next to it and fails on its own.
+  // A demo scan never reached the backend, so it asks for nothing.
+  const recommendation = useRecommendation(recommendationTarget(state.status === 'ready' ? state.result : undefined));
   const [menuOpen, setMenuOpen] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   // Set once the scan was deleted and the screen is on its way out, so it does not flash "not found".
@@ -131,8 +136,8 @@ export default function ScanResultScreen() {
       <OverallAnalysisCard result={result} />
       <DetectedAreasCard result={result} categories={categories} />
       <AcneTypesSection categories={categories} />
-      <SkinProfileSummary variant="result" />
-      <CareGuidance isClear={isClear} />
+      <SkinProfileSnapshotCard snapshot={result.skinProfileSnapshot} />
+      <CareSection isDemo={result.isDemoData === true} state={recommendation.state} onRetry={recommendation.retry} />
       <Notice
         icon={<AppIcon icon={InfoIcon} size={18} />}
         message={

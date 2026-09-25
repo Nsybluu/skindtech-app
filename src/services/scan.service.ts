@@ -6,6 +6,7 @@ import type { ScanOutcome, ScanResult } from '@/types/scan';
 
 import { apiRequest } from './api';
 import { classifyScanFailure, isConnectivityFailure } from './scan-failure';
+import { parseScan } from './scan-history.service';
 
 /**
  * What to do when the SKINDTECH API cannot be reached (offline, services not
@@ -30,14 +31,18 @@ function readScanFallback(): ScanFallback {
 
 const SCAN_FALLBACK = readScanFallback();
 
-/** Demo result, clearly flagged so the UI can label it as sample data. */
-function demoResult(photoUri: string): ScanResult {
+/**
+ * Demo result, clearly flagged so the UI can label it as sample data. Its snapshot is a private
+ * copy of the profile that was passed in, so editing the profile later cannot change it either.
+ */
+function demoResult(photoUri: string, skinProfile: SkinProfile | null): ScanResult {
   const base = SCAN_FALLBACK === 'clear' ? mockClearScanResult : mockScanResult;
 
   return {
     ...base,
     id: `demo-${Date.now()}`,
     scannedAt: new Date().toISOString(),
+    skinProfileSnapshot: skinProfile ? { ...skinProfile, concerns: [...skinProfile.concerns] } : null,
     photoUri,
     isDemoData: true,
   };
@@ -45,7 +50,7 @@ function demoResult(photoUri: string): ScanResult {
 
 type CreateScanResponse = {
   status: 'success';
-  result: ScanResult;
+  result: unknown;
 };
 
 export const scanService = {
@@ -71,9 +76,10 @@ export const scanService = {
         method: 'POST',
         body: form,
       });
+      // The same strict parser as history and detail: a scan without a valid snapshot is an error.
       return {
         status: 'success',
-        result: { ...response.result, photoUri },
+        result: { ...parseScan(response?.result), photoUri },
       };
     } catch (error) {
       const reason = classifyScanFailure(error);
@@ -81,7 +87,7 @@ export const scanService = {
 
       if (SCAN_FALLBACK !== 'off' && isConnectivityFailure(reason)) {
         console.warn(`Falling back to ${SCAN_FALLBACK} demo data (EXPO_PUBLIC_SCAN_FALLBACK).`);
-        return { status: 'success', result: demoResult(photoUri) };
+        return { status: 'success', result: demoResult(photoUri, skinProfile) };
       }
 
       return { status: 'failed', reason };

@@ -6,16 +6,17 @@ import { DropletIcon, SoapDispenserDropletIcon, SunMediumIcon, type LucideIcon }
 import { Alpha, Colors } from '@/constants/colors';
 import { Radius, Spacing } from '@/constants/spacing';
 import { useI18n } from '@/i18n/i18n-provider';
+import type { CareBasic } from '@/types/recommendation';
 
-/** Figma "Card / Skincare Basics" — three product tiles. */
-export function SkincareBasics() {
+const ICONS: Record<CareBasic, LucideIcon> = {
+  gentle_cleanser: SoapDispenserDropletIcon,
+  lightweight_moisturizer: DropletIcon,
+  non_comedogenic_spf: SunMediumIcon,
+};
+
+/** Figma "Card / Skincare Basics" — one tile per basic the recommendation names. */
+export function SkincareBasics({ basics }: { basics: CareBasic[] }) {
   const { t } = useI18n();
-
-  const tiles: { key: string; label: string; icon: LucideIcon }[] = [
-    { key: 'cleanser', label: t.care.basicCleanser, icon: SoapDispenserDropletIcon },
-    { key: 'moisturizer', label: t.care.basicMoisturizer, icon: DropletIcon },
-    { key: 'sunscreen', label: t.care.basicSunscreen, icon: SunMediumIcon },
-  ];
 
   return (
     <View style={styles.card}>
@@ -23,12 +24,12 @@ export function SkincareBasics() {
         {t.care.basicsTitle}
       </AppText>
       <View style={styles.row}>
-        {tiles.map(({ key, label, icon }) => (
-          <View key={key} style={styles.tile}>
-            <AppIcon icon={icon} size={20} />
-            {/* All three tiles share one size; a long label wraps instead of shrinking. */}
+        {basics.map((basic) => (
+          <View key={basic} style={styles.tile}>
+            <AppIcon icon={ICONS[basic]} size={20} />
+            {/* All tiles share one size; a long label wraps instead of shrinking. */}
             <AppText variant="footnote" color={Colors.text.secondary} align="center">
-              {label}
+              {t.care.basic[basic]}
             </AppText>
           </View>
         ))}

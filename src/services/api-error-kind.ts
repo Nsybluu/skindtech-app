@@ -6,7 +6,7 @@ export type ApiErrorKind =
   | 'network'
   /** The session is no longer valid; the app signs the user out on its own. */
   | 'session'
-  /** `SCAN_NOT_FOUND`: no such scan for this account. */
+  /** `SCAN_NOT_FOUND` / `RECOMMENDATION_NOT_FOUND`: nothing of that kind for this account. */
   | 'not-found'
   /** `STORAGE_UNAVAILABLE`: the backend could not remove the stored photos, so it deleted nothing. */
   | 'storage'
@@ -20,6 +20,7 @@ export function apiErrorKind(error: unknown): ApiErrorKind {
     case 'NETWORK_ERROR':
       return 'network';
     case 'SCAN_NOT_FOUND':
+    case 'RECOMMENDATION_NOT_FOUND':
       return 'not-found';
     case 'STORAGE_UNAVAILABLE':
       return 'storage';
