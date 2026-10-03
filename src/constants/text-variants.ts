@@ -14,7 +14,18 @@
  *   14 body small / label · 13 caption · 12 footnote · 11 micro
  */
 
+/** `authTitle` → `auth-title`: the name of the variant's Tailwind class (`text-auth-title`). */
+export const kebabCase = (key: string) => key.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+
 export type FontWeightName = 'regular' | 'medium' | 'semibold' | 'bold';
+
+/** The bundled font file (= the family name) of each weight; the files are loaded in typography.ts. */
+export const FontFamily = {
+  regular: 'NotoSansThaiSemiCondensed-Regular',
+  medium: 'NotoSansThaiSemiCondensed-Medium',
+  semibold: 'NotoSansThaiSemiCondensed-SemiBold',
+  bold: 'NotoSansThaiSemiCondensed-Bold',
+} as const satisfies Record<FontWeightName, string>;
 
 export type TextVariantSpec = {
   fontSize: number;

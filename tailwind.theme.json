@@ -1,0 +1,425 @@
+{
+  "colors": {
+    "transparent": "transparent",
+    "rose": "rgb(201 89 97 / <alpha-value>)",
+    "taupe": "rgb(176 143 133 / <alpha-value>)",
+    "blush": "rgb(253 234 235 / <alpha-value>)",
+    "peach": "rgb(245 183 166 / <alpha-value>)",
+    "white": "rgb(255 255 255 / <alpha-value>)",
+    "ink": "rgb(27 21 19 / <alpha-value>)",
+    "fg": {
+      "primary": "#1B1513",
+      "secondary": "#523D38",
+      "muted": "#79645E",
+      "tagline": "#3C2F2A",
+      "label": "#302421",
+      "footer": "#4F3C37",
+      "google": "#141414",
+      "on-brand": "#FFFFFF",
+      "on-dark-muted": "rgba(255, 255, 255, 0.72)"
+    },
+    "brand": {
+      "primary": "#C95961",
+      "vivid": "#CE5862",
+      "gradient-start": "#D6656C",
+      "gradient-end": "#E27C7F",
+      "accent": "#E1787F",
+      "peach": "#F5B7A6"
+    },
+    "icon": {
+      "strong": "#4A3B35"
+    },
+    "canvas": {
+      "base": "#FFF9F7",
+      "gradient-start": "#FDF1EF",
+      "gradient-mid": "#FFF9F7",
+      "gradient-end": "#FCE9E9",
+      "camera": "#1B1513",
+      "sheet": "#FFFDFC",
+      "avatar": "#FFE8E8"
+    },
+    "line": {
+      "input": "rgba(171, 122, 112, 0.62)",
+      "button": "rgba(176, 143, 133, 0.72)",
+      "card": "rgba(176, 143, 133, 0.34)",
+      "subtle": "rgba(176, 143, 133, 0.26)",
+      "divider": "rgba(176, 143, 133, 0.2)",
+      "brand": "rgba(201, 89, 97, 0.22)",
+      "brand-strong": "rgba(201, 89, 97, 0.3)"
+    },
+    "surface": {
+      "input": "rgba(255, 255, 255, 0.42)",
+      "card": "rgba(255, 255, 255, 0.58)",
+      "card-strong": "rgba(255, 255, 255, 0.74)",
+      "list": "rgba(255, 255, 255, 0.78)",
+      "secondary-button": "rgba(255, 255, 255, 0.7)",
+      "bar": "rgba(255, 255, 255, 0.94)",
+      "notice": "rgba(201, 89, 97, 0.08)",
+      "icon-tint": "rgba(201, 89, 97, 0.12)",
+      "overlay-chip": "rgba(255, 255, 255, 0.12)",
+      "backdrop": "rgba(27, 21, 19, 0.34)"
+    },
+    "success": {
+      "surface": "#F2F8F4",
+      "surface-alt": "#EFF7F2",
+      "border": "#D3EBDD",
+      "text": "#48765E"
+    },
+    "progress": {
+      "surface": "#FFF5F6",
+      "border": "#F7D5D8",
+      "title": "#271D1F",
+      "track": "#F4DBDD",
+      "text": "#675759"
+    },
+    "error": {
+      "icon-surface": "#FFEBED",
+      "icon-border": "#F8CDD1",
+      "title": "#271D1F",
+      "body": "#705E61",
+      "card-border": "#F2D6D9",
+      "text": "#5C4D4F",
+      "notice-surface": "#FFF3F4",
+      "notice-border": "#F7D8DB"
+    },
+    "danger": {
+      "fill": "#B3261E",
+      "text": "#B3261E",
+      "surface": "#FDECEA",
+      "border": "rgba(179, 38, 30, 0.28)"
+    },
+    "history": {
+      "moderate": "#FCECEC",
+      "mild": "#FDF2F0",
+      "severe": "#F9E0E2"
+    }
+  },
+  "borderRadius": {
+    "none": "0px",
+    "sm": "8px",
+    "md": "12px",
+    "lg": "16px",
+    "xl": "20px",
+    "2xl": "24px",
+    "sheet": "28px",
+    "pill": "999px",
+    "full": "9999px"
+  },
+  "fontFamily": {
+    "noto-regular": [
+      "NotoSansThaiSemiCondensed-Regular"
+    ],
+    "noto-medium": [
+      "NotoSansThaiSemiCondensed-Medium"
+    ],
+    "noto-semibold": [
+      "NotoSansThaiSemiCondensed-SemiBold"
+    ],
+    "noto-bold": [
+      "NotoSansThaiSemiCondensed-Bold"
+    ]
+  },
+  "fontSize": {
+    "brand": [
+      "14px",
+      {
+        "lineHeight": "20px",
+        "letterSpacing": "5px"
+      }
+    ],
+    "brand-th": [
+      "14px",
+      {
+        "lineHeight": "21px",
+        "letterSpacing": "5px"
+      }
+    ],
+    "display": [
+      "36px",
+      {
+        "lineHeight": "46px",
+        "letterSpacing": "-0.5px"
+      }
+    ],
+    "display-th": [
+      "36px",
+      {
+        "lineHeight": "51px",
+        "letterSpacing": "0px"
+      }
+    ],
+    "auth-title": [
+      "30px",
+      {
+        "lineHeight": "40px",
+        "letterSpacing": "-0.4px"
+      }
+    ],
+    "auth-title-th": [
+      "30px",
+      {
+        "lineHeight": "42px",
+        "letterSpacing": "0px"
+      }
+    ],
+    "greeting": [
+      "26px",
+      {
+        "lineHeight": "36px",
+        "letterSpacing": "-0.3px"
+      }
+    ],
+    "greeting-th": [
+      "26px",
+      {
+        "lineHeight": "37px",
+        "letterSpacing": "0px"
+      }
+    ],
+    "screen-title": [
+      "24px",
+      {
+        "lineHeight": "34px",
+        "letterSpacing": "0px"
+      }
+    ],
+    "screen-title-th": [
+      "24px",
+      {
+        "lineHeight": "34px",
+        "letterSpacing": "0px"
+      }
+    ],
+    "avatar-letter": [
+      "24px",
+      {
+        "lineHeight": "30px",
+        "letterSpacing": "0px"
+      }
+    ],
+    "avatar-letter-th": [
+      "24px",
+      {
+        "lineHeight": "34px",
+        "letterSpacing": "0px"
+      }
+    ],
+    "headline": [
+      "20px",
+      {
+        "lineHeight": "30px",
+        "letterSpacing": "0px"
+      }
+    ],
+    "headline-th": [
+      "20px",
+      {
+        "lineHeight": "30px",
+        "letterSpacing": "0px"
+      }
+    ],
+    "section-title": [
+      "18px",
+      {
+        "lineHeight": "27px",
+        "letterSpacing": "0px"
+      }
+    ],
+    "section-title-th": [
+      "18px",
+      {
+        "lineHeight": "27px",
+        "letterSpacing": "0px"
+      }
+    ],
+    "card-title": [
+      "16px",
+      {
+        "lineHeight": "24px",
+        "letterSpacing": "0px"
+      }
+    ],
+    "card-title-th": [
+      "16px",
+      {
+        "lineHeight": "24px",
+        "letterSpacing": "0px"
+      }
+    ],
+    "title-small": [
+      "15px",
+      {
+        "lineHeight": "23px",
+        "letterSpacing": "0px"
+      }
+    ],
+    "title-small-th": [
+      "15px",
+      {
+        "lineHeight": "23px",
+        "letterSpacing": "0px"
+      }
+    ],
+    "body-large": [
+      "16px",
+      {
+        "lineHeight": "25px",
+        "letterSpacing": "0px"
+      }
+    ],
+    "body-large-th": [
+      "16px",
+      {
+        "lineHeight": "25px",
+        "letterSpacing": "0px"
+      }
+    ],
+    "body": [
+      "15px",
+      {
+        "lineHeight": "23px",
+        "letterSpacing": "0px"
+      }
+    ],
+    "body-th": [
+      "15px",
+      {
+        "lineHeight": "23px",
+        "letterSpacing": "0px"
+      }
+    ],
+    "body-small": [
+      "14px",
+      {
+        "lineHeight": "21px",
+        "letterSpacing": "0px"
+      }
+    ],
+    "body-small-th": [
+      "14px",
+      {
+        "lineHeight": "21px",
+        "letterSpacing": "0px"
+      }
+    ],
+    "label": [
+      "14px",
+      {
+        "lineHeight": "21px",
+        "letterSpacing": "0px"
+      }
+    ],
+    "label-th": [
+      "14px",
+      {
+        "lineHeight": "21px",
+        "letterSpacing": "0px"
+      }
+    ],
+    "caption": [
+      "13px",
+      {
+        "lineHeight": "20px",
+        "letterSpacing": "0px"
+      }
+    ],
+    "caption-th": [
+      "13px",
+      {
+        "lineHeight": "20px",
+        "letterSpacing": "0px"
+      }
+    ],
+    "caption-semibold": [
+      "13px",
+      {
+        "lineHeight": "20px",
+        "letterSpacing": "0px"
+      }
+    ],
+    "caption-semibold-th": [
+      "13px",
+      {
+        "lineHeight": "20px",
+        "letterSpacing": "0px"
+      }
+    ],
+    "footnote": [
+      "12px",
+      {
+        "lineHeight": "18px",
+        "letterSpacing": "0px"
+      }
+    ],
+    "footnote-th": [
+      "12px",
+      {
+        "lineHeight": "18px",
+        "letterSpacing": "0px"
+      }
+    ],
+    "footnote-semibold": [
+      "12px",
+      {
+        "lineHeight": "18px",
+        "letterSpacing": "0px"
+      }
+    ],
+    "footnote-semibold-th": [
+      "12px",
+      {
+        "lineHeight": "18px",
+        "letterSpacing": "0px"
+      }
+    ],
+    "micro": [
+      "11px",
+      {
+        "lineHeight": "16px",
+        "letterSpacing": "0px"
+      }
+    ],
+    "micro-th": [
+      "11px",
+      {
+        "lineHeight": "17px",
+        "letterSpacing": "0px"
+      }
+    ],
+    "button-large": [
+      "16px",
+      {
+        "lineHeight": "24px",
+        "letterSpacing": "0px"
+      }
+    ],
+    "button-large-th": [
+      "16px",
+      {
+        "lineHeight": "24px",
+        "letterSpacing": "0px"
+      }
+    ],
+    "button": [
+      "15px",
+      {
+        "lineHeight": "22px",
+        "letterSpacing": "0px"
+      }
+    ],
+    "button-th": [
+      "15px",
+      {
+        "lineHeight": "23px",
+        "letterSpacing": "0px"
+      }
+    ],
+    "field": "16px",
+    "field-multiline": [
+      "16px",
+      {
+        "lineHeight": "25px"
+      }
+    ]
+  }
+}

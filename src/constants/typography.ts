@@ -8,9 +8,10 @@
 
 import type { TextStyle } from 'react-native';
 
-import { TextVariants, type FontWeightName, type TextVariant } from './text-variants';
+import { FontFamily, TextVariants, type TextVariant } from './text-variants';
 
 export {
+  FontFamily,
   MAX_FONT_SIZE_MULTIPLIER,
   resolveLetterSpacing,
   resolveLineHeight,
@@ -21,13 +22,6 @@ export {
   type TextVariant,
   type TextVariantSpec,
 } from './text-variants';
-
-export const FontFamily = {
-  regular: 'NotoSansThaiSemiCondensed-Regular',
-  medium: 'NotoSansThaiSemiCondensed-Medium',
-  semibold: 'NotoSansThaiSemiCondensed-SemiBold',
-  bold: 'NotoSansThaiSemiCondensed-Bold',
-} as const satisfies Record<FontWeightName, string>;
 
 export const FontAssets = {
   [FontFamily.regular]: require('@/assets/fonts/NotoSansThaiSemiCondensed-Regular.ttf'),
