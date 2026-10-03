@@ -1,35 +1,29 @@
 import type { ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 
 import { AppText } from '@/components/ui/app-text';
 import { ListRow } from '@/components/ui/list-group';
-import { Colors } from '@/constants/colors';
-import { Spacing } from '@/constants/spacing';
+import { cn } from '@/utils/cn';
 
 type InfoRowProps = {
   icon: ReactNode;
   title: string;
   body: string;
-  minHeight?: number;
+  /** Replaces the default `min-h-[58px]`. */
+  className?: string;
 };
 
 /** Icon + title + description row used by Privacy & data and About SKINDTECH. */
-export function InfoRow({ icon, title, body, minHeight = 58 }: InfoRowProps) {
+export function InfoRow({ icon, title, body, className }: InfoRowProps) {
   return (
-    <ListRow minHeight={minHeight} paddingVertical={Spacing.s}>
+    <ListRow className={cn('min-h-[58px]', className)}>
       {icon}
-      <View style={styles.copy}>
+      <View className="flex-1">
         <AppText variant="titleSmall">{title}</AppText>
-        <AppText variant="caption" color={Colors.text.secondary}>
+        <AppText variant="caption" className="text-fg-secondary">
           {body}
         </AppText>
       </View>
     </ListRow>
   );
 }
-
-const styles = StyleSheet.create({
-  copy: {
-    flex: 1,
-  },
-});

@@ -1,8 +1,10 @@
 const { getDefaultConfig } = require('expo/metro-config');
+const { withNativeWind } = require('nativewind/metro');
 
 /**
  * Figma icons are exported as SVG files and imported as React components
- * through react-native-svg-transformer.
+ * through react-native-svg-transformer; NativeWind compiles Tailwind classes on top of that.
+ * `inlineRem: 16` makes Tailwind's stock spacing the app's 4pt grid (`p-1` = 4, `p-4` = 16).
  */
 module.exports = (() => {
   const config = getDefaultConfig(__dirname);
@@ -18,5 +20,5 @@ module.exports = (() => {
     sourceExts: [...resolver.sourceExts, 'svg'],
   };
 
-  return config;
+  return withNativeWind(config, { input: './global.css', inlineRem: 16 });
 })();

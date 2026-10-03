@@ -1,15 +1,15 @@
 import type { ReactNode } from 'react';
-import { Pressable, StyleSheet } from 'react-native';
+import { Pressable } from 'react-native';
 
 import { AppText } from '@/components/ui/app-text';
-import { Colors } from '@/constants/colors';
-import { Radius, Spacing } from '@/constants/spacing';
+import { cn } from '@/utils/cn';
 
 type ActionRowProps = {
   icon: ReactNode;
   label: string;
   onPress: () => void;
-  color?: string;
+  /** Colour class of the label; defaults to `text-brand-primary`. */
+  colorClassName?: string;
   /** Emphasised rows (destructive or standalone) use the semibold small-title style. */
   emphasized?: boolean;
   /** Standalone rows have their own card background; list rows don't. */
@@ -23,7 +23,7 @@ export function ActionRow({
   icon,
   label,
   onPress,
-  color = Colors.brand.primary,
+  colorClassName = 'text-brand-primary',
   emphasized = false,
   standalone = false,
   disabled = false,
@@ -35,43 +35,15 @@ export function ActionRow({
       accessibilityState={{ disabled }}
       disabled={disabled}
       onPress={onPress}
-      style={({ pressed }) => [
-        styles.row,
-        standalone && styles.standalone,
-        pressed && styles.pressed,
-        disabled && styles.disabled,
-      ]}>
+      className={cn(
+        'min-h-[52px] flex-row items-center gap-3 p-3 active:opacity-70',
+        standalone && 'min-h-14 rounded-lg border border-line-subtle bg-surface-list',
+        disabled && 'opacity-50',
+      )}>
       {icon}
-      <AppText variant={emphasized ? 'titleSmall' : 'body'} color={color} style={styles.label}>
+      <AppText variant={emphasized ? 'titleSmall' : 'body'} className={cn('flex-1', colorClassName)}>
         {label}
       </AppText>
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  row: {
-    minHeight: 52,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.m,
-    paddingHorizontal: Spacing.m,
-    paddingVertical: Spacing.m,
-  },
-  standalone: {
-    minHeight: 56,
-    borderRadius: Radius.l,
-    borderWidth: 1,
-    borderColor: Colors.border.subtle,
-    backgroundColor: Colors.surface.list,
-  },
-  label: {
-    flex: 1,
-  },
-  pressed: {
-    opacity: 0.7,
-  },
-  disabled: {
-    opacity: 0.5,
-  },
-});

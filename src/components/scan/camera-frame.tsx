@@ -1,11 +1,11 @@
-import { Image } from 'expo-image';
 import type { ReactNode } from 'react';
-import { StyleSheet, View, type ViewStyle } from 'react-native';
+import { View } from 'react-native';
 
 import { AppText } from '@/components/ui/app-text';
-import { Alpha, Colors } from '@/constants/colors';
-import { Radius, Shadows, Spacing } from '@/constants/spacing';
+import { Image } from '@/components/ui/styled';
+import { Effects } from '@/constants/effects';
 import { useI18n } from '@/i18n/i18n-provider';
+import { cn } from '@/utils/cn';
 
 type CameraFrameProps = {
   guidanceTitle: string;
@@ -18,7 +18,7 @@ type CameraFrameProps = {
   /** Captured local image shown during review and analysis. */
   photoUri?: string | null;
   /** Dims the captured image (used behind a warning). */
-  photoOpacity?: number;
+  dimmed?: boolean;
   /** Shown instead of a preview when there is no camera or photo (e.g. camera access is off). */
   emptyContent?: ReactNode;
 };
@@ -34,43 +34,48 @@ export function CameraFrame({
   topRightAccessory,
   cameraContent,
   photoUri,
-  photoOpacity = 1,
+  dimmed = false,
   emptyContent,
 }: CameraFrameProps) {
   const { t } = useI18n();
 
   return (
-    <View style={styles.frame}>
-      <View style={styles.viewport}>
+    <View
+      className="min-h-[280px] flex-1 overflow-hidden rounded-2xl bg-canvas-camera"
+      style={Effects.shadowCamera}>
+      <View className="flex-1 overflow-hidden">
         {cameraContent ? (
           <>
-            <View style={styles.media}>{cameraContent}</View>
+            <View className="absolute inset-0">{cameraContent}</View>
             <FramingGuide />
           </>
         ) : photoUri ? (
           <Image
             source={{ uri: photoUri }}
             contentFit="cover"
-            style={[styles.media, { opacity: photoOpacity }]}
+            className={cn('absolute inset-0', dimmed && 'opacity-[0.55]')}
             accessibilityLabel={t.scan.photoLabel}
           />
         ) : emptyContent ? (
-          <View style={styles.empty}>{emptyContent}</View>
+          <View className="flex-1 items-center justify-center px-6">{emptyContent}</View>
         ) : null}
       </View>
 
       <View
         accessibilityRole={tone === 'warning' ? 'alert' : 'summary'}
-        style={[styles.guidance, tone === 'warning' && styles.guidanceWarning]}>
-        <AppText variant="label" color={Colors.text.onBrand} align="center">
+        className={cn(
+          'mx-4 mb-4 mt-3 min-h-16 justify-center gap-0.5 rounded-lg px-4 py-3',
+          tone === 'warning' ? 'min-h-[76px] bg-brand-primary' : 'bg-surface-overlay-chip',
+        )}>
+        <AppText variant="label" className="text-center text-fg-on-brand">
           {guidanceTitle}
         </AppText>
-        <AppText variant="caption" color={Colors.text.onDarkMuted} align="center" style={styles.guidanceBody}>
+        <AppText variant="caption" className="px-1 text-center text-fg-on-dark-muted">
           {guidanceBody}
         </AppText>
       </View>
 
-      {topRightAccessory ? <View style={styles.topRight}>{topRightAccessory}</View> : null}
+      {topRightAccessory ? <View className="absolute right-3 top-3">{topRightAccessory}</View> : null}
     </View>
   );
 }
@@ -82,124 +87,16 @@ function FramingGuide() {
       pointerEvents="none"
       accessibilityElementsHidden
       importantForAccessibility="no-hide-descendants"
-      style={styles.guideLayer}>
-      <View style={styles.guide}>
-        <View style={[styles.corner, styles.cornerTopLeft]} />
-        <View style={[styles.corner, styles.cornerTopRight]} />
-        <View style={[styles.corner, styles.cornerBottomLeft]} />
-        <View style={[styles.corner, styles.cornerBottomRight]} />
+      className="absolute inset-0 items-center justify-center">
+      <View className="aspect-[0.8] h-[78%]">
+        <View className="absolute left-0 top-0 size-7 rounded-tl-md border-l-[3px] border-t-[3px] border-white/[0.85]" />
+        <View className="absolute right-0 top-0 size-7 rounded-tr-md border-r-[3px] border-t-[3px] border-white/[0.85]" />
+        <View className="absolute bottom-0 left-0 size-7 rounded-bl-md border-b-[3px] border-l-[3px] border-white/[0.85]" />
+        <View className="absolute bottom-0 right-0 size-7 rounded-br-md border-b-[3px] border-r-[3px] border-white/[0.85]" />
       </View>
     </View>
   );
 }
 
-const CORNER_SIZE = 28;
-const CORNER_WIDTH = 3;
-const CORNER_RADIUS = 12;
-const GUIDE_COLOR = Alpha.white(0.85);
-
-const corner = (edges: ViewStyle): ViewStyle => ({
-  ...edges,
-  width: CORNER_SIZE,
-  height: CORNER_SIZE,
-  borderColor: GUIDE_COLOR,
-});
-
-const styles = StyleSheet.create({
-  frame: {
-    flex: 1,
-    minHeight: 280,
-    borderRadius: Radius.xxl,
-    backgroundColor: Colors.background.camera,
-    boxShadow: Shadows.camera,
-    overflow: 'hidden',
-  },
-  viewport: {
-    flex: 1,
-    overflow: 'hidden',
-  },
-  media: {
-    ...StyleSheet.absoluteFill,
-  },
-  empty: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: Spacing.xxl,
-  },
-  guideLayer: {
-    ...StyleSheet.absoluteFill,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  guide: {
-    height: '78%',
-    aspectRatio: 0.8,
-  },
-  corner: {
-    position: 'absolute',
-  },
-  cornerTopLeft: corner({
-    top: 0,
-    left: 0,
-    borderTopWidth: CORNER_WIDTH,
-    borderLeftWidth: CORNER_WIDTH,
-    borderTopLeftRadius: CORNER_RADIUS,
-  }),
-  cornerTopRight: corner({
-    top: 0,
-    right: 0,
-    borderTopWidth: CORNER_WIDTH,
-    borderRightWidth: CORNER_WIDTH,
-    borderTopRightRadius: CORNER_RADIUS,
-  }),
-  cornerBottomLeft: corner({
-    bottom: 0,
-    left: 0,
-    borderBottomWidth: CORNER_WIDTH,
-    borderLeftWidth: CORNER_WIDTH,
-    borderBottomLeftRadius: CORNER_RADIUS,
-  }),
-  cornerBottomRight: corner({
-    bottom: 0,
-    right: 0,
-    borderBottomWidth: CORNER_WIDTH,
-    borderRightWidth: CORNER_WIDTH,
-    borderBottomRightRadius: CORNER_RADIUS,
-  }),
-  guidance: {
-    minHeight: 64,
-    marginTop: Spacing.m,
-    marginHorizontal: Spacing.l,
-    marginBottom: Spacing.l,
-    paddingHorizontal: Spacing.l,
-    paddingVertical: Spacing.m,
-    gap: Spacing.xxs,
-    justifyContent: 'center',
-    borderRadius: Radius.l,
-    backgroundColor: Colors.surface.overlayChip,
-  },
-  guidanceWarning: {
-    minHeight: 76,
-    backgroundColor: Colors.brand.primary,
-  },
-  guidanceBody: {
-    paddingHorizontal: Spacing.xs,
-  },
-  topRight: {
-    position: 'absolute',
-    top: Spacing.m,
-    right: Spacing.m,
-  },
-});
-
-export const cameraAccessoryStyles = StyleSheet.create({
-  roundButton: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: Alpha.white(0.12),
-  },
-});
+/** Round 34pt button on the preview (the flip-camera button). */
+export const CAMERA_ROUND_BUTTON_CLASS = 'size-[34px] items-center justify-center rounded-full bg-white/[0.12]';

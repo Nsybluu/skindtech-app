@@ -1,13 +1,11 @@
 import type { ReactNode } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 
 import CaptureButtonIcon from '@/assets/illustrations/capture-button.svg';
 import { AppIcon } from '@/components/ui/app-icon';
 import { AppText } from '@/components/ui/app-text';
 import { IconContainer } from '@/components/ui/icon-container';
 import { ImageUpIcon, ZapOffIcon } from '@/components/ui/icons';
-import { Alpha, Colors } from '@/constants/colors';
-import { Radius, Spacing } from '@/constants/spacing';
 import { useI18n } from '@/i18n/i18n-provider';
 
 type CaptureControlsProps = {
@@ -22,14 +20,14 @@ export function CaptureControls({ onUpload, onCapture, flashOn, onToggleFlash }:
   const { t } = useI18n();
 
   return (
-    <View style={styles.row}>
+    <View className="min-h-[84px] flex-row items-center justify-between">
       <SideAction label={t.scan.upload} icon={<AppIcon icon={ImageUpIcon} size={18} />} onPress={onUpload} />
 
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={t.scan.takePhoto}
         onPress={onCapture}
-        style={({ pressed }) => pressed && styles.shutterPressed}>
+        className="active:scale-95">
         <CaptureButtonIcon />
       </Pressable>
 
@@ -57,38 +55,13 @@ function SideAction({ label, icon, onPress, selected = false }: SideActionProps)
       accessibilityLabel={label}
       accessibilityState={{ selected }}
       onPress={onPress}
-      style={({ pressed }) => [styles.sideAction, pressed && styles.pressed]}>
-      <IconContainer
-        size={40}
-        radius={Radius.l}
-        backgroundColor={selected ? Alpha.rose(0.2) : Alpha.rose(0.1)}>
+      className="min-h-16 w-[76px] items-center justify-center gap-1 active:opacity-70">
+      <IconContainer className={selected ? 'size-10 rounded-lg bg-rose/[0.2]' : 'size-10 rounded-lg bg-rose/[0.1]'}>
         {icon}
       </IconContainer>
-      <AppText variant="caption" color={Colors.text.secondary} numberOfLines={1}>
+      <AppText variant="caption" numberOfLines={1} className="text-fg-secondary">
         {label}
       </AppText>
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  row: {
-    minHeight: 84,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  sideAction: {
-    width: 76,
-    minHeight: 64,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.xs,
-  },
-  shutterPressed: {
-    transform: [{ scale: 0.95 }],
-  },
-  pressed: {
-    opacity: 0.7,
-  },
-});

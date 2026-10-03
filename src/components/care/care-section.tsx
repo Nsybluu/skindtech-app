@@ -1,12 +1,11 @@
 import type { ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 
 import { CareGuidance } from '@/components/care/care-guidance';
 import { AppIcon } from '@/components/ui/app-icon';
 import { AppText } from '@/components/ui/app-text';
 import { InfoIcon } from '@/components/ui/icons';
 import { StateCard } from '@/components/ui/state-card';
-import { Spacing } from '@/constants/spacing';
 import { useI18n } from '@/i18n/i18n-provider';
 import { demoCareContent } from '@/mocks/care';
 import type { RecommendationState } from '@/services/recommendation-controller';
@@ -58,7 +57,7 @@ export function CareSection({ isDemo, state, onRetry }: CareSectionProps) {
 
 function Shell({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <View style={styles.shell}>
+    <View className="gap-3">
       <AppText variant="sectionTitle" accessibilityRole="header">
         {title}
       </AppText>
@@ -66,9 +65,3 @@ function Shell({ title, children }: { title: string; children: ReactNode }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  shell: {
-    gap: Spacing.m,
-  },
-});

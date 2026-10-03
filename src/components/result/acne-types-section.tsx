@@ -1,9 +1,7 @@
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 
 import { LegendDot } from '@/components/result/legend-dot';
 import { AppText } from '@/components/ui/app-text';
-import { Alpha, Colors } from '@/constants/colors';
-import { Radius, Spacing } from '@/constants/spacing';
 import { useI18n } from '@/i18n/i18n-provider';
 import type { AcneCategory } from '@/types/scan';
 
@@ -13,34 +11,30 @@ export function AcneTypesSection({ categories }: { categories: AcneCategory[] })
   const hasTypes = categories.length > 0;
 
   return (
-    <View style={styles.section}>
+    <View className="gap-3 rounded-lg bg-surface-card p-4">
       <AppText variant="cardTitle" accessibilityRole="header">
         {hasTypes ? t.result.acneTypesDetected : t.result.acneTypeAssessment}
       </AppText>
 
       {hasTypes ? (
-        <View style={styles.chips}>
+        <View className="flex-row flex-wrap gap-2">
           {categories.map((category) => (
             <View
               key={category}
-              style={[
-                styles.chip,
-                {
-                  backgroundColor:
-                    category === 'comedonal' ? Alpha.peach(0.22) : Alpha.rose(0.12),
-                },
-              ]}>
+              className={`min-h-9 grow basis-[46%] flex-row items-center gap-2 rounded-md px-3 py-1 ${
+                category === 'comedonal' ? 'bg-peach/[0.22]' : 'bg-rose/[0.12]'
+              }`}>
               <LegendDot category={category} />
               {/* Wraps under Dynamic Type instead of running out of the chip. */}
-              <AppText variant="caption" color={Colors.text.secondary} style={styles.chipLabel}>
+              <AppText variant="caption" className="shrink text-fg-secondary">
                 {t.result.category[category]}
               </AppText>
             </View>
           ))}
         </View>
       ) : (
-        <View style={styles.emptyMessage}>
-          <AppText variant="caption" color={Colors.text.secondary} align="center">
+        <View className="min-h-9 justify-center rounded-md border border-success-border bg-success-surface-alt px-2 py-1">
+          <AppText variant="caption" className="text-center text-fg-secondary">
             {t.result.noVisibleTypes}
           </AppText>
         </View>
@@ -48,41 +42,3 @@ export function AcneTypesSection({ categories }: { categories: AcneCategory[] })
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  section: {
-    gap: Spacing.m,
-    padding: Spacing.l,
-    borderRadius: Radius.l,
-    backgroundColor: Colors.surface.card,
-  },
-  chips: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.s,
-  },
-  chip: {
-    flexGrow: 1,
-    flexBasis: '46%',
-    minHeight: 36,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.s,
-    paddingHorizontal: Spacing.m,
-    paddingVertical: Spacing.xs,
-    borderRadius: Radius.m,
-  },
-  chipLabel: {
-    flexShrink: 1,
-  },
-  emptyMessage: {
-    minHeight: 36,
-    justifyContent: 'center',
-    paddingHorizontal: Spacing.s,
-    paddingVertical: Spacing.xs,
-    borderRadius: Radius.m,
-    borderWidth: 1,
-    borderColor: Colors.success.border,
-    backgroundColor: Colors.success.surfaceAlt,
-  },
-});

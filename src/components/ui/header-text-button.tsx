@@ -1,7 +1,4 @@
-import { Pressable, StyleSheet } from 'react-native';
-
-import { Colors } from '@/constants/colors';
-import { Layout, Spacing } from '@/constants/spacing';
+import { Pressable } from 'react-native';
 
 import { AppText } from './app-text';
 
@@ -23,21 +20,10 @@ export function HeaderTextButton({ label, onPress, disabled = false, accessibili
       disabled={disabled}
       hitSlop={8}
       onPress={onPress}
-      style={({ pressed }) => [styles.base, (pressed || disabled) && styles.dimmed]}>
-      <AppText variant="label" color={Colors.brand.primary} numberOfLines={1}>
+      className={`min-h-10 justify-center px-1 active:opacity-50 ${disabled ? 'opacity-50' : ''}`}>
+      <AppText variant="label" className="text-brand-primary" numberOfLines={1}>
         {label}
       </AppText>
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  base: {
-    minHeight: Layout.iconButton,
-    justifyContent: 'center',
-    paddingHorizontal: Spacing.xs,
-  },
-  dimmed: {
-    opacity: 0.5,
-  },
-});

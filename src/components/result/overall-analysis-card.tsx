@@ -1,11 +1,10 @@
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 
 import { AppText } from '@/components/ui/app-text';
 import { Badge } from '@/components/ui/badge';
-import { Alpha, Colors } from '@/constants/colors';
-import { Radius, Spacing } from '@/constants/spacing';
 import { useI18n } from '@/i18n/i18n-provider';
 import type { ScanResult } from '@/types/scan';
+import { cn } from '@/utils/cn';
 
 /** Figma "Card / Overall Analysis" — acne amount and severity. */
 export function OverallAnalysisCard({ result }: { result: ScanResult }) {
@@ -13,34 +12,33 @@ export function OverallAnalysisCard({ result }: { result: ScanResult }) {
   const isClear = result.amount === 'none';
 
   return (
-    <View style={styles.card}>
-      <View style={styles.header}>
+    <View className="gap-3 rounded-lg border border-line-brand bg-surface-card-strong p-4">
+      <View className="min-h-[22px] flex-row items-center justify-between gap-2">
         <AppText variant="cardTitle" accessibilityRole="header">
           {t.result.overallAnalysis}
         </AppText>
         {result.isDemoData ? (
           <Badge
             label={t.result.demoBadge}
-            minWidth={92}
-            backgroundColor={Alpha.taupe(0.22)}
-            color={Colors.text.secondary}
+            className="min-w-[92px] bg-taupe/[0.22]"
+            textClassName="text-fg-secondary"
           />
         ) : (
-          <Badge label={t.common.preliminary} minWidth={92} />
+          <Badge label={t.common.preliminary} className="min-w-[92px]" />
         )}
       </View>
-      <View style={styles.stats}>
+      <View className="flex-row gap-3">
         <Stat
           label={t.result.acneAmount}
           value={t.result.amountValue[result.amount]}
-          backgroundColor={isClear ? Colors.success.surface : Alpha.rose(0.08)}
-          valueColor={isClear ? Colors.success.text : Colors.brand.primary}
+          className={isClear ? 'bg-success-surface' : 'bg-rose/[0.08]'}
+          valueClassName={isClear ? 'text-success-text' : 'text-brand-primary'}
         />
         <Stat
           label={t.result.severity}
           value={t.result.severityValue[result.severity]}
-          backgroundColor={isClear ? Colors.success.surface : Alpha.rose(0.12)}
-          valueColor={isClear ? Colors.success.text : Colors.brand.primary}
+          className={isClear ? 'bg-success-surface' : 'bg-rose/[0.12]'}
+          valueClassName={isClear ? 'text-success-text' : 'text-brand-primary'}
         />
       </View>
     </View>
@@ -50,51 +48,22 @@ export function OverallAnalysisCard({ result }: { result: ScanResult }) {
 type StatProps = {
   label: string;
   value: string;
-  backgroundColor: string;
-  valueColor: string;
+  /** Background class of the tile. */
+  className: string;
+  /** Colour class of the value. */
+  valueClassName: string;
 };
 
-function Stat({ label, value, backgroundColor, valueColor }: StatProps) {
+function Stat({ label, value, className, valueClassName }: StatProps) {
   return (
-    <View style={[styles.stat, { backgroundColor }]}>
-      <AppText variant="caption" color={Colors.text.muted} numberOfLines={1}>
+    <View className={cn('min-h-[72px] flex-1 justify-center gap-0.5 rounded-md px-3 py-2', className)}>
+      <AppText variant="caption" numberOfLines={1} className="text-fg-muted">
         {label}
       </AppText>
       {/* The headline figure of the analysis, so one step above a card title. */}
-      <AppText variant="sectionTitle" color={valueColor} numberOfLines={1}>
+      <AppText variant="sectionTitle" className={valueClassName} numberOfLines={1}>
         {value}
       </AppText>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    gap: Spacing.m,
-    padding: Spacing.l,
-    borderRadius: Radius.l,
-    borderWidth: 1,
-    borderColor: Colors.border.brand,
-    backgroundColor: Colors.surface.cardStrong,
-  },
-  header: {
-    minHeight: 22,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: Spacing.s,
-  },
-  stats: {
-    flexDirection: 'row',
-    gap: Spacing.m,
-  },
-  stat: {
-    flex: 1,
-    minHeight: 72,
-    justifyContent: 'center',
-    gap: Spacing.xxs,
-    paddingHorizontal: Spacing.m,
-    paddingVertical: Spacing.s,
-    borderRadius: Radius.m,
-  },
-});

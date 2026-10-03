@@ -1,10 +1,8 @@
 import { useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import { AppText } from '@/components/ui/app-text';
-import { Colors } from '@/constants/colors';
-import { Radius, Spacing } from '@/constants/spacing';
 import { useI18n } from '@/i18n/i18n-provider';
 
 type AnalysisProgressCardProps = {
@@ -27,24 +25,27 @@ export function AnalysisProgressCard({ currentStep }: AnalysisProgressCardProps)
   const fillStyle = useAnimatedStyle(() => ({ width: `${progress.value * 100}%` }));
 
   return (
-    <View style={styles.card} accessibilityLiveRegion="polite">
-      <AppText variant="cardTitle" color={Colors.progress.title}>
+    <View
+      className="min-h-[190px] gap-2 rounded-lg border border-progress-border bg-progress-surface p-4"
+      accessibilityLiveRegion="polite">
+      <AppText variant="cardTitle" className="text-progress-title">
         {t.analyzing.cardTitle}
       </AppText>
-      <AppText variant="label" color={Colors.brand.primary}>
+      <AppText variant="label" className="text-brand-primary">
         {t.analyzing.stepProgress(step, total, steps[step - 1].label)}
       </AppText>
       <View
-        style={styles.track}
+        className="h-2 overflow-hidden rounded-full bg-progress-track"
         accessibilityRole="progressbar"
         accessibilityValue={{ min: 0, max: total, now: step }}>
-        <Animated.View style={[styles.fill, fillStyle]} />
+        {/* The fill's width is animated, so it is a Reanimated style. */}
+        <Animated.View className="h-2 rounded-full bg-brand-primary" style={fillStyle} />
       </View>
       <View>
         {steps.map((item, index) => {
           const done = index < step - 1;
           return (
-            <AppText key={item.label} variant="bodySmall" color={Colors.progress.text}>
+            <AppText key={item.label} variant="bodySmall" className="text-progress-text">
               {done ? `✓  ${item.done}` : `•  ${item.label}`}
             </AppText>
           );
@@ -53,27 +54,3 @@ export function AnalysisProgressCard({ currentStep }: AnalysisProgressCardProps)
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    minHeight: 190,
-    gap: Spacing.s,
-    paddingHorizontal: Spacing.l,
-    paddingVertical: Spacing.l,
-    borderRadius: Radius.l,
-    borderWidth: 1,
-    borderColor: Colors.progress.border,
-    backgroundColor: Colors.progress.surface,
-  },
-  track: {
-    height: 8,
-    borderRadius: 4,
-    overflow: 'hidden',
-    backgroundColor: Colors.progress.track,
-  },
-  fill: {
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: Colors.brand.primary,
-  },
-});

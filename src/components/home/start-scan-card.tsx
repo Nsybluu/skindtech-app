@@ -1,10 +1,9 @@
-import { Image } from 'expo-image';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 
 import { AppButton } from '@/components/ui/app-button';
 import { AppText } from '@/components/ui/app-text';
-import { Colors, Gradients } from '@/constants/colors';
-import { Radius, Shadows, Spacing } from '@/constants/spacing';
+import { Image } from '@/components/ui/styled';
+import { Effects } from '@/constants/effects';
 import { useI18n } from '@/i18n/i18n-provider';
 
 type StartScanCardProps = {
@@ -16,55 +15,26 @@ export function StartScanCard({ onStartScan }: StartScanCardProps) {
   const { t } = useI18n();
 
   return (
-    <View style={styles.card}>
-      <View style={styles.content}>
+    <View
+      className="min-h-48 flex-row items-center justify-between rounded-2xl border border-line-brand bg-canvas-base p-5"
+      style={Effects.scanCard}>
+      <View className="flex-1 gap-3">
         <AppText variant="headline">{t.home.scanCardTitle}</AppText>
-        <AppText variant="body" color={Colors.text.secondary}>
+        <AppText variant="body" className="text-fg-secondary">
           {t.home.scanCardBody}
         </AppText>
         <AppButton
           label={t.home.startScan}
           onPress={onStartScan}
-          height={44}
-          radius={Radius.l}
-          style={styles.button}
+          className="mt-1 h-11 self-start px-5"
         />
       </View>
       <Image
         source={require('@/assets/images/face-scan-illustration.png')}
         contentFit="contain"
-        style={styles.illustration}
+        className="h-[156px] w-[108px]"
         accessibilityIgnoresInvertColors
       />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    minHeight: 192,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: Spacing.xl,
-    borderRadius: Radius.xxl,
-    borderWidth: 1,
-    borderColor: Colors.border.brand,
-    backgroundColor: Colors.background.base,
-    experimental_backgroundImage: Gradients.scanCard,
-    boxShadow: Shadows.primary,
-  },
-  content: {
-    flex: 1,
-    gap: Spacing.m,
-  },
-  button: {
-    marginTop: Spacing.xs,
-    alignSelf: 'flex-start',
-    paddingHorizontal: Spacing.xl,
-  },
-  illustration: {
-    width: 108,
-    height: 156,
-  },
-});

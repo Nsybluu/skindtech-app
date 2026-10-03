@@ -1,32 +1,15 @@
 import type { ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 
-import { Colors } from '@/constants/colors';
+import { cn } from '@/utils/cn';
 
 type IconContainerProps = {
   children: ReactNode;
-  size: number;
-  radius: number;
-  backgroundColor?: string;
+  /** Size, radius and tint (`size-*`, `rounded-*`, `bg-*`); the tint defaults to `bg-surface-icon-tint`. */
+  className: string;
 };
 
 /** Tinted square / circle behind an icon. */
-export function IconContainer({
-  children,
-  size,
-  radius,
-  backgroundColor = Colors.surface.iconTint,
-}: IconContainerProps) {
-  return (
-    <View style={[styles.container, { width: size, height: size, borderRadius: radius, backgroundColor }]}>
-      {children}
-    </View>
-  );
+export function IconContainer({ children, className }: IconContainerProps) {
+  return <View className={cn('items-center justify-center bg-surface-icon-tint', className)}>{children}</View>;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

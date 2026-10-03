@@ -1,12 +1,11 @@
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 
 import { AppButton } from '@/components/ui/app-button';
 import { AppIcon } from '@/components/ui/app-icon';
 import { AppText } from '@/components/ui/app-text';
 import { IconContainer } from '@/components/ui/icon-container';
 import { TrashIcon } from '@/components/ui/icons';
-import { Alpha, Colors } from '@/constants/colors';
-import { Spacing } from '@/constants/spacing';
+import { Colors } from '@/constants/colors';
 import { useI18n } from '@/i18n/i18n-provider';
 
 type ConfirmDeleteContentProps = {
@@ -40,15 +39,15 @@ export function ConfirmDeleteContent({
 
   return (
     <>
-      <View style={styles.intro}>
-        <IconContainer size={40} radius={20} backgroundColor={Colors.danger.surface}>
+      <View className="flex-row items-start gap-3 py-1">
+        <IconContainer className="size-10 rounded-full bg-danger-surface">
           <AppIcon icon={TrashIcon} size={20} color={Colors.danger.text} />
         </IconContainer>
-        <View style={styles.introCopy}>
+        <View className="flex-1 gap-1">
           <AppText variant="headline" accessibilityRole="header">
             {title}
           </AppText>
-          <AppText variant="body" color={Colors.text.secondary}>
+          <AppText variant="body" className="text-fg-secondary">
             {message}
           </AppText>
         </View>
@@ -57,54 +56,29 @@ export function ConfirmDeleteContent({
       {error ? (
         <AppText
           variant="bodySmall"
-          color={Colors.danger.text}
+          className="text-danger-text"
           accessibilityRole="alert"
           accessibilityLiveRegion="polite">
           {error}
         </AppText>
       ) : null}
 
-      <View style={styles.actions}>
+      <View className="flex-row gap-3">
         <AppButton
           variant="secondary"
           label={t.common.cancel}
           onPress={onCancel}
           disabled={busy}
-          style={styles.secondary}
+          className="w-[104px] border-rose/[0.32] bg-white/[0.75]"
         />
         <AppButton
           variant="destructive"
           label={busy ? t.history.deleting : confirmLabel}
           onPress={onConfirm}
           disabled={busy}
-          style={styles.primary}
+          className="flex-1"
         />
       </View>
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  intro: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: Spacing.m,
-    paddingVertical: Spacing.xs,
-  },
-  introCopy: {
-    flex: 1,
-    gap: Spacing.xs,
-  },
-  actions: {
-    flexDirection: 'row',
-    gap: Spacing.m,
-  },
-  secondary: {
-    width: 104,
-    borderColor: Alpha.rose(0.32),
-    backgroundColor: Alpha.white(0.75),
-  },
-  primary: {
-    flex: 1,
-  },
-});

@@ -45,4 +45,6 @@ export const Shadows = {
   navFloating: '0px 10px 28px -10px rgba(27, 21, 19, 0.45)',
   navFloatingLight: '0px 12px 30px -10px rgba(66, 36, 31, 0.4)',
   modalUp: '0px -6px 18px -4px rgba(66, 36, 31, 0.16)',
+  /** Glow under the active tab's halo in the floating tab bar. */
+  navHalo: '0px 4px 16px 0px rgba(201, 89, 97, 0.55)',
 } as const;

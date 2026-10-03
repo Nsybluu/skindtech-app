@@ -1,10 +1,8 @@
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 
 import { AppIcon } from '@/components/ui/app-icon';
 import { AppText } from '@/components/ui/app-text';
 import { DropletIcon, SoapDispenserDropletIcon, SunMediumIcon, type LucideIcon } from '@/components/ui/icons';
-import { Alpha, Colors } from '@/constants/colors';
-import { Radius, Spacing } from '@/constants/spacing';
 import { useI18n } from '@/i18n/i18n-provider';
 import type { CareBasic } from '@/types/recommendation';
 
@@ -19,16 +17,19 @@ export function SkincareBasics({ basics }: { basics: CareBasic[] }) {
   const { t } = useI18n();
 
   return (
-    <View style={styles.card}>
+    <View className="gap-3 rounded-lg bg-rose/[0.07] p-4">
       <AppText variant="cardTitle" accessibilityRole="header">
         {t.care.basicsTitle}
       </AppText>
-      <View style={styles.row}>
+      <View className="flex-row gap-2">
         {basics.map((basic) => (
-          <View key={basic} style={styles.tile}>
+          // Just enough side padding (px-0.5) for "Non-comedogenic" to stay on one line at the caption size.
+          <View
+            key={basic}
+            className="min-h-[76px] flex-1 items-center justify-center gap-2 rounded-md bg-white/[0.68] px-0.5 py-3">
             <AppIcon icon={ICONS[basic]} size={20} />
             {/* All tiles share one size; a long label wraps instead of shrinking. */}
-            <AppText variant="footnote" color={Colors.text.secondary} align="center">
+            <AppText variant="footnote" className="text-center text-fg-secondary">
               {t.care.basic[basic]}
             </AppText>
           </View>
@@ -37,28 +38,3 @@ export function SkincareBasics({ basics }: { basics: CareBasic[] }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    gap: Spacing.m,
-    padding: Spacing.l,
-    borderRadius: Radius.l,
-    backgroundColor: Alpha.rose(0.07),
-  },
-  row: {
-    flexDirection: 'row',
-    gap: Spacing.s,
-  },
-  tile: {
-    flex: 1,
-    minHeight: 76,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.s,
-    // Just enough side padding for "Non-comedogenic" to stay on one line at the caption size.
-    paddingHorizontal: Spacing.xxs,
-    paddingVertical: Spacing.m,
-    borderRadius: Radius.m,
-    backgroundColor: Alpha.white(0.68),
-  },
-});

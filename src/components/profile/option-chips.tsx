@@ -1,8 +1,7 @@
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 
 import { AppText } from '@/components/ui/app-text';
-import { Alpha, Colors } from '@/constants/colors';
-import { Radius, Spacing } from '@/constants/spacing';
+import { cn } from '@/utils/cn';
 
 export type ChipOption<T extends string> = {
   value: T;
@@ -16,22 +15,15 @@ type OptionChipsProps<T extends string> = {
   rows: ChipOption<T>[][];
   isSelected: (value: T) => boolean;
   onPress: (value: T) => void;
-  height?: number;
   multiple?: boolean;
 };
 
 /** Selectable pills used by the Skin Profile form. */
-export function OptionChips<T extends string>({
-  rows,
-  isSelected,
-  onPress,
-  height = 40,
-  multiple = false,
-}: OptionChipsProps<T>) {
+export function OptionChips<T extends string>({ rows, isSelected, onPress, multiple = false }: OptionChipsProps<T>) {
   return (
-    <View style={styles.rows}>
+    <View className="gap-2">
       {rows.map((row, rowIndex) => (
-        <View key={rowIndex} style={styles.row}>
+        <View key={rowIndex} className="flex-row gap-2">
           {row.map((option) => {
             const selected = isSelected(option.value);
             return (
@@ -41,17 +33,16 @@ export function OptionChips<T extends string>({
                 accessibilityState={multiple ? { checked: selected } : { selected }}
                 accessibilityLabel={option.label}
                 onPress={() => onPress(option.value)}
-                style={({ pressed }) => [
-                  styles.chip,
-                  { flexGrow: option.flex, height },
-                  selected ? styles.selected : styles.idle,
-                  pressed && styles.pressed,
-                ]}>
+                // The Figma chip widths are data (`option.flex`), so the grow factor is a runtime value.
+                style={{ flexGrow: option.flex }}
+                className={cn(
+                  'h-10 basis-0 items-center justify-center rounded-md px-2 active:opacity-80',
+                  selected ? 'bg-brand-primary' : 'border border-taupe/[0.28] bg-surface-card',
+                )}>
                 <AppText
                   variant="label"
-                  color={selected ? Colors.text.onBrand : Colors.text.secondary}
-                  align="center"
-                  numberOfLines={1}>
+                  numberOfLines={1}
+                  className={selected ? 'text-center text-fg-on-brand' : 'text-center text-fg-secondary'}>
                   {option.label}
                 </AppText>
               </Pressable>
@@ -62,31 +53,3 @@ export function OptionChips<T extends string>({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  rows: {
-    gap: Spacing.s,
-  },
-  row: {
-    flexDirection: 'row',
-    gap: Spacing.s,
-  },
-  chip: {
-    flexBasis: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: Spacing.s,
-    borderRadius: Radius.m,
-  },
-  selected: {
-    backgroundColor: Colors.brand.primary,
-  },
-  idle: {
-    backgroundColor: Colors.surface.card,
-    borderWidth: 1,
-    borderColor: Alpha.taupe(0.28),
-  },
-  pressed: {
-    opacity: 0.8,
-  },
-});

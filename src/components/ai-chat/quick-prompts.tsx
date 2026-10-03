@@ -1,8 +1,6 @@
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 
 import { AppText } from '@/components/ui/app-text';
-import { Alpha, Colors } from '@/constants/colors';
-import { Radius, Spacing } from '@/constants/spacing';
 import { useI18n } from '@/i18n/i18n-provider';
 import { QUICK_PROMPTS } from '@/mocks/chat';
 import type { ChatPromptId } from '@/types/chat';
@@ -17,11 +15,11 @@ export function QuickPrompts({ onSelect, disabled = false }: QuickPromptsProps) 
   const { t } = useI18n();
 
   return (
-    <View style={styles.section}>
+    <View className="gap-2">
       <AppText variant="titleSmall" accessibilityRole="header">
         {t.aiChat.suggestedQuestions}
       </AppText>
-      <View style={styles.chips}>
+      <View className="flex-row flex-wrap gap-2">
         {QUICK_PROMPTS.map((promptId) => (
           <Pressable
             key={promptId}
@@ -31,8 +29,8 @@ export function QuickPrompts({ onSelect, disabled = false }: QuickPromptsProps) 
             disabled={disabled}
             onPress={() => onSelect(promptId)}
             hitSlop={{ top: 4, bottom: 4 }}
-            style={({ pressed }) => [styles.chip, (pressed || disabled) && styles.pressed]}>
-            <AppText variant="label" color={Colors.text.secondary}>
+            className={`min-h-9 justify-center rounded-md bg-peach/[0.22] px-3 py-2 active:opacity-70 ${disabled ? 'opacity-70' : ''}`}>
+            <AppText variant="label" className="text-fg-secondary">
               {t.aiChat.prompts[promptId]}
             </AppText>
           </Pressable>
@@ -41,25 +39,3 @@ export function QuickPrompts({ onSelect, disabled = false }: QuickPromptsProps) 
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  section: {
-    gap: Spacing.s,
-  },
-  chips: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.s,
-  },
-  chip: {
-    minHeight: 36,
-    justifyContent: 'center',
-    paddingHorizontal: Spacing.m,
-    paddingVertical: Spacing.s,
-    borderRadius: Radius.m,
-    backgroundColor: Alpha.peach(0.22),
-  },
-  pressed: {
-    opacity: 0.7,
-  },
-});

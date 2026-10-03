@@ -1,8 +1,7 @@
 import type { ReactNode } from 'react';
-import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { View } from 'react-native';
 
-import { Alpha, Colors } from '@/constants/colors';
-import { Radius, Spacing } from '@/constants/spacing';
+import { cn } from '@/utils/cn';
 
 import { AppText } from './app-text';
 
@@ -13,42 +12,42 @@ type NoticeProps = {
   message: string;
   title?: string;
   tone?: NoticeTone;
-  /** Title color; Figma uses ink for informational and rose for warnings. */
-  titleColor?: string;
+  /** Title colour class; Figma uses ink for informational and rose (the default) for warnings. */
+  titleClassName?: string;
   /** Extra rows under the message (for example a short list of reasons). */
   children?: ReactNode;
-  style?: StyleProp<ViewStyle>;
+  /** Padding / radius / min height classes, passed to match each Figma instance. */
+  className?: string;
 };
 
-const TONE_BACKGROUND: Record<NoticeTone, string> = {
-  rose: Colors.surface.notice,
-  blush: Alpha.blush(0.78),
+const TONE_CLASS: Record<NoticeTone, string> = {
+  rose: 'bg-surface-notice',
+  blush: 'bg-blush/[0.78]',
 };
 
 /**
  * Tinted info row (icon + text) used for disclaimers and hints: an optional `label` title over a
  * `caption` message. Every notice reads the same, so the sizes are not configurable.
- * Padding / radius / min height are passed via `style` to match each Figma instance.
  */
 export function Notice({
   icon,
   message,
   title,
   tone = 'rose',
-  titleColor = Colors.brand.primary,
+  titleClassName = 'text-brand-primary',
   children,
-  style,
+  className,
 }: NoticeProps) {
   return (
-    <View style={[styles.container, { backgroundColor: TONE_BACKGROUND[tone] }, style]}>
+    <View className={cn('flex-row items-center gap-3 rounded-lg p-3', TONE_CLASS[tone], className)}>
       {icon}
-      <View style={styles.copy}>
+      <View className="flex-1 gap-0.5">
         {title ? (
-          <AppText variant="label" color={titleColor}>
+          <AppText variant="label" className={titleClassName}>
             {title}
           </AppText>
         ) : null}
-        <AppText variant="caption" color={Colors.text.secondary}>
+        <AppText variant="caption" className="text-fg-secondary">
           {message}
         </AppText>
         {children}
@@ -56,17 +55,3 @@ export function Notice({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.m,
-    padding: Spacing.m,
-    borderRadius: Radius.l,
-  },
-  copy: {
-    flex: 1,
-    gap: Spacing.xxs,
-  },
-});

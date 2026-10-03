@@ -1,10 +1,10 @@
-import { CameraView, useCameraPermissions, type CameraType } from 'expo-camera';
+import { useCameraPermissions, type CameraType } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Linking, Pressable, StyleSheet } from 'react-native';
+import { ActivityIndicator, Alert, Linking, Pressable } from 'react-native';
 
-import { cameraAccessoryStyles, CameraFrame } from '@/components/scan/camera-frame';
+import { CAMERA_ROUND_BUTTON_CLASS, CameraFrame } from '@/components/scan/camera-frame';
 import { CameraPlaceholder } from '@/components/scan/camera-placeholder';
 import { CaptureControls } from '@/components/scan/capture-controls';
 import { ScanFlowLayout } from '@/components/scan/scan-flow-layout';
@@ -13,9 +13,11 @@ import { AppIcon } from '@/components/ui/app-icon';
 import { SwitchCameraIcon } from '@/components/ui/icons';
 import { ScreenBackground } from '@/components/ui/screen-background';
 import { goBackOr } from '@/components/ui/screen-header';
+import { CameraView } from '@/components/ui/styled';
 import { Colors } from '@/constants/colors';
 import { useI18n } from '@/i18n/i18n-provider';
 import { useUserData } from '@/providers/app-provider';
+import { cn } from '@/utils/cn';
 
 /** Figma 07 — Scan with a live Expo camera and gallery import. */
 export default function ScanScreen() {
@@ -96,7 +98,7 @@ export default function ScanScreen() {
   // sending a returning user to the empty form would look like their profile was lost.
   if (!skinProfile && isSkinProfileLoading) {
     return (
-      <ScreenBackground style={styles.loading}>
+      <ScreenBackground className="items-center justify-center">
         <ActivityIndicator color={Colors.brand.primary} />
       </ScreenBackground>
     );
@@ -127,7 +129,7 @@ export default function ScanScreen() {
             permission?.granted ? (
               <CameraView
                 ref={cameraRef}
-                style={styles.camera}
+                className="flex-1"
                 facing={facing}
                 flash={flashOn ? 'on' : 'off'}
                 mode="picture"
@@ -141,7 +143,7 @@ export default function ScanScreen() {
                 accessibilityRole="button"
                 accessibilityLabel={t.scan.switchCamera}
                 onPress={() => setFacing((value) => (value === 'front' ? 'back' : 'front'))}
-                style={({ pressed }) => [cameraAccessoryStyles.roundButton, pressed && { opacity: 0.7 }]}>
+                className={cn(CAMERA_ROUND_BUTTON_CLASS, 'active:opacity-70')}>
                 <AppIcon icon={SwitchCameraIcon} size={18} color={Colors.text.onBrand} />
               </Pressable>
             ) : undefined
@@ -163,13 +165,3 @@ export default function ScanScreen() {
     />
   );
 }
-
-const styles = StyleSheet.create({
-  loading: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  camera: {
-    flex: 1,
-  },
-});

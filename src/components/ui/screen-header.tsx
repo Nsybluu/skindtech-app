@@ -1,12 +1,12 @@
 import { router } from 'expo-router';
 import type { ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 
 import { AppIcon } from '@/components/ui/app-icon';
 import { ChevronLeftIcon } from '@/components/ui/icons';
 import { Colors } from '@/constants/colors';
-import { Layout, Spacing } from '@/constants/spacing';
 import { useI18n } from '@/i18n/i18n-provider';
+import { cn } from '@/utils/cn';
 
 import { AppText } from './app-text';
 import { HeaderTextButton } from './header-text-button';
@@ -20,7 +20,8 @@ type ScreenHeaderProps = {
   backLabel?: string;
   /** Right side content: an icon button or a short label. */
   accessory?: ReactNode;
-  gap?: number;
+  /** Replaces the default `gap-2`. */
+  className?: string;
 };
 
 export function goBackOr(fallback: () => void) {
@@ -32,17 +33,11 @@ export function goBackOr(fallback: () => void) {
 }
 
 /** Back button + bold title row used by every in-app screen. */
-export function ScreenHeader({
-  title,
-  onBack,
-  backLabel,
-  accessory,
-  gap = Spacing.s,
-}: ScreenHeaderProps) {
+export function ScreenHeader({ title, onBack, backLabel, accessory, className }: ScreenHeaderProps) {
   const { t } = useI18n();
 
   return (
-    <View style={[styles.row, { gap }]}>
+    <View className={cn('min-h-11 flex-row items-center gap-2', className)}>
       {backLabel ? (
         <HeaderTextButton label={backLabel} onPress={onBack ?? (() => goBackOr(() => router.replace('/')))} />
       ) : (
@@ -53,25 +48,10 @@ export function ScreenHeader({
         </IconButton>
       )}
       {/* Every screen title is the same size. A long one wraps to a second line; it is never shrunk. */}
-      <AppText
-        variant="screenTitle"
-        numberOfLines={2}
-        accessibilityRole="header"
-        style={styles.title}>
+      <AppText variant="screenTitle" numberOfLines={2} accessibilityRole="header" className="flex-1">
         {title}
       </AppText>
       {accessory}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  row: {
-    minHeight: Layout.headerHeight,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  title: {
-    flex: 1,
-  },
-});

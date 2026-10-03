@@ -1,6 +1,6 @@
 import { Redirect, router } from 'expo-router';
 import { useState } from 'react';
-import { Alert, StyleSheet } from 'react-native';
+import { Alert } from 'react-native';
 
 import { AiConsentSheet } from '@/components/scan/ai-consent-sheet';
 import { CameraFrame } from '@/components/scan/camera-frame';
@@ -69,9 +69,9 @@ export default function PhotoReviewScreen() {
                 setPendingPhotoUri(null);
                 router.back();
               }}
-              style={styles.secondary}
+              className="w-[104px]"
             />
-            <AppButton variant="solid" label={t.photoReview.usePhoto} onPress={usePhoto} style={styles.primary} />
+            <AppButton variant="solid" label={t.photoReview.usePhoto} onPress={usePhoto} className="flex-1" />
           </>
         }
       />
@@ -90,12 +90,3 @@ export default function PhotoReviewScreen() {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  secondary: {
-    width: 104,
-  },
-  primary: {
-    flex: 1,
-  },
-});

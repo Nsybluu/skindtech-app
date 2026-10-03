@@ -7,7 +7,7 @@ export function BrandWordmark() {
   const { t } = useI18n();
 
   return (
-    <AppText variant="brand" align="center" accessibilityRole="header">
+    <AppText variant="brand" className="text-center" accessibilityRole="header">
       {t.common.brand}
     </AppText>
   );

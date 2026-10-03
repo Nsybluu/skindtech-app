@@ -1,13 +1,13 @@
 import type { ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 
 import { AppIcon } from '@/components/ui/app-icon';
 import { AppText } from '@/components/ui/app-text';
 import { IconContainer } from '@/components/ui/icon-container';
 import { ChevronRightIcon } from '@/components/ui/icons';
 import { ListRow } from '@/components/ui/list-group';
-import { Alpha, Colors } from '@/constants/colors';
-import { Radius, Spacing } from '@/constants/spacing';
+import { Colors } from '@/constants/colors';
+import { cn } from '@/utils/cn';
 
 type MenuRowProps = {
   icon: ReactNode;
@@ -17,8 +17,10 @@ type MenuRowProps = {
   /** Right-aligned value before the chevron (e.g. the current language). */
   value?: string;
   onPress: () => void;
-  minHeight?: number;
-  iconBackground?: string;
+  /** Replaces the default `min-h-12`. */
+  className?: string;
+  /** Background class of the icon tile; defaults to `bg-rose/[0.08]`. */
+  iconClassName?: string;
 };
 
 /** Row in the Profile menu: tinted icon, label, optional value, chevron. */
@@ -28,26 +30,23 @@ export function MenuRow({
   description,
   value,
   onPress,
-  minHeight = 48,
-  iconBackground = Alpha.rose(0.08),
+  className,
+  iconClassName = 'bg-rose/[0.08]',
 }: MenuRowProps) {
   return (
     <ListRow
-      minHeight={minHeight}
-      paddingVertical={Spacing.s}
+      className={cn('min-h-12', className)}
       accessibilityLabel={description ? `${label}, ${description}` : label}
       onPress={onPress}>
-      <IconContainer size={28} radius={Radius.l} backgroundColor={iconBackground}>
-        {icon}
-      </IconContainer>
+      <IconContainer className={cn('size-7 rounded-lg', iconClassName)}>{icon}</IconContainer>
 
-      <View style={styles.copy}>
+      <View className="flex-1">
         {description ? (
           <>
             <AppText variant="titleSmall" numberOfLines={1}>
               {label}
             </AppText>
-            <AppText variant="caption" color={Colors.text.muted} numberOfLines={1}>
+            <AppText variant="caption" numberOfLines={1} className="text-fg-muted">
               {description}
             </AppText>
           </>
@@ -59,7 +58,7 @@ export function MenuRow({
       </View>
 
       {value ? (
-        <AppText variant="bodySmall" color={Colors.text.muted} numberOfLines={1} style={styles.value}>
+        <AppText variant="bodySmall" numberOfLines={1} className="shrink-0 text-fg-muted">
           {value}
         </AppText>
       ) : null}
@@ -67,12 +66,3 @@ export function MenuRow({
     </ListRow>
   );
 }
-
-const styles = StyleSheet.create({
-  copy: {
-    flex: 1,
-  },
-  value: {
-    flexShrink: 0,
-  },
-});

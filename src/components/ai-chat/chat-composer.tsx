@@ -1,12 +1,13 @@
-import { Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { Pressable, TextInput, View } from 'react-native';
 
 import { AppIcon } from '@/components/ui/app-icon';
 import { AppText } from '@/components/ui/app-text';
 import { SendHorizontalIcon } from '@/components/ui/icons';
-import { Alpha, Colors, Gradients } from '@/constants/colors';
-import { Layout, Radius, Spacing } from '@/constants/spacing';
-import { inputTextStyle, MAX_FONT_SIZE_MULTIPLIER } from '@/constants/typography';
+import { Colors } from '@/constants/colors';
+import { Effects } from '@/constants/effects';
+import { MAX_FONT_SIZE_MULTIPLIER } from '@/constants/typography';
 import { useI18n } from '@/i18n/i18n-provider';
+import { cn } from '@/utils/cn';
 
 type ChatComposerProps = {
   value: string;
@@ -29,9 +30,10 @@ export function ChatComposer({
   const canSend = value.trim().length > 0 && !disabled;
 
   return (
-    <View style={[styles.composer, { paddingBottom: bottomPadding }]}>
-      <View style={styles.row}>
-        <View style={styles.inputBox}>
+    // The bottom padding depends on the tab bar and keyboard (runtime value).
+    <View className="gap-3 bg-white/[0.88] px-5 pt-4" style={{ paddingBottom: bottomPadding }}>
+      <View className="w-full max-w-content flex-row items-end gap-2 self-center">
+        <View className="min-h-[52px] flex-1 justify-center rounded-lg border border-line-brand bg-white/[0.82] px-4 py-2">
           <TextInput
             value={value}
             onChangeText={onChangeText}
@@ -43,7 +45,7 @@ export function ChatComposer({
             onSubmitEditing={() => canSend && onSend()}
             multiline
             maxFontSizeMultiplier={MAX_FONT_SIZE_MULTIPLIER}
-            style={styles.input}
+            className="max-h-24 font-noto-regular text-field-multiline text-fg-primary"
           />
         </View>
         <Pressable
@@ -52,59 +54,18 @@ export function ChatComposer({
           accessibilityState={{ disabled: !canSend }}
           disabled={!canSend}
           onPress={onSend}
-          style={({ pressed }) => [styles.send, (pressed || !canSend) && styles.sendIdle]}>
+          className={cn(
+            'size-[52px] items-center justify-center rounded-lg bg-brand-gradient-start active:opacity-[0.55]',
+            !canSend && 'opacity-[0.55]',
+          )}
+          style={Effects.gradientPrimary}>
           <AppIcon icon={SendHorizontalIcon} size={20} color={Colors.text.onBrand} />
         </Pressable>
       </View>
 
-      <AppText variant="footnote" color={Colors.text.muted} align="center">
+      <AppText variant="footnote" className="text-center text-fg-muted">
         {t.aiChat.disclaimer}
       </AppText>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  composer: {
-    gap: Spacing.m,
-    paddingTop: Spacing.l,
-    paddingHorizontal: Layout.screenPadding,
-    backgroundColor: Alpha.white(0.88),
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    gap: Spacing.s,
-    width: '100%',
-    maxWidth: Layout.maxContentWidth,
-    alignSelf: 'center',
-  },
-  inputBox: {
-    flex: 1,
-    minHeight: 52,
-    justifyContent: 'center',
-    paddingHorizontal: Spacing.l,
-    paddingVertical: Spacing.s,
-    borderRadius: Radius.l,
-    borderWidth: 1,
-    borderColor: Colors.border.brand,
-    backgroundColor: Alpha.white(0.82),
-  },
-  input: {
-    maxHeight: 96,
-    ...inputTextStyle('bodyLarge', { multiline: true }),
-    color: Colors.text.primary,
-  },
-  send: {
-    width: 52,
-    height: 52,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: Radius.l,
-    backgroundColor: Colors.brand.gradientStart,
-    experimental_backgroundImage: Gradients.primary,
-  },
-  sendIdle: {
-    opacity: 0.55,
-  },
-});

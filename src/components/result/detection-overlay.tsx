@@ -1,6 +1,6 @@
-import { StyleSheet } from 'react-native';
-import Svg, { Ellipse, Path } from 'react-native-svg';
+import { Ellipse, Path } from 'react-native-svg';
 
+import { Svg } from '@/components/ui/styled';
 import { Colors } from '@/constants/colors';
 import type { AcneDetectionArea } from '@/types/scan';
 
@@ -40,7 +40,7 @@ export function DetectionOverlay({ width, height, photo, areas }: DetectionOverl
   ].join(' ');
 
   return (
-    <Svg style={StyleSheet.absoluteFill} width={width} height={height} pointerEvents="none">
+    <Svg className="absolute inset-0" width={width} height={height} pointerEvents="none">
       <Path d={brackets} stroke={Colors.brand.accent} strokeWidth={2} strokeLinecap="round" fill="none" />
 
       {areas.map((area) => {

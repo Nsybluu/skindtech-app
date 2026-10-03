@@ -1,20 +1,23 @@
-import { GlassView, isLiquidGlassAvailable } from 'expo-glass-effect';
+import { isLiquidGlassAvailable } from 'expo-glass-effect';
 import type { BottomTabBarProps } from 'expo-router/js-tabs';
 import { useEffect, useState, type ReactNode } from 'react';
-import { Pressable, StyleSheet, View, type LayoutChangeEvent } from 'react-native';
+import { Pressable, View, type LayoutChangeEvent } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 import { AppIcon } from '@/components/ui/app-icon';
 import { BotMessageSquareIcon, HouseIcon, ScanFaceIcon, type LucideIcon, UserIcon } from '@/components/ui/icons';
+import { GlassView } from '@/components/ui/styled';
 import { Alpha, Colors } from '@/constants/colors';
-import { Layout, Radius, Shadows, Spacing } from '@/constants/spacing';
+import { Effects } from '@/constants/effects';
+import { Spacing } from '@/constants/spacing';
+import { cn } from '@/utils/cn';
 import { useDesignInsets } from '@/hooks/use-design-insets';
 import { useStartScan } from '@/hooks/use-start-scan';
 import { useI18n } from '@/i18n/i18n-provider';
 
 type TabName = 'index' | 'scan' | 'ai-chat' | 'account';
 
-const BAR_HEIGHT = 64;
+/** Sizes are classes (`h-16` bar, `size-12` halo, `px-2` row padding); the halo maths below needs the numbers. */
 const INDICATOR_SIZE = 48;
 const ROW_PADDING = Spacing.s;
 
@@ -34,20 +37,18 @@ const TONES = {
     iconIdlePrimary: Alpha.white(0.88),
     glassScheme: 'dark' as const,
     glassTint: Alpha.ink(0.86),
-    solid: Colors.background.camera,
-    borderWidth: 0,
-    border: 'transparent',
-    shadow: Shadows.navFloating,
+    solidClass: 'bg-canvas-camera',
+    borderClass: 'border-0',
+    shadow: Effects.shadowNavFloating,
   },
   light: {
     iconIdle: Colors.text.muted,
     iconIdlePrimary: Colors.brand.primary,
     glassScheme: 'light' as const,
     glassTint: Alpha.white(0.86),
-    solid: Alpha.white(0.97),
-    borderWidth: 1,
-    border: Alpha.taupe(0.4),
-    shadow: Shadows.navFloatingLight,
+    solidClass: 'bg-white/[0.97]',
+    borderClass: 'border border-taupe/[0.4]',
+    shadow: Effects.shadowNavFloatingLight,
   },
 };
 
@@ -124,10 +125,12 @@ export function SkinTabBar({ state, navigation }: BottomTabBarProps) {
   return (
     <View
       pointerEvents="box-none"
-      style={[styles.wrapper, { bottom: Math.max(insets.bottom, Spacing.m) }]}>
+      className="absolute left-0 right-0 items-center px-5"
+      // Sits above the home indicator (runtime value).
+      style={{ bottom: Math.max(insets.bottom, Spacing.m) }}>
       <TabBarSurface>
         <View
-          style={styles.row}
+          className="flex-1 flex-row items-center justify-between px-2"
           onLayout={(event: LayoutChangeEvent) => {
             const { width, height } = event.nativeEvent.layout;
             setRowSize((current) =>
@@ -141,7 +144,7 @@ export function SkinTabBar({ state, navigation }: BottomTabBarProps) {
               accessibilityLabel={label}
               accessibilityState={{ selected: activeRoute === name }}
               onPress={() => onTabPress(name)}
-              style={({ pressed }) => [styles.item, pressed && styles.pressed]}>
+              className="h-16 flex-1 items-center justify-center active:opacity-75">
               <AppIcon
                 icon={icon}
                 size={24}
@@ -154,21 +157,24 @@ export function SkinTabBar({ state, navigation }: BottomTabBarProps) {
             <>
               <Animated.View
                 pointerEvents="none"
-                style={[styles.halo, { left: haloLeft, top: haloTop }, haloStyle]}
+                className="absolute size-12 rounded-full bg-brand-primary"
+                // Position follows the measured row; the glow is an Effect.
+                style={[Effects.shadowNavHalo, { left: haloLeft, top: haloTop }, haloStyle]}
               />
               <Animated.View
                 pointerEvents="none"
                 accessibilityElementsHidden
                 importantForAccessibility="no-hide-descendants"
-                style={[styles.window, { left: haloLeft, top: haloTop }, haloStyle]}>
+                className="absolute size-12 overflow-hidden rounded-full"
+                style={[{ left: haloLeft, top: haloTop }, haloStyle]}>
                 <Animated.View
+                  className="absolute flex-row items-stretch px-2"
                   style={[
-                    styles.highlightRow,
                     { left: -haloLeft, top: -haloTop, width: rowSize.width, height: rowSize.height },
                     counterStyle,
                   ]}>
                   {tabs.map(({ name, icon }) => (
-                    <View key={name} style={styles.highlightItem}>
+                    <View key={name} className="flex-1 items-center justify-center">
                       <AppIcon icon={icon} size={24} color={ICON_ACTIVE} />
                     </View>
                   ))}
@@ -182,12 +188,15 @@ export function SkinTabBar({ state, navigation }: BottomTabBarProps) {
   );
 }
 
+const BAR_CLASS = 'h-16 w-full max-w-[360px] overflow-hidden rounded-full';
+
 /** Liquid Glass on iOS 26+, solid capsule everywhere else. */
 function TabBarSurface({ children }: { children: ReactNode }) {
   if (LIQUID_GLASS) {
     return (
       <GlassView
-        style={styles.bar}
+        className={cn(BAR_CLASS, TONE.borderClass)}
+        style={TONE.shadow}
         glassEffectStyle="regular"
         colorScheme={TONE.glassScheme}
         tintColor={TONE.glassTint}>
@@ -196,70 +205,9 @@ function TabBarSurface({ children }: { children: ReactNode }) {
     );
   }
 
-  return <View style={[styles.bar, styles.barSolid]}>{children}</View>;
+  return (
+    <View className={cn(BAR_CLASS, TONE.borderClass, TONE.solidClass)} style={TONE.shadow}>
+      {children}
+    </View>
+  );
 }
-
-const styles = StyleSheet.create({
-  wrapper: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-    paddingHorizontal: Layout.screenPadding,
-  },
-  bar: {
-    width: '100%',
-    maxWidth: 360,
-    height: BAR_HEIGHT,
-    borderRadius: BAR_HEIGHT / 2,
-    overflow: 'hidden',
-    borderWidth: TONE.borderWidth,
-    borderColor: TONE.border,
-    boxShadow: TONE.shadow,
-  },
-  barSolid: {
-    backgroundColor: TONE.solid,
-  },
-  row: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: ROW_PADDING,
-  },
-  item: {
-    flex: 1,
-    height: BAR_HEIGHT,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  halo: {
-    position: 'absolute',
-    width: INDICATOR_SIZE,
-    height: INDICATOR_SIZE,
-    borderRadius: Radius.pill,
-    backgroundColor: Colors.brand.primary,
-    boxShadow: '0px 4px 16px 0px rgba(201, 89, 97, 0.55)',
-  },
-  window: {
-    position: 'absolute',
-    width: INDICATOR_SIZE,
-    height: INDICATOR_SIZE,
-    borderRadius: Radius.pill,
-    overflow: 'hidden',
-  },
-  highlightRow: {
-    position: 'absolute',
-    flexDirection: 'row',
-    alignItems: 'stretch',
-    paddingHorizontal: ROW_PADDING,
-  },
-  highlightItem: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  pressed: {
-    opacity: 0.75,
-  },
-});

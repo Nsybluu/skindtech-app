@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import { Alert, View } from 'react-native';
 
 import { ActionRow } from '@/components/info/action-row';
 import { InfoRow } from '@/components/info/info-row';
@@ -15,8 +15,6 @@ import { Notice } from '@/components/ui/notice';
 import { ScreenHeader } from '@/components/ui/screen-header';
 import { Section } from '@/components/ui/section';
 import { Toggle } from '@/components/ui/toggle';
-import { Alpha, Colors } from '@/constants/colors';
-import { Radius, Spacing } from '@/constants/spacing';
 import { useI18n } from '@/i18n/i18n-provider';
 import { useSession, useUserData } from '@/providers/app-provider';
 import { AccountDeletionController, type AccountDeletionSnapshot } from '@/services/account-deletion-controller';
@@ -120,16 +118,14 @@ export default function PrivacyScreen() {
   };
 
   return (
-    <AppScreen
-      header={<ScreenHeader title={t.privacy.title} />}
-      gap={Spacing.l}>
-      <View style={styles.intro}>
-        <IconContainer size={40} radius={20} backgroundColor={Alpha.white(0.7)}>
+    <AppScreen header={<ScreenHeader title={t.privacy.title} />} contentClassName="gap-4">
+      <View className="min-h-[88px] flex-row items-center gap-3 rounded-lg bg-blush/[0.8] p-4">
+        <IconContainer className="size-10 rounded-full bg-white/[0.7]">
           <AppIcon icon={ShieldCheckIcon} size={20} />
         </IconContainer>
-        <View style={styles.introCopy}>
+        <View className="flex-1 gap-1">
           <AppText variant="cardTitle">{t.privacy.introTitle}</AppText>
-          <AppText variant="bodySmall" color={Colors.text.secondary}>
+          <AppText variant="bodySmall" className="text-fg-secondary">
             {t.privacy.introBody}
           </AppText>
         </View>
@@ -141,7 +137,7 @@ export default function PrivacyScreen() {
             icon={<AppIcon icon={ImageIcon} size={20} />}
             title={t.privacy.facePhotos}
             body={t.privacy.facePhotosBody}
-            minHeight={72}
+            className="min-h-[72px]"
           />
           <InfoRow
             icon={<AppIcon icon={FaceSlightlySmilingIcon} size={20} />}
@@ -157,13 +153,13 @@ export default function PrivacyScreen() {
       </Section>
 
       <Section title={t.privacy.aiImprovement}>
-        <View style={styles.consentCard}>
-          <IconContainer size={36} radius={20} backgroundColor={Alpha.white(0.7)}>
+        <View className="min-h-[84px] flex-row items-center gap-2 rounded-lg border border-line-subtle bg-surface-list p-3">
+          <IconContainer className="size-9 rounded-full bg-white/[0.7]">
             <AppIcon icon={ShieldCheckIcon} size={20} />
           </IconContainer>
-          <View style={styles.consentCopy}>
+          <View className="flex-1">
             <AppText variant="titleSmall">{t.privacy.aiImprovementTitle}</AppText>
-            <AppText variant="caption" color={Colors.text.secondary}>
+            <AppText variant="caption" className="text-fg-secondary">
               {t.privacy.aiImprovementBody}
             </AppText>
           </View>
@@ -199,19 +195,19 @@ export default function PrivacyScreen() {
         tone="blush"
         title={t.privacy.noticeTitle}
         message={t.privacy.noticeBody}
-        style={styles.notice}
+        className="p-4"
       />
 
       <ActionRow
         standalone
         icon={<AppIcon icon={FileTextIcon} size={18} />}
         label={t.privacy.privacyPolicy}
-        color={Colors.text.primary}
+        colorClassName="text-fg-primary"
         emphasized
         onPress={() => showMockupOnlyAlert(t, t.privacy.privacyPolicy.replace('  ›', ''))}
       />
 
-      <AppText variant="footnote" color={Colors.text.muted} align="center">
+      <AppText variant="footnote" className="text-center text-fg-muted">
         {t.privacy.policyNote}
       </AppText>
 
@@ -225,38 +221,3 @@ export default function PrivacyScreen() {
     </AppScreen>
   );
 }
-
-const styles = StyleSheet.create({
-  intro: {
-    minHeight: 88,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.m,
-    padding: Spacing.l,
-    borderRadius: Radius.l,
-    backgroundColor: Alpha.blush(0.8),
-  },
-  introCopy: {
-    flex: 1,
-    gap: Spacing.xs,
-  },
-  consentCard: {
-    minHeight: 84,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.s,
-    padding: Spacing.m,
-    borderRadius: Radius.l,
-    borderWidth: 1,
-    borderColor: Colors.border.subtle,
-    backgroundColor: Colors.surface.list,
-  },
-  consentCopy: {
-    flex: 1,
-  },
-  notice: {
-    gap: Spacing.m,
-    padding: Spacing.l,
-    borderRadius: Radius.l,
-  },
-});

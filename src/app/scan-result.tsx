@@ -1,6 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet } from 'react-native';
 
 import { CareSection } from '@/components/care/care-section';
 import { AcneTypesSection } from '@/components/result/acne-types-section';
@@ -19,7 +18,6 @@ import { Notice } from '@/components/ui/notice';
 import { goBackOr, ScreenHeader } from '@/components/ui/screen-header';
 import { StateCard } from '@/components/ui/state-card';
 import { Colors } from '@/constants/colors';
-import { Radius, Spacing } from '@/constants/spacing';
 import { useRecommendation } from '@/hooks/use-recommendation';
 import { useScanResult } from '@/hooks/use-scan-result';
 import { useI18n } from '@/i18n/i18n-provider';
@@ -50,7 +48,7 @@ export default function ScanResultScreen() {
 
   if (state.status !== 'ready') {
     return (
-      <AppScreen header={<ScreenHeader title={t.result.title} gap={Spacing.m} />}>
+      <AppScreen header={<ScreenHeader title={t.result.title} className="gap-3" />}>
         {state.status === 'loading' ? (
           <StateCard loading title={t.result.loadingResult} />
         ) : state.status === 'not-found' ? (
@@ -106,7 +104,7 @@ export default function ScanResultScreen() {
       header={
         <ScreenHeader
           title={t.result.title}
-          gap={Spacing.m}
+          className="gap-3"
           accessory={
             canDelete ? (
               <IconButton accessibilityLabel={t.result.moreOptions} onPress={() => setMenuOpen(true)}>
@@ -122,11 +120,11 @@ export default function ScanResultScreen() {
             variant="solid"
             label={t.common.scanAgain}
             onPress={() => router.dismissTo('/scan')}
-            style={styles.scanAgain}
+            className="flex-1"
           />
         </ActionBar>
       }>
-      <AppText variant="caption" color={Colors.text.muted}>
+      <AppText variant="caption" className="text-fg-muted">
         {formatScanDate(result.scannedAt, {
           language,
           todayLabel: t.result.today,
@@ -147,7 +145,7 @@ export default function ScanResultScreen() {
               ? t.result.clearDisclaimer
               : t.result.disclaimer
         }
-        style={styles.notice}
+        className="min-h-12 rounded-md px-3"
       />
       <ScanActionsSheet
         visible={menuOpen}
@@ -159,14 +157,3 @@ export default function ScanResultScreen() {
     </AppScreen>
   );
 }
-
-const styles = StyleSheet.create({
-  notice: {
-    minHeight: 48,
-    paddingHorizontal: Spacing.m,
-    borderRadius: Radius.m,
-  },
-  scanAgain: {
-    flex: 1,
-  },
-});

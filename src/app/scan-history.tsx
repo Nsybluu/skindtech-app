@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { AccessibilityInfo, BackHandler, Pressable, StyleSheet, View } from 'react-native';
+import { AccessibilityInfo, BackHandler, Pressable, View } from 'react-native';
 
 import { DeleteScansSheet, type DeleteScansTarget } from '@/components/history/delete-scans-sheet';
 import { ScanHistoryCard } from '@/components/history/scan-history-card';
@@ -15,12 +15,11 @@ import { InfoIcon, RotateCcwClockIcon } from '@/components/ui/icons';
 import { Notice } from '@/components/ui/notice';
 import { ScreenHeader } from '@/components/ui/screen-header';
 import { StateCard } from '@/components/ui/state-card';
-import { Alpha, Colors } from '@/constants/colors';
-import { Radius, Spacing } from '@/constants/spacing';
 import { useI18n } from '@/i18n/i18n-provider';
 import { useUserData } from '@/providers/app-provider';
 import { MAX_SELECTION } from '@/services/history-controller';
 import type { Severity } from '@/types/scan';
+import { cn } from '@/utils/cn';
 import { dataErrorMessage } from '@/utils/data-errors';
 
 type Filter = 'all' | Extract<Severity, 'mild' | 'moderate' | 'severe'>;
@@ -156,31 +155,31 @@ export default function ScanHistoryScreen() {
               label={deleteLabel}
               disabled={nothingPicked || history.deleting}
               onPress={openConfirm}
-              style={styles.deleteButton}
+              className="flex-1"
             />
           </ActionBar>
         ) : undefined
       }>
-      <View style={styles.intro}>
-        <IconContainer size={40} radius={20}>
+      <View className="min-h-[84px] flex-row items-center gap-3 rounded-lg bg-blush/[0.78] p-4">
+        <IconContainer className="size-10 rounded-full">
           <AppIcon icon={RotateCcwClockIcon} size={20} />
         </IconContainer>
-        <View style={styles.introCopy}>
+        <View className="flex-1 gap-1">
           <AppText variant="cardTitle">{t.history.introTitle}</AppText>
-          <AppText variant="bodySmall" color={Colors.text.secondary}>
+          <AppText variant="bodySmall" className="text-fg-secondary">
             {t.history.introBody}
           </AppText>
         </View>
         {scans.length > 0 || isEmpty ? (
-          <View style={styles.countBadge}>
-            <AppText variant="captionSemibold" color={Colors.brand.primary}>
+          <View className="h-7 min-w-11 items-center justify-center rounded-pill bg-white/[0.78]">
+            <AppText variant="captionSemibold" className="text-brand-primary">
               {history.hasMore ? `${scans.length}+` : scans.length}
             </AppText>
           </View>
         ) : null}
       </View>
 
-      <View style={styles.filters}>
+      <View className="flex-row flex-wrap gap-2">
         {filters.map((option) => {
           const selected = option.value === filter;
           return (
@@ -192,15 +191,15 @@ export default function ScanHistoryScreen() {
               disabled={managing}
               hitSlop={{ top: 4, bottom: 4 }}
               onPress={() => setFilter(option.value)}
-              style={({ pressed }) => [
-                styles.filter,
-                selected ? styles.filterSelected : styles.filterIdle,
-                (pressed || managing) && styles.pressed,
-              ]}>
+              className={cn(
+                'h-9 items-center justify-center rounded-pill px-4',
+                selected ? 'bg-brand-vivid' : 'border border-taupe/[0.26] bg-white/[0.64]',
+                managing ? 'opacity-60' : 'active:opacity-60',
+              )}>
               <AppText
                 variant="label"
-                color={selected ? Colors.text.onBrand : Colors.text.secondary}
-                numberOfLines={1}>
+                numberOfLines={1}
+                className={selected ? 'text-fg-on-brand' : 'text-fg-secondary'}>
                 {option.label}
               </AppText>
             </Pressable>
@@ -209,17 +208,17 @@ export default function ScanHistoryScreen() {
       </View>
 
       {managing && history.allSelected ? (
-        <AppText variant="caption" color={Colors.text.muted} accessibilityLiveRegion="polite">
+        <AppText variant="caption" accessibilityLiveRegion="polite" className="text-fg-muted">
           {t.history.allSelectedHint}
         </AppText>
       ) : null}
       {managing && !history.allSelected && history.selectedIds.length >= MAX_SELECTION ? (
-        <AppText variant="caption" color={Colors.text.muted} accessibilityLiveRegion="polite">
+        <AppText variant="caption" accessibilityLiveRegion="polite" className="text-fg-muted">
           {t.history.selectLimit}
         </AppText>
       ) : null}
 
-      <AppText variant="sectionTitle" accessibilityRole="header" style={styles.sectionTitle}>
+      <AppText variant="sectionTitle" accessibilityRole="header" className="mt-1">
         {t.history.recentScans}
       </AppText>
 
@@ -251,32 +250,32 @@ export default function ScanHistoryScreen() {
       {isCatchingUp && history.loadingMore ? <StateCard loading title={t.history.loading} /> : null}
 
       {isEmpty ? (
-        <View style={styles.empty}>
-          <AppText variant="cardTitle" color={Colors.text.secondary} align="center">
+        <View className="gap-1 py-6">
+          <AppText variant="cardTitle" className="text-center text-fg-secondary">
             {t.history.emptyTitle}
           </AppText>
-          <AppText variant="bodySmall" color={Colors.text.muted} align="center">
+          <AppText variant="bodySmall" className="text-center text-fg-muted">
             {t.history.emptyBody}
           </AppText>
         </View>
       ) : null}
 
       {scans.length > 0 && visibleScans.length === 0 ? (
-        <View style={styles.empty}>
-          <AppText variant="cardTitle" color={Colors.text.secondary} align="center">
+        <View className="gap-1 py-6">
+          <AppText variant="cardTitle" className="text-center text-fg-secondary">
             {t.history.noMatches}
           </AppText>
         </View>
       ) : null}
 
       {filter !== 'all' && !managing && history.hasMore ? (
-        <AppText variant="footnote" color={Colors.text.muted} align="center">
+        <AppText variant="footnote" className="text-center text-fg-muted">
           {t.history.filterNote}
         </AppText>
       ) : null}
 
       {history.loadError && !isFailed ? (
-        <AppText variant="bodySmall" color={Colors.brand.primary} align="center" accessibilityLiveRegion="polite">
+        <AppText variant="bodySmall" accessibilityLiveRegion="polite" className="text-center text-brand-primary">
           {t.history.updateFailed}
         </AppText>
       ) : null}
@@ -295,7 +294,7 @@ export default function ScanHistoryScreen() {
         icon={<AppIcon icon={InfoIcon} size={16} />}
         tone="blush"
         message={t.history.disclaimer}
-        style={styles.notice}
+        className="mt-1 py-3"
       />
 
       <DeleteScansSheet
@@ -308,66 +307,3 @@ export default function ScanHistoryScreen() {
     </AppScreen>
   );
 }
-
-const styles = StyleSheet.create({
-  intro: {
-    minHeight: 84,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.m,
-    padding: Spacing.l,
-    borderRadius: Radius.l,
-    backgroundColor: Alpha.blush(0.78),
-  },
-  introCopy: {
-    flex: 1,
-    gap: Spacing.xs,
-  },
-  countBadge: {
-    minWidth: 44,
-    height: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: Radius.pill,
-    backgroundColor: Alpha.white(0.78),
-  },
-  filters: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.s,
-  },
-  filter: {
-    height: 36,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: Spacing.l,
-    borderRadius: Radius.pill,
-  },
-  filterSelected: {
-    backgroundColor: Colors.brand.vivid,
-  },
-  filterIdle: {
-    backgroundColor: Alpha.white(0.64),
-    borderWidth: 1,
-    borderColor: Alpha.taupe(0.26),
-  },
-  sectionTitle: {
-    marginTop: Spacing.xs,
-  },
-  empty: {
-    gap: Spacing.xs,
-    paddingVertical: Spacing.xxl,
-  },
-  notice: {
-    marginTop: Spacing.xs,
-    gap: Spacing.m,
-    paddingVertical: Spacing.m,
-    borderRadius: Radius.l,
-  },
-  deleteButton: {
-    flex: 1,
-  },
-  pressed: {
-    opacity: 0.6,
-  },
-});

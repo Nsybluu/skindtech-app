@@ -1,12 +1,10 @@
 import { router } from 'expo-router';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 
 import { AppIcon } from '@/components/ui/app-icon';
 import { AppText } from '@/components/ui/app-text';
 import { IconContainer } from '@/components/ui/icon-container';
 import { FaceSlightlySmilingIcon } from '@/components/ui/icons';
-import { Colors } from '@/constants/colors';
-import { Radius, Spacing } from '@/constants/spacing';
 import { useI18n } from '@/i18n/i18n-provider';
 import { useUserData } from '@/providers/app-provider';
 import type { Translations } from '@/i18n/en';
@@ -32,52 +30,23 @@ export function SkinProfileSummary() {
       accessibilityRole="button"
       accessibilityLabel={`${t.common.skinProfile}, ${action}`}
       onPress={() => router.push('/skin-profile')}
-      style={({ pressed }) => [styles.bar, pressed && styles.pressed]}>
-      <View style={styles.content}>
-        <IconContainer size={30} radius={Radius.m}>
+      className="min-h-14 flex-row items-center justify-between gap-3 rounded-lg bg-surface-notice px-4 py-2 active:opacity-80">
+      <View className="flex-1 flex-row items-center gap-3">
+        <IconContainer className="size-[30px] rounded-md">
           <AppIcon icon={FaceSlightlySmilingIcon} size={16} />
         </IconContainer>
-        <View style={styles.copy}>
+        <View className="flex-1">
           <AppText variant="captionSemibold" numberOfLines={1}>
             {t.common.skinProfile}
           </AppText>
-          <AppText variant="caption" color={Colors.text.muted} numberOfLines={1}>
+          <AppText variant="caption" numberOfLines={1} className="text-fg-muted">
             {formatSkinProfileShort(skinProfile, t)}
           </AppText>
         </View>
       </View>
-      <AppText variant="captionSemibold" color={Colors.brand.primary} style={styles.action}>
+      <AppText variant="captionSemibold" className="shrink-0 text-brand-primary">
         {action}
       </AppText>
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  bar: {
-    minHeight: 56,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: Spacing.m,
-    paddingHorizontal: Spacing.l,
-    paddingVertical: Spacing.s,
-    borderRadius: Radius.l,
-    backgroundColor: Colors.surface.notice,
-  },
-  content: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.m,
-  },
-  copy: {
-    flex: 1,
-  },
-  action: {
-    flexShrink: 0,
-  },
-  pressed: {
-    opacity: 0.8,
-  },
-});

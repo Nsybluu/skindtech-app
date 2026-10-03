@@ -1,11 +1,10 @@
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 
 import { AppButton } from '@/components/ui/app-button';
 import { AppIcon } from '@/components/ui/app-icon';
 import { AppText } from '@/components/ui/app-text';
 import { CameraIcon } from '@/components/ui/icons';
-import { Alpha, Colors } from '@/constants/colors';
-import { Spacing } from '@/constants/spacing';
+import { Colors } from '@/constants/colors';
 import { useI18n } from '@/i18n/i18n-provider';
 
 type CameraPlaceholderProps = {
@@ -20,47 +19,24 @@ export function CameraPlaceholder({ canAskAgain, onAllow, onOpenSettings }: Came
   const { t } = useI18n();
 
   return (
-    <View style={styles.container}>
-      <View style={styles.iconCircle}>
+    <View className="items-center gap-4">
+      <View className="size-16 items-center justify-center rounded-full bg-white/[0.1]">
         <AppIcon icon={CameraIcon} size={28} color={Colors.text.onBrand} />
       </View>
-      <View style={styles.text}>
-        <AppText variant="cardTitle" color={Colors.text.onBrand} align="center" accessibilityRole="header">
+      <View className="max-w-[280px] gap-1">
+        <AppText variant="cardTitle" accessibilityRole="header" className="text-center text-fg-on-brand">
           {t.scan.cameraOffTitle}
         </AppText>
-        <AppText variant="caption" color={Colors.text.onDarkMuted} align="center">
+        <AppText variant="caption" className="text-center text-fg-on-dark-muted">
           {canAskAgain ? t.scan.cameraOffBody : t.scan.cameraDeniedBody}
         </AppText>
       </View>
       <AppButton
         variant="solid"
-        height={44}
         label={canAskAgain ? t.scan.allowCamera : t.scan.openSettings}
         onPress={canAskAgain ? onAllow : onOpenSettings}
-        style={styles.button}
+        className="h-11 px-6"
       />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    gap: Spacing.l,
-  },
-  iconCircle: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: Alpha.white(0.1),
-  },
-  text: {
-    maxWidth: 280,
-    gap: Spacing.xs,
-  },
-  button: {
-    paddingHorizontal: Spacing.xxl,
-  },
-});

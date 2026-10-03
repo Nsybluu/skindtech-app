@@ -1,10 +1,9 @@
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 
 import { AppIcon } from '@/components/ui/app-icon';
 import { AppText } from '@/components/ui/app-text';
 import { InfoIcon } from '@/components/ui/icons';
 import { StateCard } from '@/components/ui/state-card';
-import { Spacing } from '@/constants/spacing';
 import { useI18n } from '@/i18n/i18n-provider';
 
 type LatestResultStatusProps = {
@@ -20,7 +19,7 @@ export function LatestResultStatus({ status, onRetry }: LatestResultStatusProps)
   const { t } = useI18n();
 
   return (
-    <View style={styles.section}>
+    <View className="gap-3">
       <AppText variant="sectionTitle" accessibilityRole="header">
         {t.home.latestResult}
       </AppText>
@@ -38,9 +37,3 @@ export function LatestResultStatus({ status, onRetry }: LatestResultStatusProps)
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  section: {
-    gap: Spacing.m,
-  },
-});

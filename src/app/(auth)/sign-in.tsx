@@ -1,13 +1,11 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Alert, Pressable, StyleSheet, View } from 'react-native';
+import { Alert, Pressable, View } from 'react-native';
 
 import { AuthFooterLink, AuthLayout } from '@/components/auth/auth-layout';
 import { AppButton } from '@/components/ui/app-button';
 import { AppInput } from '@/components/ui/app-input';
 import { AppText } from '@/components/ui/app-text';
-import { Colors } from '@/constants/colors';
-import { Spacing } from '@/constants/spacing';
 import { useI18n } from '@/i18n/i18n-provider';
 import { useSession } from '@/providers/app-provider';
 import { authService } from '@/services/auth.service';
@@ -45,16 +43,16 @@ export default function SignInScreen() {
 
   return (
     <AuthLayout>
-      <View style={styles.intro}>
+      <View className="gap-1">
         <AppText variant="authTitle" accessibilityRole="header">
           {t.signIn.title}
         </AppText>
-        <AppText variant="bodyLarge" color={Colors.text.secondary}>
+        <AppText variant="bodyLarge" className="text-fg-secondary">
           {t.signIn.subtitle}
         </AppText>
       </View>
 
-      <View style={styles.form}>
+      <View className="mt-6 gap-5">
         <AppInput
           label={t.signIn.email}
           value={email}
@@ -76,30 +74,25 @@ export default function SignInScreen() {
         />
       </View>
 
-      <View style={styles.actions}>
+      <View className="mt-8 items-center gap-4">
         <AppButton
           label={submitting ? t.authErrors.signingIn : t.signIn.submit}
           onPress={submit}
           disabled={submitting}
-          style={styles.fullWidth}
+          className="self-stretch"
         />
         <Pressable
           accessibilityRole="link"
           hitSlop={8}
-          onPress={() => showMockupOnlyAlert(t, t.signIn.forgotPassword)}>
-          {({ pressed }) => (
-            <AppText
-              variant="body"
-              color={Colors.brand.primary}
-              align="center"
-              style={pressed && styles.pressed}>
-              {t.signIn.forgotPassword}
-            </AppText>
-          )}
+          onPress={() => showMockupOnlyAlert(t, t.signIn.forgotPassword)}
+          className="active:opacity-60">
+          <AppText variant="body" className="text-center text-brand-primary">
+            {t.signIn.forgotPassword}
+          </AppText>
         </Pressable>
       </View>
 
-      <View style={styles.footer}>
+      <View className="mt-6">
         <AuthFooterLink
           prompt={t.signIn.noAccount}
           action={t.signIn.signUp}
@@ -109,27 +102,3 @@ export default function SignInScreen() {
     </AuthLayout>
   );
 }
-
-const styles = StyleSheet.create({
-  intro: {
-    gap: Spacing.xs,
-  },
-  form: {
-    marginTop: Spacing.xxl,
-    gap: Spacing.xl,
-  },
-  actions: {
-    marginTop: Spacing.xxxl,
-    gap: Spacing.l,
-    alignItems: 'center',
-  },
-  fullWidth: {
-    alignSelf: 'stretch',
-  },
-  footer: {
-    marginTop: Spacing.xxl,
-  },
-  pressed: {
-    opacity: 0.6,
-  },
-});

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { Keyboard, KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
 
 import { AssistantBubble, TypingIndicator, UserBubble } from '@/components/ai-chat/chat-bubble';
 import { ChatComposer } from '@/components/ai-chat/chat-composer';
@@ -7,8 +7,7 @@ import { QuickPrompts } from '@/components/ai-chat/quick-prompts';
 import { SkinContextCard } from '@/components/ai-chat/skin-context-card';
 import { AppText } from '@/components/ui/app-text';
 import { ScreenBackground } from '@/components/ui/screen-background';
-import { Alpha, Colors } from '@/constants/colors';
-import { Layout, Radius, Spacing } from '@/constants/spacing';
+import { Layout, Spacing } from '@/constants/spacing';
 import { useDesignInsets } from '@/hooks/use-design-insets';
 import { useI18n } from '@/i18n/i18n-provider';
 import { chatService } from '@/services/chat.service';
@@ -71,16 +70,15 @@ export default function AiChatScreen() {
 
   return (
     <ScreenBackground>
-      <KeyboardAvoidingView
-        style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        <View style={[styles.header, { paddingTop: top(40) }]}>
-          <View style={styles.headerRow}>
-            <AppText variant="screenTitle" accessibilityRole="header" style={styles.headerTitle}>
+      <KeyboardAvoidingView className="flex-1" behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        {/* The top padding follows the status bar (runtime value). */}
+        <View className="px-5" style={{ paddingTop: top(40) }}>
+          <View className="min-h-11 w-full max-w-content flex-row items-center justify-between gap-3 self-center">
+            <AppText variant="screenTitle" accessibilityRole="header" className="flex-1">
               {t.aiChat.title}
             </AppText>
-            <View style={styles.badge}>
-              <AppText variant="footnoteSemibold" color={Colors.brand.gradientStart}>
+            <View className="h-7 min-w-[46px] items-center justify-center rounded-pill border border-line-brand bg-white/[0.58] px-3">
+              <AppText variant="footnoteSemibold" className="text-brand-gradient-start">
                 {t.aiChat.badge}
               </AppText>
             </View>
@@ -89,11 +87,11 @@ export default function AiChatScreen() {
 
         <ScrollView
           ref={scrollRef}
-          style={styles.flex}
-          contentContainerStyle={styles.content}
+          className="flex-1"
+          contentContainerClassName="grow px-5 pb-4 pt-4"
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}>
-          <View style={styles.constrained}>
+          <View className="w-full max-w-content gap-3 self-center">
             <SkinContextCard />
 
             {messages.map((message) =>
@@ -113,9 +111,9 @@ export default function AiChatScreen() {
           </View>
         </ScrollView>
 
-        <View style={styles.noticeWrapper}>
-          <View style={styles.notice}>
-            <AppText variant="footnote" color={Colors.text.secondary} align="center">
+        <View className="px-5 pb-3">
+          <View className="w-full max-w-content self-center rounded-md bg-surface-notice px-4 py-3">
+            <AppText variant="footnote" className="text-center text-fg-secondary">
               {t.aiChat.notice}
             </AppText>
           </View>
@@ -132,61 +130,3 @@ export default function AiChatScreen() {
     </ScreenBackground>
   );
 }
-
-const styles = StyleSheet.create({
-  flex: {
-    flex: 1,
-  },
-  header: {
-    paddingHorizontal: Layout.screenPadding,
-  },
-  headerRow: {
-    minHeight: Layout.headerHeight,
-    width: '100%',
-    maxWidth: Layout.maxContentWidth,
-    alignSelf: 'center',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: Spacing.m,
-  },
-  headerTitle: {
-    flex: 1,
-  },
-  badge: {
-    minWidth: 46,
-    height: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: Spacing.m,
-    borderRadius: Radius.pill,
-    borderWidth: 1,
-    borderColor: Colors.border.brand,
-    backgroundColor: Alpha.white(0.58),
-  },
-  content: {
-    flexGrow: 1,
-    paddingTop: Spacing.l,
-    paddingHorizontal: Layout.screenPadding,
-    paddingBottom: Spacing.l,
-  },
-  constrained: {
-    width: '100%',
-    maxWidth: Layout.maxContentWidth,
-    alignSelf: 'center',
-    gap: Spacing.m,
-  },
-  noticeWrapper: {
-    paddingHorizontal: Layout.screenPadding,
-    paddingBottom: Spacing.m,
-  },
-  notice: {
-    width: '100%',
-    maxWidth: Layout.maxContentWidth,
-    alignSelf: 'center',
-    paddingHorizontal: Spacing.l,
-    paddingVertical: Spacing.m,
-    borderRadius: Radius.m,
-    backgroundColor: Colors.surface.notice,
-  },
-});

@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState, type ReactNode } from 'react';
-import { Alert, StyleSheet, TextInput, View, type StyleProp, type TextStyle } from 'react-native';
+import { Alert, TextInput, View } from 'react-native';
 
 import { OptionChips, type ChipOption } from '@/components/profile/option-chips';
 import { ActionBar } from '@/components/ui/action-bar';
@@ -12,9 +12,8 @@ import { Badge } from '@/components/ui/badge';
 import { InfoIcon } from '@/components/ui/icons';
 import { Notice } from '@/components/ui/notice';
 import { ScreenHeader } from '@/components/ui/screen-header';
-import { Alpha, Colors } from '@/constants/colors';
-import { Radius, Spacing } from '@/constants/spacing';
-import { inputTextStyle, MAX_FONT_SIZE_MULTIPLIER } from '@/constants/typography';
+import { Colors } from '@/constants/colors';
+import { MAX_FONT_SIZE_MULTIPLIER } from '@/constants/typography';
 import { useI18n } from '@/i18n/i18n-provider';
 import { useUserData } from '@/providers/app-provider';
 import type { SkinConcern, SkinSensitivity, SkinType } from '@/types/profile';
@@ -111,11 +110,11 @@ export default function SkinProfileScreen() {
   return (
     <AppScreen
       keyboardAware
-      gap={Spacing.l}
+      contentClassName="gap-4"
       header={
         <ScreenHeader
           title={t.skinProfile.title}
-          accessory={<Badge label={t.skinProfile.required} height={26} minWidth={90} />}
+          accessory={<Badge label={t.skinProfile.required} className="h-[26px] min-w-[90px]" />}
         />
       }
       footer={
@@ -124,16 +123,16 @@ export default function SkinProfileScreen() {
             label={isSavingSkinProfile ? t.skinProfile.saving : t.skinProfile.save}
             onPress={() => void save()}
             disabled={!canSave || isSavingSkinProfile}
-            style={styles.saveButton}
+            className="flex-1"
           />
         </ActionBar>
       }>
       <Notice
         icon={<AppIcon icon={InfoIcon} size={20} />}
         title={t.skinProfile.noticeTitle}
-        titleColor={Colors.text.primary}
+        titleClassName="text-fg-primary"
         message={t.skinProfile.noticeBody}
-        style={styles.usageNotice}
+        className="p-4"
       />
 
       <Field label={t.skinProfile.skinType}>
@@ -177,14 +176,14 @@ export default function SkinProfileScreen() {
           selectionColor={Colors.brand.primary}
           maxFontSizeMultiplier={MAX_FONT_SIZE_MULTIPLIER}
           accessibilityLabel={t.skinProfile.ingredients}
-          style={styles.input}
+          className="min-h-14 rounded-lg border border-taupe/[0.3] bg-surface-card px-4 py-3 font-noto-regular text-field text-fg-primary"
         />
       </Field>
 
       <Notice
         icon={<AppIcon icon={InfoIcon} size={18} />}
         message={t.skinProfile.disclaimer}
-        style={styles.disclaimer}
+        className="py-3"
       />
     </AppScreen>
   );
@@ -192,47 +191,14 @@ export default function SkinProfileScreen() {
 
 type FieldProps = {
   label: string;
-  labelStyle?: StyleProp<TextStyle>;
   children: ReactNode;
 };
 
-function Field({ label, labelStyle, children }: FieldProps) {
+function Field({ label, children }: FieldProps) {
   return (
-    <View style={styles.field}>
-      <AppText variant="cardTitle" style={labelStyle}>
-        {label}
-      </AppText>
+    <View className="gap-3">
+      <AppText variant="cardTitle">{label}</AppText>
       {children}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  field: {
-    gap: Spacing.m,
-  },
-
-  usageNotice: {
-    gap: Spacing.m,
-    padding: Spacing.l,
-    borderRadius: Radius.l,
-  },
-  input: {
-    minHeight: 56,
-    paddingHorizontal: Spacing.l,
-    paddingVertical: Spacing.m,
-    borderRadius: Radius.l,
-    borderWidth: 1,
-    borderColor: Alpha.taupe(0.3),
-    backgroundColor: Colors.surface.card,
-    ...inputTextStyle('bodyLarge'),
-    color: Colors.text.primary,
-  },
-  disclaimer: {
-    paddingVertical: Spacing.m,
-    borderRadius: Radius.l,
-  },
-  saveButton: {
-    flex: 1,
-  },
-});

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Pressable, StyleSheet } from 'react-native';
+import { Pressable } from 'react-native';
 
 import { AppButton } from '@/components/ui/app-button';
 import { AppIcon } from '@/components/ui/app-icon';
@@ -7,8 +7,8 @@ import { AppText } from '@/components/ui/app-text';
 import { BottomSheet } from '@/components/ui/bottom-sheet';
 import { ConfirmDeleteContent } from '@/components/ui/confirm-delete-content';
 import { TrashIcon } from '@/components/ui/icons';
-import { Alpha, Colors } from '@/constants/colors';
-import { Radius, Spacing } from '@/constants/spacing';
+import { Colors } from '@/constants/colors';
+import { Spacing } from '@/constants/spacing';
 import { useI18n } from '@/i18n/i18n-provider';
 
 type ScanActionsSheetProps = {
@@ -36,11 +36,7 @@ export function ScanActionsSheet({ visible, busy, error, onDelete, onClose }: Sc
   };
 
   return (
-    <BottomSheet
-      visible={visible}
-      onClose={close}
-      handleColor="rgba(201, 181, 174, 0.8)"
-      bottomPadding={Spacing.l}>
+    <BottomSheet visible={visible} onClose={close} bottomPadding={Spacing.l}>
       {confirming ? (
         <ConfirmDeleteContent
           title={t.history.deleteOneTitle}
@@ -57,9 +53,9 @@ export function ScanActionsSheet({ visible, busy, error, onDelete, onClose }: Sc
             accessibilityRole="button"
             accessibilityLabel={t.result.deleteThisScan}
             onPress={() => setConfirming(true)}
-            style={({ pressed }) => [styles.option, pressed && styles.pressed]}>
+            className="min-h-14 flex-row items-center gap-3 rounded-lg border border-danger-border bg-danger-surface px-4 active:bg-rose/[0.12]">
             <AppIcon icon={TrashIcon} size={20} color={Colors.danger.text} />
-            <AppText variant="button" color={Colors.danger.text} style={styles.optionLabel}>
+            <AppText variant="button" className="flex-1 text-danger-text">
               {t.result.deleteThisScan}
             </AppText>
           </Pressable>
@@ -69,23 +65,3 @@ export function ScanActionsSheet({ visible, busy, error, onDelete, onClose }: Sc
     </BottomSheet>
   );
 }
-
-const styles = StyleSheet.create({
-  option: {
-    minHeight: 56,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.m,
-    paddingHorizontal: Spacing.l,
-    borderRadius: Radius.l,
-    borderWidth: 1,
-    borderColor: Colors.danger.border,
-    backgroundColor: Colors.danger.surface,
-  },
-  optionLabel: {
-    flex: 1,
-  },
-  pressed: {
-    backgroundColor: Alpha.rose(0.12),
-  },
-});

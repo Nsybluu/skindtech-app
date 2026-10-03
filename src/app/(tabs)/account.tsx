@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 
 import { LanguageSheet } from '@/components/profile/language-sheet';
 import { MenuRow } from '@/components/profile/menu-row';
@@ -14,8 +14,6 @@ import { ListGroup } from '@/components/ui/list-group';
 import { Section } from '@/components/ui/section';
 import { ScreenBackground } from '@/components/ui/screen-background';
 import { APP_VERSION } from '@/constants/app';
-import { Alpha, Colors } from '@/constants/colors';
-import { Layout, Radius, Spacing } from '@/constants/spacing';
 import { useDesignInsets } from '@/hooks/use-design-insets';
 import { NATIVE_LANGUAGE_NAMES, useI18n } from '@/i18n/i18n-provider';
 
@@ -46,43 +44,44 @@ export default function AccountScreen() {
   return (
     <ScreenBackground>
       <ScrollView
-        contentContainerStyle={[styles.scrollContent, { paddingTop: top(48) }]}
+        contentContainerClassName="grow"
+        // The top padding follows the status bar (runtime value).
+        contentContainerStyle={{ paddingTop: top(48) }}
         showsVerticalScrollIndicator={false}>
-        <View style={styles.hero}>
+        <View className="px-5 pb-6">
           <ProfileHero user={user} onChangePhoto={() => showMockupOnlyAlert(t, t.profile.changePhoto)} />
         </View>
 
-        <View style={styles.sheet}>
-          <View style={styles.sheetContent}>
-            <View style={styles.sections}>
+        <View className="grow rounded-t-sheet border-t border-t-taupe/[0.16] bg-white/[0.9] px-5 pb-28 pt-5">
+          <View className="w-full max-w-content grow justify-between gap-6 self-center">
+            <View className="gap-4">
               <Section title={t.profile.skinAndResults}>
                 <ListGroup
-                  backgroundColor="rgba(255, 249, 247, 0.92)"
-                  borderColor={Alpha.rose(0.22)}
-                  dividerColor={Alpha.taupe(0.18)}>
+                  className="border-rose/[0.22] bg-[rgba(255,249,247,0.92)]"
+                  dividerClassName="bg-taupe/[0.18]">
                   <MenuRow
                     icon={<AppIcon icon={FaceSlightlySmilingIcon} size={16} />}
-                    iconBackground={Alpha.rose(0.1)}
+                    iconClassName="bg-rose/[0.1]"
                     label={t.profile.mySkinProfile}
                     description={
                       skinProfile
                         ? `${t.skinProfileSummary.skinTypeLong[skinProfile.skinType]} · ${t.skinProfileSummary.sensitivity[skinProfile.sensitivity]}`
                         : formatSkinProfileShort(null, t)
                     }
-                    minHeight={52}
+                    className="min-h-[52px]"
                     onPress={() => router.push('/skin-profile')}
                   />
                   <MenuRow
                     icon={<AppIcon icon={RotateCcwClockIcon} size={16} />}
                     label={t.profile.scanHistory}
-                    minHeight={52}
+                    className="min-h-[52px]"
                     onPress={() => router.push('/scan-history')}
                   />
                 </ListGroup>
               </Section>
 
               <Section title={t.profile.settingsAndInformation}>
-                <ListGroup backgroundColor={Alpha.white(0.72)} borderColor={Alpha.taupe(0.25)}>
+                <ListGroup className="border-taupe/[0.25] bg-white/[0.72]">
                   <MenuRow
                     icon={<AppIcon icon={GlobeIcon} size={16} />}
                     label={t.profile.language}
@@ -103,7 +102,7 @@ export default function AccountScreen() {
               </Section>
             </View>
 
-            <View style={styles.accountActions}>
+            <View className="gap-3">
               <AppButton
                 variant="outline"
                 label={t.profile.signOut}
@@ -111,7 +110,7 @@ export default function AccountScreen() {
                 onPress={handleSignOut}
                 disabled={signingOut}
               />
-              <AppText variant="caption" color={Colors.text.muted} align="center">
+              <AppText variant="caption" className="text-center text-fg-muted">
                 {t.profile.version(APP_VERSION)}
               </AppText>
             </View>
@@ -123,38 +122,3 @@ export default function AccountScreen() {
     </ScreenBackground>
   );
 }
-
-const styles = StyleSheet.create({
-  scrollContent: {
-    flexGrow: 1,
-  },
-  hero: {
-    paddingHorizontal: Layout.screenPadding,
-    paddingBottom: Spacing.xxl,
-  },
-  sheet: {
-    flexGrow: 1,
-    paddingTop: Spacing.xl,
-    paddingBottom: Layout.tabBarClearance,
-    paddingHorizontal: Layout.screenPadding,
-    borderTopLeftRadius: Radius.sheet,
-    borderTopRightRadius: Radius.sheet,
-    borderTopWidth: 1,
-    borderTopColor: Alpha.taupe(0.16),
-    backgroundColor: Alpha.white(0.9),
-  },
-  sheetContent: {
-    flexGrow: 1,
-    width: '100%',
-    maxWidth: Layout.maxContentWidth,
-    alignSelf: 'center',
-    justifyContent: 'space-between',
-    gap: Spacing.xxl,
-  },
-  sections: {
-    gap: Spacing.l,
-  },
-  accountActions: {
-    gap: Spacing.m,
-  },
-});

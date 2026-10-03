@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 
 import { AppButton } from '@/components/ui/app-button';
 import { AppIcon } from '@/components/ui/app-icon';
@@ -6,8 +6,7 @@ import { AppText } from '@/components/ui/app-text';
 import { BottomSheet } from '@/components/ui/bottom-sheet';
 import { IconContainer } from '@/components/ui/icon-container';
 import { ShieldCheckIcon } from '@/components/ui/icons';
-import { Alpha, Colors } from '@/constants/colors';
-import { Radius, Spacing } from '@/constants/spacing';
+import { Spacing } from '@/constants/spacing';
 import { useI18n } from '@/i18n/i18n-provider';
 
 type AiConsentSheetProps = {
@@ -35,117 +34,64 @@ export function AiConsentSheet({
     <BottomSheet
       visible={visible}
       onClose={busy ? () => {} : onClose}
-      handleColor="rgba(201, 181, 174, 0.8)"
       bottomPadding={Spacing.l}
-      style={styles.sheet}>
-      <View style={styles.intro}>
-        <IconContainer size={40} radius={20}>
+      className="bg-[rgba(255,253,252,0.99)]">
+      <View className="flex-row items-start gap-3 py-1">
+        <IconContainer className="size-10 rounded-full">
           <AppIcon icon={ShieldCheckIcon} size={20} />
         </IconContainer>
-        <View style={styles.introCopy}>
+        <View className="flex-1 gap-1">
           <AppText variant="headline" accessibilityRole="header">
             {t.consent.title}
           </AppText>
-          <AppText variant="body" color={Colors.text.secondary}>
+          <AppText variant="body" className="text-fg-secondary">
             {t.consent.body}
           </AppText>
         </View>
       </View>
 
-      <View style={styles.benefits}>
+      <View className="gap-2 rounded-lg bg-[rgba(253,235,235,0.58)] p-3">
         {[t.consent.benefitUsage, t.consent.benefitOptional].map((benefit) => (
-          <View key={benefit} style={styles.benefitRow}>
-            <View style={styles.bullet} />
-            <AppText variant="bodySmall" color={Colors.text.secondary} style={styles.benefitText}>
+          <View key={benefit} className="flex-row items-center gap-3">
+            <View className="size-[7px] rounded-full bg-brand-primary" />
+            <AppText variant="bodySmall" className="flex-1 text-fg-secondary">
               {benefit}
             </AppText>
           </View>
         ))}
       </View>
 
-      <Pressable accessibilityRole="link" onPress={onLearnMore} disabled={busy} hitSlop={6}>
-        {({ pressed }) => (
-          <AppText
-            variant="label"
-            color={Colors.brand.primary}
-            align="center"
-            style={pressed && styles.pressed}>
-            {t.consent.learnMore}
-          </AppText>
-        )}
+      <Pressable
+        accessibilityRole="link"
+        onPress={onLearnMore}
+        disabled={busy}
+        hitSlop={6}
+        className="active:opacity-60">
+        <AppText variant="label" className="text-center text-brand-primary">
+          {t.consent.learnMore}
+        </AppText>
       </Pressable>
 
-      <AppText variant="footnote" color={Colors.text.muted} align="center">
+      <AppText variant="footnote" className="text-center text-fg-muted">
         {t.consent.finePrint}
       </AppText>
 
-      <View style={styles.actions}>
+      <View className="flex-row gap-3">
         <AppButton
           variant="secondary"
           label={t.consent.notNow}
           onPress={onDecline}
           disabled={busy}
-          style={styles.secondary}
+          className="w-[104px] border-rose/[0.32] bg-white/[0.75]"
         />
         <AppButton
           variant="solid"
           label={busy ? t.consent.saving : t.consent.allow}
           onPress={onAllow}
           disabled={busy}
-          style={styles.primary}
+          className="flex-1"
         />
       </View>
     </BottomSheet>
   );
 }
-
-const styles = StyleSheet.create({
-  sheet: {
-    backgroundColor: 'rgba(255, 253, 252, 0.99)',
-  },
-  intro: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: Spacing.m,
-    paddingVertical: Spacing.xs,
-  },
-  introCopy: {
-    flex: 1,
-    gap: Spacing.xs,
-  },
-  benefits: {
-    gap: Spacing.s,
-    padding: Spacing.m,
-    borderRadius: Radius.l,
-    backgroundColor: 'rgba(253, 235, 235, 0.58)',
-  },
-  benefitRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.m,
-  },
-  bullet: {
-    width: 7,
-    height: 7,
-    borderRadius: 3.5,
-    backgroundColor: Colors.brand.primary,
-  },
-  benefitText: {
-    flex: 1,
-  },
-  actions: {
-    flexDirection: 'row',
-    gap: Spacing.m,
-  },
-  secondary: {
-    width: 104,
-    borderColor: Alpha.rose(0.32),
-    backgroundColor: Alpha.white(0.75),
-  },
-  primary: {
-    flex: 1,
-  },
-  pressed: {
-    opacity: 0.6,
-  },
-});

@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 
 import { RoutineCard } from '@/components/care/routine-card';
 import { SkincareBasics } from '@/components/care/skincare-basics';
@@ -14,8 +14,6 @@ import {
   SunIcon,
 } from '@/components/ui/icons';
 import { Notice } from '@/components/ui/notice';
-import { Alpha, Colors } from '@/constants/colors';
-import { Radius, Spacing } from '@/constants/spacing';
 import { useI18n } from '@/i18n/i18n-provider';
 import type { CareRecommendationContent } from '@/types/recommendation';
 
@@ -37,49 +35,49 @@ export function CareGuidance({ content, demo = false }: CareGuidanceProps) {
   const { personalization, professionalHelp } = content;
 
   return (
-    <View style={styles.section}>
-      <View style={styles.intro}>
-        <IconContainer size={40} radius={Radius.l}>
+    <View className="gap-3">
+      <View className="flex-row items-center gap-3 rounded-lg bg-rose/[0.09] p-4">
+        <IconContainer className="size-10 rounded-lg">
           <AppIcon icon={FaceSlightlySmilingIcon} size={18} />
         </IconContainer>
-        <View style={styles.introCopy}>
+        <View className="flex-1 gap-0.5">
           <AppText variant="sectionTitle" accessibilityRole="header">
             {t.care.sectionTitle}
           </AppText>
-          <AppText variant="caption" color={Colors.text.secondary}>
+          <AppText variant="caption" className="text-fg-secondary">
             {isClear ? t.care.introBodyClear : t.care.introBody}
           </AppText>
         </View>
       </View>
 
       {demo ? (
-        <Notice icon={<AppIcon icon={InfoIcon} size={18} />} tone="blush" message={t.care.demoNotice} style={styles.notice} />
+        <Notice icon={<AppIcon icon={InfoIcon} size={18} />} tone="blush" message={t.care.demoNotice} className="py-3" />
       ) : null}
 
       <RoutineCard
         title={t.care.morningRoutine}
         icon={<AppIcon icon={SunIcon} size={15} />}
-        iconBackground={Alpha.peach(0.22)}
+        iconClassName="bg-peach/[0.22]"
         steps={content.morningSteps.map((step) => t.care.step[step])}
       />
       <RoutineCard
         title={t.care.eveningRoutine}
         icon={<AppIcon icon={MoonStarIcon} size={15} />}
-        iconBackground={Alpha.rose(0.1)}
+        iconClassName="bg-rose/[0.1]"
         steps={content.eveningSteps.map((step) => t.care.step[step])}
       />
 
       <SkincareBasics basics={content.basics} />
 
-      <View style={styles.habits}>
-        <IconContainer size={36} radius={Radius.m} backgroundColor={Alpha.rose(0.1)}>
+      <View className="flex-row items-start gap-3 rounded-lg bg-white/[0.7] p-4">
+        <IconContainer className="size-9 rounded-md bg-rose/[0.1]">
           <AppIcon icon={ClipboardCheckIcon} size={18} />
         </IconContainer>
-        <View style={styles.habitsCopy}>
+        <View className="flex-1 gap-1">
           <AppText variant="cardTitle">{t.care.habitsTitle}</AppText>
-          <View style={styles.list}>
+          <View className="gap-1">
             {content.habits.map((habit) => (
-              <AppText key={habit} variant="bodySmall" color={Colors.text.secondary}>
+              <AppText key={habit} variant="bodySmall" className="text-fg-secondary">
                 {`•  ${t.care.habit[habit]}`}
               </AppText>
             ))}
@@ -88,22 +86,22 @@ export function CareGuidance({ content, demo = false }: CareGuidanceProps) {
       </View>
 
       {personalization ? (
-        <View style={styles.personalized}>
-          <View style={styles.personalizedHeader}>
-            <IconContainer size={36} radius={Radius.m} backgroundColor={Alpha.peach(0.24)}>
+        <View className="gap-3 rounded-lg border border-line-brand bg-surface-card-strong p-4">
+          <View className="flex-row items-center gap-3">
+            <IconContainer className="size-9 rounded-md bg-peach/[0.24]">
               <AppIcon icon={SparklesIcon} size={18} />
             </IconContainer>
-            <AppText variant="cardTitle" accessibilityRole="header" style={styles.personalizedTitle}>
+            <AppText variant="cardTitle" accessibilityRole="header" className="flex-1">
               {t.care.personalizedTitle}
             </AppText>
           </View>
           {/* Plain text in the app's own language: never markup, never the other language. */}
-          <AppText variant="body" color={Colors.text.secondary}>
+          <AppText variant="body" className="text-fg-secondary">
             {personalization.summary[language]}
           </AppText>
-          <View style={styles.list}>
+          <View className="gap-1">
             {personalization.tips.map((tip, index) => (
-              <AppText key={index} variant="bodySmall" color={Colors.text.secondary}>
+              <AppText key={index} variant="bodySmall" className="text-fg-secondary">
                 {`•  ${tip[language]}`}
               </AppText>
             ))}
@@ -116,10 +114,10 @@ export function CareGuidance({ content, demo = false }: CareGuidanceProps) {
           icon={<AppIcon icon={InfoIcon} size={18} />}
           title={t.care.professionalRecommendedTitle}
           message={t.care.professionalRecommendedBody}
-          style={styles.professional}>
-          <View style={styles.list}>
+          className="p-4">
+          <View className="gap-1">
             {professionalHelp.reasons.map((reason) => (
-              <AppText key={reason} variant="caption" color={Colors.text.secondary}>
+              <AppText key={reason} variant="caption" className="text-fg-secondary">
                 {`•  ${t.care.professionalReason[reason]}`}
               </AppText>
             ))}
@@ -130,71 +128,15 @@ export function CareGuidance({ content, demo = false }: CareGuidanceProps) {
         <Notice
           icon={<AppIcon icon={InfoIcon} size={18} />}
           title={t.care.professionalTitle}
-          titleColor={Colors.text.primary}
+          titleClassName="text-fg-primary"
           message={t.care.professionalBody}
-          style={styles.professional}
+          className="p-4"
         />
       )}
 
-      <AppText variant="footnote" color={Colors.text.muted} align="center">
+      <AppText variant="footnote" className="text-center text-fg-muted">
         {t.care.disclaimer[content.disclaimer]}
       </AppText>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  section: {
-    gap: Spacing.m,
-  },
-  intro: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.m,
-    padding: Spacing.l,
-    borderRadius: Radius.l,
-    backgroundColor: Alpha.rose(0.09),
-  },
-  introCopy: {
-    flex: 1,
-    gap: Spacing.xxs,
-  },
-  notice: {
-    paddingVertical: Spacing.m,
-    borderRadius: Radius.l,
-  },
-  habits: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: Spacing.m,
-    padding: Spacing.l,
-    borderRadius: Radius.l,
-    backgroundColor: Alpha.white(0.7),
-  },
-  habitsCopy: {
-    flex: 1,
-    gap: Spacing.xs,
-  },
-  list: {
-    gap: Spacing.xs,
-  },
-  personalized: {
-    gap: Spacing.m,
-    padding: Spacing.l,
-    borderRadius: Radius.l,
-    borderWidth: 1,
-    borderColor: Colors.border.brand,
-    backgroundColor: Colors.surface.cardStrong,
-  },
-  personalizedHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.m,
-  },
-  personalizedTitle: {
-    flex: 1,
-  },
-  professional: {
-    padding: Spacing.l,
-  },
-});

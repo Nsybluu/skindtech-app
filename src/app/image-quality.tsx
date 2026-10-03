@@ -1,5 +1,4 @@
 import { router } from 'expo-router';
-import { StyleSheet } from 'react-native';
 
 import { CameraFrame } from '@/components/scan/camera-frame';
 import { ScanFlowLayout } from '@/components/scan/scan-flow-layout';
@@ -26,7 +25,7 @@ export default function ImageQualityScreen() {
         <CameraFrame
           tone="warning"
           photoUri={pendingPhotoUri}
-          photoOpacity={0.55}
+          dimmed
           guidanceTitle={t.imageQuality.warningTitle}
           guidanceBody={t.imageQuality.warningBody}
         />
@@ -44,25 +43,16 @@ export default function ImageQualityScreen() {
             label={t.imageQuality.chooseAnother}
             // A fresh `pick` value makes the Scan screen open the photo library.
             onPress={() => backToScan({ pick: String(Date.now()) })}
-            style={styles.secondary}
+            className="w-[132px]"
           />
           <AppButton
             variant="solid"
             label={t.imageQuality.retake}
             onPress={() => backToScan()}
-            style={styles.primary}
+            className="flex-1"
           />
         </>
       }
     />
   );
 }
-
-const styles = StyleSheet.create({
-  secondary: {
-    width: 132,
-  },
-  primary: {
-    flex: 1,
-  },
-});

@@ -32,7 +32,6 @@ export function DeleteScansSheet({ target, busy, error, onConfirm, onClose }: De
       visible={target !== null}
       // A running request cannot be abandoned: closing would hide its outcome.
       onClose={busy ? () => {} : onClose}
-      handleColor="rgba(201, 181, 174, 0.8)"
       bottomPadding={Spacing.l}>
       <ConfirmDeleteContent
         title={copy.title}

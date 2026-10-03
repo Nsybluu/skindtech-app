@@ -1,16 +1,16 @@
 import { useState } from 'react';
-import { Pressable, StyleSheet, TextInput, View, type TextInputProps } from 'react-native';
+import { Pressable, TextInput, View, type TextInputProps } from 'react-native';
 
 import { AppIcon } from '@/components/ui/app-icon';
 import { EyeIcon, EyeOffIcon } from '@/components/ui/icons';
 import { Colors } from '@/constants/colors';
-import { Layout, Radius, Spacing } from '@/constants/spacing';
-import { inputTextStyle, MAX_FONT_SIZE_MULTIPLIER } from '@/constants/typography';
+import { MAX_FONT_SIZE_MULTIPLIER } from '@/constants/typography';
 import { useI18n } from '@/i18n/i18n-provider';
+import { cn } from '@/utils/cn';
 
 import { AppText } from './app-text';
 
-type AppInputProps = Omit<TextInputProps, 'style' | 'secureTextEntry'> & {
+type AppInputProps = Omit<TextInputProps, 'style' | 'className' | 'secureTextEntry'> & {
   label: string;
   /** Adds the eye toggle from the Figma password fields. */
   secure?: boolean;
@@ -22,11 +22,15 @@ export function AppInput({ label, secure = false, onFocus, onBlur, ...inputProps
   const [focused, setFocused] = useState(false);
 
   return (
-    <View style={styles.field}>
-      <AppText variant="body" color={Colors.text.label}>
+    <View className="gap-2">
+      <AppText variant="body" className="text-fg-label">
         {label}
       </AppText>
-      <View style={[styles.box, focused && styles.boxFocused]}>
+      <View
+        className={cn(
+          'h-14 flex-row items-center gap-3 rounded-lg border px-4',
+          focused ? 'border-brand-primary bg-surface-card-strong' : 'border-line-input bg-surface-input',
+        )}>
         <TextInput
           accessibilityLabel={label}
           placeholderTextColor={Colors.text.muted}
@@ -35,7 +39,7 @@ export function AppInput({ label, secure = false, onFocus, onBlur, ...inputProps
           maxFontSizeMultiplier={MAX_FONT_SIZE_MULTIPLIER}
           autoCapitalize="none"
           autoCorrect={false}
-          style={styles.input}
+          className="h-full flex-1 font-noto-regular text-field text-fg-primary"
           {...inputProps}
           onFocus={(event) => {
             setFocused(true);
@@ -52,7 +56,7 @@ export function AppInput({ label, secure = false, onFocus, onBlur, ...inputProps
             accessibilityLabel={hidden ? t.signIn.showPassword : t.signIn.hidePassword}
             hitSlop={10}
             onPress={() => setHidden((value) => !value)}
-            style={({ pressed }) => pressed && styles.pressed}>
+            className="active:opacity-60">
             {/* The icon shows the current state: open eye = password visible, closed eye = hidden. */}
             {hidden ? (
               <AppIcon icon={EyeOffIcon} size={26} color={Colors.icon.strong} />
@@ -65,33 +69,3 @@ export function AppInput({ label, secure = false, onFocus, onBlur, ...inputProps
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  field: {
-    gap: Spacing.s,
-  },
-  box: {
-    height: Layout.inputHeight,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.m,
-    paddingHorizontal: Spacing.l,
-    borderRadius: Radius.l,
-    borderWidth: 1,
-    borderColor: Colors.border.input,
-    backgroundColor: Colors.surface.input,
-  },
-  boxFocused: {
-    borderColor: Colors.brand.primary,
-    backgroundColor: Colors.surface.cardStrong,
-  },
-  input: {
-    flex: 1,
-    height: '100%',
-    ...inputTextStyle('bodyLarge'),
-    color: Colors.text.primary,
-  },
-  pressed: {
-    opacity: 0.6,
-  },
-});

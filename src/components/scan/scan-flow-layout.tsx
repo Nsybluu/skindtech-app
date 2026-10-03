@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import { Alert, View } from 'react-native';
 
 import { ActionBar } from '@/components/ui/action-bar';
 import { AppIcon } from '@/components/ui/app-icon';
@@ -7,8 +7,8 @@ import { IconButton } from '@/components/ui/icon-button';
 import { InfoIcon } from '@/components/ui/icons';
 import { ScreenBackground } from '@/components/ui/screen-background';
 import { ScreenHeader } from '@/components/ui/screen-header';
-import { Colors } from '@/constants/colors';
-import { Layout, Radius, Shadows, Spacing } from '@/constants/spacing';
+import { Effects } from '@/constants/effects';
+import { Spacing } from '@/constants/spacing';
 import { useDesignInsets } from '@/hooks/use-design-insets';
 import { useI18n } from '@/i18n/i18n-provider';
 
@@ -41,7 +41,8 @@ export function ScanFlowLayout({
 
   return (
     <ScreenBackground>
-      <View style={[styles.top, { paddingTop: top(40) }]}>
+      {/* `max-w-[520px]` = content width 480 + 2 × the 20pt screen padding. */}
+      <View className="w-full max-w-[520px] gap-3 self-center px-5" style={{ paddingTop: top(40) }}>
         <ScreenHeader
           title={title}
           onBack={onBack}
@@ -57,47 +58,16 @@ export function ScanFlowLayout({
         <SkinProfileSummary />
       </View>
 
-      <View style={styles.previewArea}>{preview}</View>
+      <View className="w-full max-w-[520px] flex-1 self-center px-5 py-4">{preview}</View>
 
-      <View style={[styles.sheet, { paddingBottom: actions ? Spacing.xl : bottom(Spacing.xl) }]}>
-        <View style={styles.sheetContent}>{controls}</View>
+      <View
+        className={`rounded-t-sheet bg-surface-bar px-5 pt-4 ${actions ? 'pb-5' : ''}`}
+        // Without an action bar the sheet's bottom padding follows the safe area (runtime value).
+        style={[Effects.shadowBarUp, actions ? null : { paddingBottom: bottom(Spacing.xl) }]}>
+        <View className="w-full max-w-content items-stretch gap-3 self-center">{controls}</View>
       </View>
 
       {actions ? <ActionBar>{actions}</ActionBar> : null}
     </ScreenBackground>
   );
 }
-
-const styles = StyleSheet.create({
-  top: {
-    width: '100%',
-    maxWidth: Layout.maxContentWidth + Layout.screenPadding * 2,
-    alignSelf: 'center',
-    paddingHorizontal: Layout.screenPadding,
-    gap: Spacing.m,
-  },
-  previewArea: {
-    flex: 1,
-    width: '100%',
-    maxWidth: Layout.maxContentWidth + Layout.screenPadding * 2,
-    alignSelf: 'center',
-    paddingHorizontal: Layout.screenPadding,
-    paddingTop: Spacing.l,
-    paddingBottom: Spacing.l,
-  },
-  sheet: {
-    paddingTop: Spacing.l,
-    paddingHorizontal: Layout.screenPadding,
-    borderTopLeftRadius: Radius.sheet,
-    borderTopRightRadius: Radius.sheet,
-    backgroundColor: Colors.surface.bar,
-    boxShadow: Shadows.barUp,
-  },
-  sheetContent: {
-    width: '100%',
-    maxWidth: Layout.maxContentWidth,
-    alignSelf: 'center',
-    alignItems: 'stretch',
-    gap: Spacing.m,
-  },
-});

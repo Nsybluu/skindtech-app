@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react';
-import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Pressable, View } from 'react-native';
 
-import { Alpha, Colors, Gradients } from '@/constants/colors';
-import { Layout, Radius, Shadows, Spacing } from '@/constants/spacing';
+import { Effects } from '@/constants/effects';
 import type { TextVariant } from '@/constants/typography';
+import { cn } from '@/utils/cn';
 
 import { AppText } from './app-text';
 
@@ -26,73 +26,53 @@ type AppButtonProps = {
   onPress?: () => void;
   variant?: ButtonVariant;
   icon?: ReactNode;
-  height?: number;
-  radius?: number;
-  style?: StyleProp<ViewStyle>;
+  /** Layout classes of the caller (width, margin, a different `h-*`); they replace the variant's own. */
+  className?: string;
   accessibilityLabel?: string;
   disabled?: boolean;
 };
 
-const VARIANT_DEFAULTS: Record<
-  ButtonVariant,
-  { height: number; radius: number; textVariant: TextVariant; textColor: string; iconGap: number }
-> = {
+const VARIANTS: Record<ButtonVariant, { containerClass: string; textVariant: TextVariant; textClass: string }> = {
   gradient: {
-    height: Layout.primaryButtonHeight,
-    radius: Radius.l,
+    // The gradient itself is `Effects.primaryButton`; the flat colour is what shows if it cannot draw.
+    containerClass: 'h-14 gap-2 bg-brand-gradient-start',
     textVariant: 'buttonLarge',
-    textColor: Colors.text.onBrand,
-    iconGap: Spacing.s,
+    textClass: 'text-fg-on-brand',
   },
-  solid: {
-    height: Layout.buttonHeight,
-    radius: Radius.l,
-    textVariant: 'button',
-    textColor: Colors.text.onBrand,
-    iconGap: Spacing.s,
-  },
+  solid: { containerClass: 'h-14 gap-2 bg-brand-primary', textVariant: 'button', textClass: 'text-fg-on-brand' },
   secondary: {
-    height: Layout.buttonHeight,
-    radius: Radius.l,
+    containerClass: 'h-14 gap-2 border border-line-brand-strong bg-surface-secondary-button',
     textVariant: 'button',
-    textColor: Colors.brand.primary,
-    iconGap: Spacing.s,
+    textClass: 'text-brand-primary',
   },
   outline: {
-    height: 48,
-    radius: Radius.l,
+    containerClass: 'h-12 gap-2 border border-rose/[0.28] bg-white/[0.62]',
     textVariant: 'button',
-    textColor: Colors.brand.primary,
-    iconGap: Spacing.s,
+    textClass: 'text-brand-primary',
   },
   google: {
-    height: Layout.buttonHeight,
-    radius: Radius.l,
+    containerClass: 'h-14 gap-4 border border-line-button bg-white',
     textVariant: 'buttonLarge',
-    textColor: Colors.text.google,
-    iconGap: Spacing.l,
+    textClass: 'text-fg-google',
   },
-  destructive: {
-    height: Layout.buttonHeight,
-    radius: Radius.l,
-    textVariant: 'button',
-    textColor: Colors.text.onBrand,
-    iconGap: Spacing.s,
-  },
+  destructive: { containerClass: 'h-14 gap-2 bg-danger-fill', textVariant: 'button', textClass: 'text-fg-on-brand' },
 };
+
+const EFFECTS = {
+  gradient: Effects.primaryButton,
+  google: Effects.shadowGoogle,
+} as const;
 
 export function AppButton({
   label,
   onPress,
   variant = 'gradient',
   icon,
-  height,
-  radius,
-  style,
+  className,
   accessibilityLabel,
   disabled = false,
 }: AppButtonProps) {
-  const defaults = VARIANT_DEFAULTS[variant];
+  const spec = VARIANTS[variant];
 
   return (
     <Pressable
@@ -101,78 +81,23 @@ export function AppButton({
       accessibilityState={{ disabled }}
       disabled={disabled}
       onPress={onPress}
-      style={({ pressed }) => [
-        styles.base,
-        variantStyles[variant],
-        {
-          height: height ?? defaults.height,
-          borderRadius: radius ?? defaults.radius,
-          gap: defaults.iconGap,
-        },
-        (pressed || disabled) && styles.pressed,
+      className={cn(
+        'flex-row items-center justify-center rounded-lg px-1 active:opacity-[0.85]',
+        spec.containerClass,
         // A delete button that cannot be used yet must look unavailable, not merely pressed.
-        disabled && variant === 'destructive' && styles.disabledDestructive,
-        style,
-      ]}>
+        disabled && (variant === 'destructive' ? 'opacity-40' : 'opacity-[0.85]'),
+        className,
+      )}
+      style={variant === 'gradient' || variant === 'google' ? EFFECTS[variant] : undefined}>
       {icon ? <View>{icon}</View> : null}
       <AppText
-        variant={defaults.textVariant}
+        variant={spec.textVariant}
         // Google's own button guidelines ask for a medium weight; every other button is semibold.
         weight={variant === 'google' ? 'medium' : undefined}
-        color={defaults.textColor}
-        align="center"
-        numberOfLines={2}
-        style={styles.label}>
+        className={cn('shrink text-center', spec.textClass)}
+        numberOfLines={2}>
         {label}
       </AppText>
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  base: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: Spacing.xs,
-  },
-  label: {
-    flexShrink: 1,
-  },
-  pressed: {
-    opacity: 0.85,
-  },
-  disabledDestructive: {
-    opacity: 0.4,
-  },
-});
-
-const variantStyles = StyleSheet.create({
-  gradient: {
-    backgroundColor: Colors.brand.gradientStart,
-    experimental_backgroundImage: Gradients.primary,
-    boxShadow: Shadows.primary,
-  },
-  solid: {
-    backgroundColor: Colors.brand.primary,
-  },
-  secondary: {
-    backgroundColor: Colors.surface.secondaryButton,
-    borderWidth: 1,
-    borderColor: Colors.border.brandStrong,
-  },
-  outline: {
-    backgroundColor: Alpha.white(0.62),
-    borderWidth: 1,
-    borderColor: Alpha.rose(0.28),
-  },
-  google: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: Colors.border.button,
-    boxShadow: Shadows.google,
-  },
-  destructive: {
-    backgroundColor: Colors.danger.fill,
-  },
-});

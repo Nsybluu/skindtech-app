@@ -1,10 +1,8 @@
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 
 import { AppIcon } from '@/components/ui/app-icon';
 import { AppText } from '@/components/ui/app-text';
 import { ImageOffIcon, ScanFaceIcon, SunIcon, type LucideIcon } from '@/components/ui/icons';
-import { Colors } from '@/constants/colors';
-import { Radius, Spacing } from '@/constants/spacing';
 import { useI18n } from '@/i18n/i18n-provider';
 
 /** Figma "Tips / Before You Scan" — three quick-check tiles. */
@@ -18,15 +16,17 @@ export function ScanTipsRow() {
   ];
 
   return (
-    <View style={styles.section}>
+    <View className="gap-3">
       <AppText variant="sectionTitle" accessibilityRole="header">
         {t.home.beforeYouScan}
       </AppText>
-      <View style={styles.row}>
+      <View className="flex-row gap-2">
         {tips.map(({ key, label, icon }) => (
-          <View key={key} style={styles.tile}>
+          <View
+            key={key}
+            className="min-h-[84px] flex-1 items-center justify-center gap-2 rounded-lg border border-line-card bg-surface-card px-2 py-3">
             <AppIcon icon={icon} size={24} />
-            <AppText variant="bodySmall" color={Colors.text.secondary} align="center" numberOfLines={2}>
+            <AppText variant="bodySmall" numberOfLines={2} className="text-center text-fg-secondary">
               {label}
             </AppText>
           </View>
@@ -35,26 +35,3 @@ export function ScanTipsRow() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  section: {
-    gap: Spacing.m,
-  },
-  row: {
-    flexDirection: 'row',
-    gap: Spacing.s,
-  },
-  tile: {
-    flex: 1,
-    minHeight: 84,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.s,
-    paddingVertical: Spacing.m,
-    paddingHorizontal: Spacing.s,
-    borderRadius: Radius.l,
-    borderWidth: 1,
-    borderColor: Colors.border.card,
-    backgroundColor: Colors.surface.card,
-  },
-});

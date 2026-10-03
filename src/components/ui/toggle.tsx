@@ -1,14 +1,11 @@
 import { useEffect } from 'react';
-import { Pressable, StyleSheet } from 'react-native';
+import { Pressable } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
-import { Alpha, Colors } from '@/constants/colors';
+import { cn } from '@/utils/cn';
 
-const TRACK_WIDTH = 48;
-const TRACK_HEIGHT = 28;
-const KNOB_SIZE = 24;
-const KNOB_OFFSET = 2;
-const KNOB_TRAVEL = TRACK_WIDTH - KNOB_SIZE - KNOB_OFFSET * 2;
+/** Track `w-12` (48) minus the `size-6` knob (24) minus the `px-0.5` padding on both sides (4). */
+const KNOB_TRAVEL = 20;
 
 type ToggleProps = {
   value: boolean;
@@ -38,31 +35,12 @@ export function Toggle({ value, onValueChange, accessibilityLabel, disabled = fa
       disabled={disabled}
       hitSlop={8}
       onPress={() => onValueChange(!value)}
-      style={[
-        styles.track,
-        { backgroundColor: value ? Colors.brand.primary : Alpha.taupe(0.45) },
-        disabled && styles.disabled,
-      ]}>
-      <Animated.View style={[styles.knob, knobStyle]} />
+      className={cn(
+        'h-7 w-12 justify-center rounded-full px-0.5',
+        value ? 'bg-brand-primary' : 'bg-taupe/[0.45]',
+        disabled && 'opacity-[0.55]',
+      )}>
+      <Animated.View className="size-6 rounded-full bg-white" style={knobStyle} />
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  track: {
-    width: TRACK_WIDTH,
-    height: TRACK_HEIGHT,
-    borderRadius: TRACK_HEIGHT / 2,
-    justifyContent: 'center',
-    paddingHorizontal: KNOB_OFFSET,
-  },
-  disabled: {
-    opacity: 0.55,
-  },
-  knob: {
-    width: KNOB_SIZE,
-    height: KNOB_SIZE,
-    borderRadius: KNOB_SIZE / 2,
-    backgroundColor: '#FFFFFF',
-  },
-});

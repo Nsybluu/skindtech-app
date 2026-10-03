@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 
 import { ActionBar } from '@/components/ui/action-bar';
 import { AppButton } from '@/components/ui/app-button';
@@ -8,8 +8,6 @@ import { AppScreen } from '@/components/ui/app-screen';
 import { AppText } from '@/components/ui/app-text';
 import { InfoIcon } from '@/components/ui/icons';
 import { ScreenHeader, goBackOr } from '@/components/ui/screen-header';
-import { Colors } from '@/constants/colors';
-import { Radius, Spacing } from '@/constants/spacing';
 import { useI18n } from '@/i18n/i18n-provider';
 
 /** Figma 07D — Analysis Failed. */
@@ -19,106 +17,54 @@ export default function AnalysisFailedScreen() {
 
   return (
     <AppScreen
-      header={<ScreenHeader title={t.analysisFailed.title} gap={Spacing.m} onBack={backToScan} />}
-      contentStyle={styles.content}
+      header={<ScreenHeader title={t.analysisFailed.title} className="gap-3" onBack={backToScan} />}
+      contentClassName="grow items-center justify-center gap-4 py-8"
       footer={
         <ActionBar>
           <AppButton
             variant="secondary"
             label={t.analysisFailed.backToScan}
             onPress={backToScan}
-            style={styles.secondary}
+            className="w-[104px]"
           />
           <AppButton
             variant="solid"
             label={t.analysisFailed.tryAgain}
             onPress={() => router.replace('/analyzing')}
-            style={styles.primary}
+            className="flex-1"
           />
         </ActionBar>
       }>
-      <View style={styles.iconCircle}>
+      <View className="size-16 items-center justify-center rounded-full border border-error-icon-border bg-error-icon-surface">
         <AppIcon icon={InfoIcon} size={24} />
       </View>
 
-      <AppText variant="headline" color={Colors.error.title} align="center">
+      <AppText variant="headline" className="text-center text-error-title">
         {t.analysisFailed.heading}
       </AppText>
-      <AppText variant="body" color={Colors.error.body} align="center">
+      <AppText variant="body" className="text-center text-error-body">
         {t.analysisFailed.body}
       </AppText>
 
-      <View style={styles.card}>
-        <AppText variant="cardTitle" color={Colors.error.title}>
+      <View className="gap-2 self-stretch rounded-lg border border-error-card-border bg-white p-4">
+        <AppText variant="cardTitle" className="text-error-title">
           {t.analysisFailed.whatYouCanDo}
         </AppText>
-        <View style={styles.tips}>
+        <View className="gap-1">
           {t.analysisFailed.tips.map((tip) => (
-            <AppText key={tip} variant="bodySmall" color={Colors.error.text}>
+            <AppText key={tip} variant="bodySmall" className="text-error-text">
               {`•  ${tip}`}
             </AppText>
           ))}
         </View>
       </View>
 
-      <View style={styles.notice}>
+      <View className="flex-row items-center gap-3 self-stretch rounded-lg border border-error-notice-border bg-error-notice-surface p-3">
         <AppIcon icon={InfoIcon} size={18} />
-        <AppText variant="caption" color={Colors.error.text} style={styles.noticeText}>
+        <AppText variant="caption" className="flex-1 text-error-text">
           {t.analysisFailed.notSaved}
         </AppText>
       </View>
     </AppScreen>
   );
 }
-
-const styles = StyleSheet.create({
-  content: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: Spacing.l,
-    paddingVertical: Spacing.xxxl,
-  },
-  iconCircle: {
-    width: 64,
-    height: 64,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 32,
-    borderWidth: 1,
-    borderColor: Colors.error.iconBorder,
-    backgroundColor: Colors.error.iconSurface,
-  },
-  card: {
-    alignSelf: 'stretch',
-    gap: Spacing.s,
-    padding: Spacing.l,
-    borderRadius: Radius.l,
-    borderWidth: 1,
-    borderColor: Colors.error.cardBorder,
-    backgroundColor: '#FFFFFF',
-  },
-  notice: {
-    alignSelf: 'stretch',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.m,
-    padding: Spacing.m,
-    borderRadius: Radius.l,
-    borderWidth: 1,
-    borderColor: Colors.error.noticeBorder,
-    backgroundColor: Colors.error.noticeSurface,
-  },
-  noticeText: {
-    flex: 1,
-  },
-  tips: {
-    gap: Spacing.xs,
-  },
-  secondary: {
-    width: 104,
-  },
-  primary: {
-    flex: 1,
-  },
-});

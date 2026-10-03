@@ -1,14 +1,12 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import { Alert, View } from 'react-native';
 
 import GoogleIcon from '@/assets/illustrations/google.svg';
 import { AuthFooterLink, AuthLayout } from '@/components/auth/auth-layout';
 import { AppButton } from '@/components/ui/app-button';
 import { AppInput } from '@/components/ui/app-input';
 import { AppText } from '@/components/ui/app-text';
-import { Colors } from '@/constants/colors';
-import { Spacing } from '@/constants/spacing';
 import { useGoogleSignIn } from '@/hooks/use-google-sign-in';
 import { useI18n } from '@/i18n/i18n-provider';
 import { useSession } from '@/providers/app-provider';
@@ -52,16 +50,16 @@ export default function SignUpScreen() {
 
   return (
     <AuthLayout>
-      <View style={styles.intro}>
+      <View className="gap-1">
         <AppText variant="authTitle" accessibilityRole="header">
           {t.signUp.title}
         </AppText>
-        <AppText variant="bodyLarge" color={Colors.text.secondary}>
+        <AppText variant="bodyLarge" className="text-fg-secondary">
           {t.signUp.subtitle}
         </AppText>
       </View>
 
-      <View style={styles.form}>
+      <View className="mt-6 gap-5">
         <AppInput
           label={t.signIn.email}
           value={email}
@@ -92,7 +90,7 @@ export default function SignUpScreen() {
         />
       </View>
 
-      <View style={styles.actions}>
+      <View className="mt-8 gap-3">
         <AppButton
           label={submitting ? t.authErrors.creatingAccount : t.signUp.submit}
           onPress={submit}
@@ -107,7 +105,7 @@ export default function SignUpScreen() {
         />
       </View>
 
-      <View style={styles.footer}>
+      <View className="mt-6">
         <AuthFooterLink
           prompt={t.signUp.haveAccount}
           action={t.signUp.signIn}
@@ -117,20 +115,3 @@ export default function SignUpScreen() {
     </AuthLayout>
   );
 }
-
-const styles = StyleSheet.create({
-  intro: {
-    gap: Spacing.xs,
-  },
-  form: {
-    marginTop: Spacing.xxl,
-    gap: Spacing.xl,
-  },
-  actions: {
-    marginTop: Spacing.xxxl,
-    gap: Spacing.m,
-  },
-  footer: {
-    marginTop: Spacing.xxl,
-  },
-});
